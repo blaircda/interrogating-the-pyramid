@@ -4,10 +4,9 @@ diff_to_w = [round(1/( 10**(-diff/400)+1),2) for diff in range(-2000,2001)]
 
 
 def get_new_ratings(ratings, home_team, away_team, home_score, away_score):
-    default_elo = 1500
 
-    home_team_rating = ratings.get(home_team, default_elo)
-    away_team_rating = ratings.get(away_team, default_elo)
+    home_team_rating = ratings[home_team]
+    away_team_rating = ratings[away_team]
 
     K = 100
     G = 1
