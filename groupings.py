@@ -4,6 +4,7 @@ from config import *
 
 #Date,Season,HomeTeam,AwayTeam,Score,hGoal,aGoal,Division,Tier,Result
 
+@st.cache_data
 def get_seasons_daterange(scores_file):
     df = pd.read_csv(scores_file, usecols=["Date", "Season"])
     df = df.groupby(["Season"]).agg(
@@ -14,19 +15,21 @@ def get_seasons_daterange(scores_file):
     #print(df)
     return df
 
+@st.cache_data
 def get_seasons_tiers(scores_file):
     df = pd.read_csv(scores_file, usecols=["Season", "Tier", "Division"])
     df = df[["Season", "Tier", "Division"]].drop_duplicates()
     #print(df.index)
     return df
 
+@st.cache_data
 def get_seasons_tiers_teams(scores_file):
     df = pd.read_csv(scores_file, usecols=["Season", "Tier", "Division", "HomeTeam"])
     df = df.groupby(["Season", "Tier", "Division"])["HomeTeam"].unique().apply(sorted)
     #print(df)
     return df
 
-#@st.cache_data
+@st.cache_data
 def build_league_tables(scores_file):
     df = pd.read_csv(scores_file)
 
