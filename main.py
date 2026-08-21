@@ -17,12 +17,27 @@ ratings_df = pd.DataFrame.from_dict(ratings)
 ratings_df = ratings_df.set_index('date')       
 ratings_df.index = pd.to_datetime(ratings_df.index)
 
+
+season_dates = get_seasons_daterange(scores_csv)
+season_league_teams = get_seasons_tiers_teams(scores_csv)
+season_list = season_league_teams.index.get_level_values("Season").unique().tolist()
+
+start_date = min(ratings_df.index)
+end_date = max(ratings_df.index)
+
+start_season = min(season_dates.index)
+end_season = max(season_dates.index)
+
 st.set_page_config(layout="wide", page_title="Interrogating the pyramid")
 col1, col2, col3 = st.columns([0.1,0.8,0.1])
 
 with col2:
     mt1, mt2 = st.tabs(["Historic ratings", "Season simulations"])
     with mt1:
+
+        s1, s2 = st.select_slider("Season range",
+            options = season_dates.index, value = (start_season, end_season)  )
+
         sel = st.multiselect(
         f"Team ({len(teams)} options)",
         teams,
@@ -32,17 +47,12 @@ with col2:
 
         if sel:           
             filtered = ratings_df[ratings_df["team"].isin(sel)]
+            filtered = filtered[ ( s1 <= filtered["season"]) & (filtered["season"] <= s2)]
             fig = plot_multi(filtered, sel)
             st.pyplot(fig,width='stretch')
             plt.close(fig)
             
     with mt2:
-        season_dates = get_seasons_daterange(scores_csv)
-
-        season_league_teams = get_seasons_tiers_teams(scores_csv)
-
-        season_list = season_league_teams.index.get_level_values("Season").unique().tolist()
-
         sel_season = st.selectbox(
         "Choose season",
         season_list[1:],
@@ -82,8 +92,6 @@ with col2:
                 for team in new_teams:
                     sel_preseason_ratings[team] = int(av_rating)
                     #sel_preseason_ratings[team] = 1500
-
-            #st.write(sel_preseason_ratings) 
 
             state = {
             "teams": sel_teams,

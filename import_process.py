@@ -23,6 +23,7 @@ def build_ratings(teams_csv, scores_csv):
         last_date_read = None
         for row in reader:
             date = row["Date"]
+            season = row["Season"]
 
             home_team = row["HomeTeam"]
             away_team = row["AwayTeam"]
@@ -30,8 +31,8 @@ def build_ratings(teams_csv, scores_csv):
             away_score = int(row["aGoal"])
 
             rating_home_new, rating_away_new = get_new_ratings(live_ratings, home_team, away_team, home_score, away_score)
-            rating_history.append( { "date": date, "team": home_team, "rating": rating_home_new } )
-            rating_history.append( { "date": date, "team": away_team, "rating": rating_away_new } )
+            rating_history.append( { "date": date,  "season": season, "team": home_team, "rating": rating_home_new} )
+            rating_history.append( { "date": date, "season": season, "team": away_team, "rating": rating_away_new} )
             live_ratings[home_team] = rating_home_new
             live_ratings[away_team] = rating_away_new 
 

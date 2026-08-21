@@ -10,17 +10,17 @@ def get_seasons_daterange(scores_file):
     end=("Date", "max")
     )
     df["pre"] = df["end"].shift(1)
-    print(df)
+    #print(df)
     return df
 
 def get_seasons_tiers(scores_file):
     df = pd.read_csv(scores_file, usecols=["Season", "Tier", "Division"])
     df = df[["Season", "Tier", "Division"]].drop_duplicates()
-    print(df.index)
+    #print(df.index)
     return df
 
 def get_seasons_tiers_teams(scores_file):
     df = pd.read_csv(scores_file, usecols=["Season", "Tier", "Division", "HomeTeam"])
-    seasons = df.groupby(["Season", "Tier", "Division"])["HomeTeam"].unique().apply(sorted)
-    print(seasons)
-    return seasons
+    df = df.groupby(["Season", "Tier", "Division"])["HomeTeam"].unique().apply(sorted)
+    #print(df)
+    return df
