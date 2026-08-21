@@ -3,7 +3,8 @@ from time import perf_counter
 
 # helper functions for creating defaultdicts to store simulation results
 def make_posn_stats():
-    return {"W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0, "GD": 0, "PTS":0}
+    #return {"W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0, "GD": 0, "PTS":0}
+    return {"W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0, "PTS":0}
 def make_team_stats(league_size):
     return {i: 0 for i in range(1, league_size+1)} | make_posn_stats()
 

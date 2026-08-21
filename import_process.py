@@ -1,6 +1,7 @@
 import csv
 import pandas as pd
 import streamlit as st
+from collections import defaultdict
 from rating_model import *
 
 @st.cache_data
@@ -20,7 +21,10 @@ def build_ratings(teams_csv, scores_csv):
 
     with open(scores_csv, newline="") as f:
         reader = csv.DictReader(f)
+        #Date,Season,HomeTeam,AwayTeam,Score,hGoal,aGoal,Division,Tier,Result
+
         last_date_read = None
+                
         for row in reader:
             date = row["Date"]
             season = row["Season"]

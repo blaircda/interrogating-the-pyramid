@@ -12,7 +12,7 @@ def get_new_ratings(ratings, home_team, away_team, home_score, away_score):
 
     margin = abs(home_score - away_score)
     K = 20
-    G = gd_adj(margin) 
+    G = gd_adj[margin]
         
     home_adv = 50
     rating_diff = home_team_rating - away_team_rating + home_adv

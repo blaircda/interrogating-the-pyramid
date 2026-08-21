@@ -1,6 +1,7 @@
 import csv
 import pandas as pd
 import streamlit as st
+from config import *
 from plotting import *
 from import_process import *
 from groupings import *
@@ -17,7 +18,6 @@ ratings_df = pd.DataFrame.from_dict(ratings)
 ratings_df = ratings_df.set_index('date')       
 ratings_df.index = pd.to_datetime(ratings_df.index)
 
-
 season_dates = get_seasons_daterange(scores_csv)
 season_league_teams = get_seasons_tiers_teams(scores_csv)
 season_list = season_league_teams.index.get_level_values("Season").unique().tolist()
@@ -27,6 +27,8 @@ end_date = max(ratings_df.index)
 
 start_season = min(season_dates.index)
 end_season = max(season_dates.index)
+
+tables = build_league_tables(scores_csv)
 
 st.set_page_config(layout="wide", page_title="Interrogating the pyramid")
 col1, col2, col3 = st.columns([0.1,0.8,0.1])
@@ -66,6 +68,7 @@ with col2:
         "Choose league",
         tier_divisions,
         index = None,
+        format_func = lambda x:x[1],
         key="league_sel")
 
         if sel_league:
@@ -98,16 +101,27 @@ with col2:
             "ratings": sel_preseason_ratings,
             }
 
+            if sel_season < change_to_goal_diff:
+                state["points_per_game"] = 2
+                state["goal_separator"] = "average"
+            elif change_to_goal_diff <= sel_season < change_to_three_points_per_win:
+                state["points_per_game"] = 2
+                state["goal_separator"] = "difference"
+            else:
+                state["points_per_game"] = 3
+                state["goal_separator"] = "difference"
+
             model_set = {
                     "elo_static": elo_to_poisson,
             }
 
-            Nsims_options = [1,10,100,1000,10000]
+            Nsims_options = [1,100,1000,10000]
             simulate = st.selectbox("Simulate", Nsims_options, index=None, key = "simulater")
 
-            if simulate: 
+            if simulate:
+                actual_table = tables.loc[(sel_season,*sel_league)]
                 simulated_season = run_simulations(state, simulate, model_set, fixtures=None)
                 display_results(simulated_season, sel_teams, simulate)
-
-
-    
+                display_actual_results(actual_table, sel_season)
+                
+                get_errors(actual_table, simulated_season, simulate)
