@@ -1,5 +1,6 @@
 from season_simulator import *
 from time import perf_counter
+import pandas as pd
 
 # helper functions for creating defaultdicts to store simulation results
 def make_posn_stats():
@@ -46,5 +47,34 @@ def run_simulations(state, Nsims, model_set, fixtures=None):
 
     return store_team_results
     
+def get_errors(actual_table, simulation_results, Nsims):
+
+    model_errors = {}
+    
+    for model_name, model_data in simulation_results.items():
+        df = pd.DataFrame.from_dict(model_data, orient="index")
+        cols = ["PTS", "W", "D", "L", "GF", "GA"]
+        df[cols] /= Nsims
+        pos_cols = df.columns[df.columns.map(lambda x: isinstance(x, int))]
+        df[pos_cols] = df[pos_cols]/Nsims
+        df["xPOS"] = sum( pos * df[pos] for pos in pos_cols )
+        new_col_names = { c: "x"+c for c in cols }
+        df = df.rename(columns=new_col_names)
+        df["POS"] = actual_table["POS"]
+        df["PTS"] = actual_table["PTS"]
+
+        #st.write(df[["POS", "xPOS", "PTS", "xPTS"]])
+
+        # posn errors
+        posn_mae = (df["POS"] - df["xPOS"]).abs().mean()
+        df["log_err"] = -np.log( df.apply(lambda row: row[row["POS"]], axis=1) )
+        posn_log = df["log_err"].mean()
+        # points errors
+        points_mae = (df["PTS"] - df["xPTS"]).abs().mean()
+        points_rmse = np.sqrt( ( (df["PTS"] - df["xPTS"]) ** 2).mean() )
+
+        model_errors[model_name] = { "posn_mae": posn_mae, "posn_log":posn_log, "points_mae":points_mae, "points_rmse":points_rmse }
+
+    return model_errors
 
 

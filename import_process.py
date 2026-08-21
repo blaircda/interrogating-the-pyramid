@@ -4,7 +4,7 @@ import streamlit as st
 from collections import defaultdict
 from rating_model import *
 
-@st.cache_data
+#@st.cache_data
 def build_ratings(teams_csv, scores_csv):
     teams = []
     rating_history = []

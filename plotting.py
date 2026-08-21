@@ -51,36 +51,17 @@ def display_actual_results(actual_table, season):
     st.write("Actual results:")
     st.write(actual_table[display_columns])
 
-def get_errors(actual_table, simulation_results, Nsims):
+   
+def display_errors(model_errors):
     
-    for model_name, model_data in simulation_results.items():
+    for model_name, model_error_data in model_errors:
         st.write(f"\nErrors for model: {model_name}")
-        df = pd.DataFrame.from_dict(model_data, orient="index")
-        cols = ["PTS", "W", "D", "L", "GF", "GA"]
-        df[cols] /= Nsims
-        pos_cols = df.columns[df.columns.map(lambda x: isinstance(x, int))]
-        df[pos_cols] = df[pos_cols]/Nsims
-        df["xPOS"] = sum( pos * df[pos] for pos in pos_cols )
-        new_col_names = { c: "x"+c for c in cols }
-        df = df.rename(columns=new_col_names)
-        df["POS"] = actual_table["POS"]
-        df["PTS"] = actual_table["PTS"]
-
-        st.write(df[["POS", "xPOS", "PTS", "xPTS"]])
-
-        # posn errors
-        posn_mae = (df["POS"] - df["xPOS"]).abs().mean()
-        df["log_err"] = -np.log( df.apply(lambda row: row[row["POS"]], axis=1) )
-        posn_log = df["log_err"].mean()
-        # points errors
-        points_mae = (df["PTS"] - df["xPTS"]).abs().mean()
-        points_rmse = np.sqrt( ( (df["PTS"] - df["xPTS"]) ** 2).mean() )
+       
+        posn_mae, posn_log, points_mae, points_rmse =   model_error_data["posn_mae"], model_error_data["posn_log"], model_error_data["points_mae"], model_error_data["points_rmse"]
 
         st.write(f"Position Mean Absolute Error: {posn_mae:.2f}")
         st.write(f"Position Log Loss Error: {posn_log:.2f}")
         st.write(f"Points Mean Absolute Error: {points_mae:.2f}")
         st.write(f"Points Root Mean Squared Error: {points_rmse:.2f}")
-
-        
 
         

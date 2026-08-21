@@ -123,5 +123,13 @@ with col2:
                 simulated_season = run_simulations(state, simulate, model_set, fixtures=None)
                 display_results(simulated_season, sel_teams, simulate)
                 display_actual_results(actual_table, sel_season)
-                
-                get_errors(actual_table, simulated_season, simulate)
+
+                model_errors = get_errors(actual_table, simulated_season, simulate)
+
+                for model_name, model_error_data in model_errors.items():
+                    st.write(f"Errors for model: {model_name}")
+                    posn_mae, posn_log, points_mae, points_rmse =   model_error_data["posn_mae"], model_error_data["posn_log"], model_error_data["points_mae"], model_error_data["points_rmse"]
+                    st.write(f"Position Mean Absolute Error: {posn_mae:.2f}")
+                    st.write(f"Position Log Loss Error: {posn_log:.2f}")
+                    st.write(f"Points Mean Absolute Error: {points_mae:.2f}")
+                    st.write(f"Points Root Mean Squared Error: {points_rmse:.2f}")

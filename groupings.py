@@ -2,7 +2,6 @@ import pandas as pd
 import streamlit as st
 from config import *
 
-scores_file = "data/EnglandLeagueResults.csv"
 #Date,Season,HomeTeam,AwayTeam,Score,hGoal,aGoal,Division,Tier,Result
 
 def get_seasons_daterange(scores_file):
@@ -27,7 +26,7 @@ def get_seasons_tiers_teams(scores_file):
     #print(df)
     return df
 
-@st.cache_data
+#@st.cache_data
 def build_league_tables(scores_file):
     df = pd.read_csv(scores_file)
 
@@ -76,20 +75,11 @@ def build_league_tables(scores_file):
     
     goal_average_era = full_tables[seasons < change_to_goal_diff].sort_values(["PTS", "GAv", "GF"], ascending=[False, False, False])
     goal_diff_era = full_tables[ seasons >= change_to_goal_diff ].sort_values(["PTS", "GD", "GF"], ascending=[False, False, False])
-    #modern = full_tables[ seasons>= change_to_three_points_per_win ].sort_values(["PTS", "GD", "GF"], ascending=[False, False, False])
 
     full_tables = pd.concat([goal_average_era, goal_diff_era])
 
-    #full_tables["PTS*"] =  2*full_tables["W"] + full_tables["D"]
-
-    # sort
-    #old_points_goal_average = full_tables[seasons < change_to_goal_diff].sort_values(["PTS*", "GAv"], ascending=[False, False])
-    #old_points_goal_diff = full_tables[ (change_to_goal_diff <= seasons) & (seasons< change_to_three_points_per_win) ].sort_values(["PTS*", "GD", "GF"], ascending=[False, False, False])
-    #modern = full_tables[ seasons>= change_to_three_points_per_win ].sort_values(["PTS", "GD", "GF"], ascending=[False, False, False])
-
-    #df = pd.concat([old_points_goal_average, old_points_goal_diff, modern])
     full_tables["POS"] = full_tables.groupby(level=["Season", "Tier", "Division"]).cumcount().add(1)
-
+    full_tables = full_tables.sort_index()
     return full_tables
     #full_tables.sort_values(by=["PTSold", "GAv"], ascending=[False, False],inplace=True)
     #full_tables.loc["1888/1889"][["W", "D", "L", "GF", "GA", "GD", "GAv", "PTS", "PTSold"]]
