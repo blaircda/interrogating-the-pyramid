@@ -1,5 +1,6 @@
 import csv
 import pandas as pd
+import numpy as np
 import streamlit as st
 from config import *
 from plotting import *
@@ -12,7 +13,7 @@ from game_simulator import *
 teams_csv = "data/EnglishTeamActivePeriods.csv"
 scores_csv = "data/EnglandLeagueResults.csv"
 
-teams, ratings = build_ratings(teams_csv, scores_csv)
+teams, ratings, home_success, home_winex = build_ratings(teams_csv, scores_csv)
 
 ratings_df = pd.DataFrame.from_dict(ratings)
 ratings_df = ratings_df.set_index('date')       
@@ -56,15 +57,36 @@ with col2:
             st.pyplot(fig,width='stretch')
             plt.close(fig)
 
-    with mt2: 
-        s1, s2 = st.select_slider("Season range",
-        options = season_dates.index, value = (start_season, end_season), key = "season_slider_ha"  )
+    with mt2:
 
-        filtered = home_adv[ ( s1 <= home_adv.index) & (home_adv.index <= s2)]
-        fig = plot_multi_cols(filtered, ["AvHomeSuccess", "AvHomeWins"])
-        st.pyplot(fig,width='stretch')
-        plt.close(fig)
+        record_tab, rating_tab = st.tabs(["Historic home advantage", "Home advantage vs ratings discrepancy"])
 
+        with record_tab:
+            s1, s2 = st.select_slider("Season range",
+            options = season_dates.index, value = (start_season, end_season), key = "season_slider_ha"  )
+
+            filtered = home_adv[ ( s1 <= home_adv.index) & (home_adv.index <= s2)]
+            fig = plot_multi_cols(filtered, ["AvHomeSuccess", "AvHomeWins"])
+            st.pyplot(fig,width='stretch')
+            plt.close(fig)
+
+        with rating_tab:
+            fig, ax = plt.subplots()
+
+            accum_home_success = np.cumsum(home_success)
+            av_accum_home_success = [ x/(i+1) for i,x in enumerate(accum_home_success)]
+            accum_home_winex = np.cumsum(home_winex )
+            av_accum_home_winex  = [ x/(i+1) for i,x in enumerate(accum_home_winex )]
+            
+            ax.plot(av_accum_home_success, label="home_success")
+            ax.plot(av_accum_home_winex, label="home win ex")
+            ax.legend()
+
+            st.pyplot(fig,width='stretch')
+            plt.close(fig)
+
+
+        
     with mt3:
         sel_season = st.selectbox(
         "Choose season",
