@@ -26,6 +26,28 @@ def plot_multi(df, selection):
     
     return fig
 
+def plot_multi_cols(df, selection):
+    """
+    plt
+    """
+    fig, ax = plt.subplots()
+
+    #ax.set_xlabel("Time")
+    #ax.set_ylabel("")
+    
+    for col in selection:
+        col_data = df[col]
+        ax.plot(col_data.index, col_data, label=col)
+
+    ax.tick_params(axis='x', labelrotation=90)
+    ax.set_xticks(col_data.index[::10])
+    ax.legend(
+        #loc="upper center",
+        #bbox_to_anchor=(0.5, -0.1),
+        #ncols=4
+    )
+    
+    return fig
 
 def display_results(store_team_results, teams, Nsims):
     # display results direct to terminal

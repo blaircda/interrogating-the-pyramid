@@ -30,11 +30,13 @@ end_season = max(season_dates.index)
 
 tables = build_league_tables(scores_csv)
 
+home_adv = build_home_adv(scores_csv)
+
 st.set_page_config(layout="wide", page_title="Interrogating the pyramid")
 col1, col2, col3 = st.columns([0.1,0.8,0.1])
 
 with col2:
-    mt1, mt2 = st.tabs(["Historic ratings", "Season simulations"])
+    mt1, mt2, mt3 = st.tabs(["Historic ratings", "Home advantage", "Season simulations"])
     with mt1:
 
         s1, s2 = st.select_slider("Season range",
@@ -53,8 +55,17 @@ with col2:
             fig = plot_multi(filtered, sel)
             st.pyplot(fig,width='stretch')
             plt.close(fig)
-            
-    with mt2:
+
+    with mt2: 
+        s1, s2 = st.select_slider("Season range",
+        options = season_dates.index, value = (start_season, end_season), key = "season_slider_ha"  )
+
+        filtered = home_adv[ ( s1 <= home_adv.index) & (home_adv.index <= s2)]
+        fig = plot_multi_cols(filtered, ["AvHomeSuccess", "AvHomeWins"])
+        st.pyplot(fig,width='stretch')
+        plt.close(fig)
+
+    with mt3:
         sel_season = st.selectbox(
         "Choose season",
         season_list[1:],

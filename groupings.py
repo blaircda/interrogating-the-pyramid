@@ -87,3 +87,19 @@ def build_league_tables(scores_file):
     #full_tables.sort_values(by=["PTSold", "GAv"], ascending=[False, False],inplace=True)
     #full_tables.loc["1888/1889"][["W", "D", "L", "GF", "GA", "GD", "GAv", "PTS", "PTSold"]]
     
+@st.cache_data
+def build_home_adv(scores_file):
+    df = pd.read_csv(scores_file)
+
+    # get all teams home results
+    home_results = df.groupby(["Season"])["Result"].value_counts().unstack(fill_value=0)
+    home_results = home_results.rename(columns={'A': 'L', 'D': 'D', 'H': 'W'})
+    #home_results.rename_axis(index={home_results.index.names[-1]: 'Team'}, inplace=True)
+    home_results["HomeGames"] = home_results["W"] + home_results["D"] + home_results["L"]
+    home_results["HomeSuccess"] = home_results["W"] + 0.5*home_results["D"]
+    home_results["AvHomeSuccess"] = home_results["HomeSuccess"] / home_results["HomeGames"]
+    home_results["AvHomeWins"] = home_results["W"] / home_results["HomeGames"]
+
+    #home_results = home_results.unstack(level=0, fill_value=0)
+    print(home_results.head())
+    return home_results
