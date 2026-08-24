@@ -17,7 +17,7 @@ Refine and backtest ELO-style club rating system (still in progress)
 ## ELO structure
 
 Given a match between a home team with rating $R_H$ and an away team with match $R_A$, the home team win expectancy is calculated via:
-$W_H = \frac{1}{1 + 10^{-d/400}}$ with d = R_H - R_A + H$
+$W_H = \frac{1}{1 + 10^{-d/400}}$ with $d = R_H - R_A + H$
 where $H$ is a home advantage factor. The away team win expectancy is $W_A = 1 - W_H$.
 For each team, the new rating is 
 $R' = R + K \cdot G \cdot ( O - W)$
