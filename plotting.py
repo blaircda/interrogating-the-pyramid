@@ -26,6 +26,28 @@ def plot_multi(df, selection):
     
     return fig
 
+def plot_multi_cols(df, selection, labels={}):
+    """
+    plt
+    """
+    fig, ax = plt.subplots()
+
+    #ax.set_xlabel("Time")
+    #ax.set_ylabel("")
+
+    for col in selection:
+        col_data = df[col]
+        ax.plot(col_data.index, col_data, label=labels.get(col, col))
+
+    ax.tick_params(axis='x', labelrotation=90)
+    ax.set_xticks(col_data.index[::10])
+    ax.legend(
+        #loc="upper center",
+        #bbox_to_anchor=(0.5, -0.1),
+        #ncols=4
+    )
+    
+    return fig
 
 def display_results(store_team_results, teams, Nsims):
     # display results direct to terminal
@@ -43,13 +65,16 @@ def display_results(store_team_results, teams, Nsims):
         st.write(df[["xPOS"] + cols + pos_cols.tolist() ])
 
 def display_actual_results(actual_table, season):
+
+    table = actual_table.sort_values(by="POS")
+    
     if season < change_to_goal_diff:
         display_columns = ["POS", "W", "D", "L", "GF", "GA", "GAv", "PTS"]
     else:
         display_columns = ["POS", "W", "D", "L", "GF", "GA", "GD", "PTS"]
 
     st.write("Actual results:")
-    st.write(actual_table[display_columns])
+    st.write(table[display_columns])
 
    
 def display_errors(model_errors):

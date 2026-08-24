@@ -71,7 +71,7 @@ def elo_to_poisson(team1, team2, state):
     """
     model function to simulate elo predicted result using Poisson distributions
     """
-    home_adv = 0
+    home_adv = state["home_adv"]
     diff = state["ratings"][team1] - state["ratings"][team2] + home_adv
     wex = diff_to_w[diff+2000]
     if wex < 0.5:
