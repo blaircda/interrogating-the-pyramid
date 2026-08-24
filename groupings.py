@@ -11,7 +11,7 @@ def get_seasons_daterange(scores_file):
     start=("Date", "min"),
     end=("Date", "max")
     )
-    df["pre"] = df["end"].shift(1)
+    #df["pre"] = df["end"].shift(1)
     #print(df)
     return df
 
@@ -101,5 +101,4 @@ def build_home_adv(scores_file):
     home_results["AvHomeWins"] = home_results["W"] / home_results["HomeGames"]
 
     #home_results = home_results.unstack(level=0, fill_value=0)
-    print(home_results.head())
     return home_results

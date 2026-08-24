@@ -1,7 +1,7 @@
 import numpy as np
 
 # lookup table for win ex
-diff_to_w = [round(1/( 10**(-diff/400)+1),4) for diff in range(-2000,2001)]
+diff_to_w = [round(1/( 10**(-diff/400)+1),2) for diff in range(-2000,2001)]
 
 w_to_diff = [ -400*np.log10( (1-W/100000)/(W/100000) ) for W in range(1,100000)]
 
