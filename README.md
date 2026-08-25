@@ -34,7 +34,7 @@ Over time the discrepancy between the average actual home outcomes and the avera
 I do this as follows:
 
 1) wait until a sufficient amount $N$ of match results have been recorded (e.g. $N=1000$ or $N=2000$)
-2) then at set intervals (the start of new seasons), I compute the average over the last $N$ results of the home win expectancies and the actual home outcome. From these averages I calculate associated putative rating difference $d\_{\text{expected}} = d_{\text{teams}} + \Delta_H$, and the latter as corresponding to a putative rating difference $d\_{\text{actual}}  = d_{\text{teams}} + (\Delta_H)\_\text{actual}$. Then the actual home advantage can be updated to:
+2) then at set intervals (the start of new seasons), I compute the average over the last $N$ results of the home win expectancies and the actual home outcome. From these averages I calculate associated putative rating differences $d\_{\text{expected}} = d_{\text{teams}} + \Delta_H$, $d\_{\text{actual}}  = d_{\text{teams}} + (\Delta_H)\_\text{actual}$. Then the model home advantage can be updated to:
 
    $$\Delta_H \rightarrow  (\Delta_H)\_\text{actual} =  d\_{\text{actual}}  - d\_{\text{expected}} + \Delta_H $$
 
