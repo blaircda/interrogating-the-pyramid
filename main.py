@@ -100,63 +100,71 @@ if __name__ == "__main__":
 
             
         with mt3:
-            sel_season = st.selectbox(
-            "Choose season",
-            season_list[1:],
-            index = len(season_list)-2,
-            key="sel_season")
 
-            selected = season_league_teams.loc[sel_season]
-            tier_divisions = selected.index.tolist()
+            with st.form("simulation_control"):
 
-            sel_league = st.selectbox(
-            "Choose league",
-            tier_divisions,
-            index = None,
-            format_func = lambda x:x[1],
-            key="league_sel")
+                sel_season = st.selectbox(
+                "Choose season",
+                season_list[1:],
+                index = len(season_list)-2,
+                key="sel_season")
 
-            if sel_league:
+                selected = season_league_teams.loc[sel_season]
+                tier_divisions = selected.index.tolist()
 
-                sel_teams = season_league_teams.loc[ (sel_season,*sel_league) ]
-                preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == sel_season ]
-                sel_preseason_ratings = {team: preseason_ratings[team].iloc[0] for team in sel_teams }
+                sel_league = st.selectbox(
+                "Choose league",
+                tier_divisions,
+                index = None,
+                format_func = lambda x:x[1],
+                key="league_sel")
 
-                state = {
-                "teams": sel_teams,
-                "ratings": sel_preseason_ratings,
-                "home_adv": preseason_ratings["home_adv"].iloc[0]
-                }
+                if sel_league:
 
-                if sel_season < change_to_goal_diff:
-                    state["points_per_game"] = 2
-                    state["goal_separator"] = "average"
-                elif change_to_goal_diff <= sel_season < change_to_three_points_per_win:
-                    state["points_per_game"] = 2
-                    state["goal_separator"] = "difference"
-                else:
-                    state["points_per_game"] = 3
-                    state["goal_separator"] = "difference"
+                    sel_teams = season_league_teams.loc[ (sel_season,*sel_league) ]
+                    preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == sel_season ]
+                    sel_preseason_ratings = {team: preseason_ratings[team].iloc[0] for team in sel_teams }
 
-                model_set = {
-                        "elo_static": elo_to_poisson,
-                }
+                    state = {
+                    "teams": sel_teams,
+                    "ratings": sel_preseason_ratings,
+                    "home_adv": preseason_ratings["home_adv"].iloc[0]
+                    }
+
+                    if sel_season < change_to_goal_diff:
+                        state["points_per_game"] = 2
+                        state["goal_separator"] = "average"
+                    elif change_to_goal_diff <= sel_season < change_to_three_points_per_win:
+                        state["points_per_game"] = 2
+                        state["goal_separator"] = "difference"
+                    else:
+                        state["points_per_game"] = 3
+                        state["goal_separator"] = "difference"
+
+                    model_set = {
+                            "elo_static": elo_to_poisson,
+                    }
 
                 Nsims_options = [1,100,1000,10000,100000]
-                simulate = st.selectbox("Simulate", Nsims_options, index=None, key = "simulater")
+                Nsims = st.selectbox("Number of simulations", Nsims_options, index=None, key = "simulater")
 
-                if simulate:
-                    actual_table = tables.loc[(sel_season,*sel_league)]
-                    simulated_season = run_simulations(state, simulate, model_set, fixtures=None)
-                    display_results(simulated_season, sel_teams, simulate)
-                    display_actual_results(actual_table, sel_season)
+                simulate = st.form_submit_button("Simulate")
 
-                    model_errors = get_errors(actual_table, simulated_season, simulate)
+            if simulate and not sel_league:
+                st.write("Please choose a league")
+                
+            if simulate and sel_league:
+                actual_table = tables.loc[(sel_season,*sel_league)]
+                simulated_season = run_simulations(state, Nsims, model_set, fixtures=None)
+                display_results(simulated_season, sel_teams, Nsims)
+                display_actual_results(actual_table, sel_season)
 
-                    for model_name, model_error_data in model_errors.items():
-                        st.write(f"Errors for model: {model_name}")
-                        posn_mae, posn_log, points_mae, points_rmse =   model_error_data["posn_mae"], model_error_data["posn_log"], model_error_data["points_mae"], model_error_data["points_rmse"]
-                        st.write(f"Position Mean Absolute Error: {posn_mae:.2f}")
-                        st.write(f"Position Log Loss Error: {posn_log:.2f}")
-                        st.write(f"Points Mean Absolute Error: {points_mae:.2f}")
-                        st.write(f"Points Root Mean Squared Error: {points_rmse:.2f}")
+                model_errors = get_errors(actual_table, simulated_season, Nsims)
+
+                for model_name, model_error_data in model_errors.items():
+                    st.write(f"Errors for model: {model_name}")
+                    posn_mae, posn_log, points_mae, points_rmse =   model_error_data["posn_mae"], model_error_data["posn_log"], model_error_data["points_mae"], model_error_data["points_rmse"]
+                    st.write(f"Position Mean Absolute Error: {posn_mae:.2f}")
+                    st.write(f"Position Log Loss Error: {posn_log:.2f}")
+                    st.write(f"Points Mean Absolute Error: {points_mae:.2f}")
+                    st.write(f"Points Root Mean Squared Error: {points_rmse:.2f}")
