@@ -6,18 +6,7 @@ from rating_model import *
 from config import *
 
 @st.cache_data
-def build_ratings(teams_csv, scores_csv):
-    # import all teams separately
-    teams = []
-    
-    with open(teams_csv, newline="") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            teams.append(row["Team"])    
-
-    # live ratings - continually updated while calculating ratings
-    live_ratings = {team:default_rating for team in teams}
-    live_ratings["home_adv"] = initial_home_adv
+def build_ratings(live_ratings, scores_csv):
 
     # container to save every rating update
     rating_history = []
@@ -87,11 +76,12 @@ def build_ratings(teams_csv, scores_csv):
             away_team = row["AwayTeam"]
             home_score = int(row["hGoal"])
             away_score = int(row["aGoal"])
+            division = row["Division"]
 
             # get new ratings for the teams involved
             rating_home_new, rating_away_new, win_ex_home = get_new_ratings(live_ratings, home_team, away_team, home_score, away_score)
-            rating_history.append( { "date": date,  "season": season, "team": home_team, "rating": rating_home_new} )
-            rating_history.append( { "date": date, "season": season, "team": away_team, "rating": rating_away_new} )
+            rating_history.append( { "date": date,  "season": season, "team": home_team, "rating": rating_home_new, "division": division} )
+            rating_history.append( { "date": date, "season": season, "team": away_team, "rating": rating_away_new, "division": division} )
             # update live rating 
             live_ratings[home_team] = rating_home_new
             live_ratings[away_team] = rating_away_new 
@@ -101,4 +91,4 @@ def build_ratings(teams_csv, scores_csv):
 
             update_home_adv_counter += 1
             
-    return teams, rating_history, season_ratings, home_success, home_winex
+    return rating_history, season_ratings, home_success, home_winex
