@@ -4,6 +4,7 @@ from config import *
 
 #Date,Season,HomeTeam,AwayTeam,Score,hGoal,aGoal,Division,Tier,Result
 
+
 @st.cache_data
 def get_seasons_daterange(scores_file):
     df = pd.read_csv(scores_file, usecols=["Date", "Season"])
@@ -102,3 +103,27 @@ def build_home_adv(scores_file):
 
     #home_results = home_results.unstack(level=0, fill_value=0)
     return home_results
+
+def get_ratings_at_date(ratings_df, teams, date):
+    """
+    return dict of latest ratings of teams at date
+    """
+    filtered = ratings_df[ratings_df["team"].isin(teams)  & (ratings_df.index <= date)]
+
+    ratings_at_date = {}
+    for team in teams:
+        ratings_at_date[team] = int(filtered[(filtered["team"]==team)].iloc[-1]["rating"])
+
+    return ratings_at_date
+
+def get_season_matches_to_date( scores_file, season, league, date):
+
+    matches = {}
+    df = pd.read_csv(scores_file, usecols=["Date", "Season", "Division", "Tier", "HomeTeam",  "AwayTeam", "hGoal", "aGoal"])
+    df["Date"] = pd.to_datetime(df["Date"])
+    df = df[ (df["Season"] == season) & (df["Division"] == league) & (df["Date"] <= date) ][["HomeTeam", "AwayTeam", "hGoal", "aGoal"]]
+    results = df.to_dict(orient='records')
+    for match in results:
+        matches[ ( match["HomeTeam"], match["AwayTeam"] ) ] = ( match["hGoal"], match["aGoal"] )
+
+    return matches
