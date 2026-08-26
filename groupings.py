@@ -25,15 +25,13 @@ def get_seasons_tiers(scores_file):
 
 @st.cache_data
 def get_seasons_tiers_teams(scores_file):
-    df = pd.read_csv(scores_file, usecols=["Season", "Tier", "Division", "HomeTeam"])
-    df = df.groupby(["Season", "Tier", "Division"])["HomeTeam"].unique().apply(sorted)
-    #print(df)
+    # catch an edge case where if only round of games has been played you need to know all the teams
+    df = pd.read_csv(scores_file, usecols=["Season", "Tier", "Division", "HomeTeam", "AwayTeam"])
+    df = df.groupby(["Season", "Tier", "Division"]).apply(lambda g: pd.unique(g[["HomeTeam", "AwayTeam"]].values.ravel()).tolist())
     return df
 
 @st.cache_data
-def build_league_tables(scores_file):
-    df = pd.read_csv(scores_file)
-
+def build_league_tables(df):    
     # get all teams home results
     home_results = df.groupby(["Season", "Tier", "Division", "HomeTeam"])["Result"].value_counts().unstack(fill_value=0)
     home_results = home_results.rename(columns={'A': 'L', 'D': 'D', 'H': 'W'})
@@ -47,6 +45,10 @@ def build_league_tables(scores_file):
     # combine them
     full_results = home_results.add(away_results, fill_value=0)
 
+    # deals with edge case where table is being built for small number of opening fixtures and not all results have occured
+    for c in [ "W", "D", "L"]:
+        full_results[c] = full_results.get( c, 0 )
+    
     # get all teams goals for and against at home
     home_results_goals = df.groupby(["Season", "Tier", "Division", "HomeTeam"])[["hGoal", "aGoal"]].sum()
     home_results_goals = home_results_goals.rename(columns={'hGoal': 'GF', 'aGoal': 'GA'})
@@ -69,13 +71,14 @@ def build_league_tables(scores_file):
     seasons = full_tables.index.get_level_values("Season")
     
     two_point_era = full_tables[ seasons < change_to_three_points_per_win ]
-    two_point_era["PTS"] = 2*full_tables["W"] + full_tables["D"]
+    if not two_point_era.empty:
+        two_point_era["PTS"] = 2*full_tables["W"] + full_tables["D"]
 
     three_point_era = full_tables[ seasons >= change_to_three_points_per_win ]
-    three_point_era["PTS"] = 3*full_tables["W"] + full_tables["D"]
+    if not three_point_era.empty:
+        three_point_era["PTS"] = 3*full_tables["W"] + full_tables["D"]
 
     full_tables = pd.concat([two_point_era, three_point_era])
-
     
     goal_average_era = full_tables[seasons < change_to_goal_diff].sort_values(["PTS", "GAv", "GF"], ascending=[False, False, False])
     goal_diff_era = full_tables[ seasons >= change_to_goal_diff ].sort_values(["PTS", "GD", "GF"], ascending=[False, False, False])
@@ -85,13 +88,9 @@ def build_league_tables(scores_file):
     full_tables["POS"] = full_tables.groupby(level=["Season", "Tier", "Division"]).cumcount().add(1)
     full_tables = full_tables.sort_index()
     return full_tables
-    #full_tables.sort_values(by=["PTSold", "GAv"], ascending=[False, False],inplace=True)
-    #full_tables.loc["1888/1889"][["W", "D", "L", "GF", "GA", "GD", "GAv", "PTS", "PTSold"]]
-    
-@st.cache_data
-def build_home_adv(scores_file):
-    df = pd.read_csv(scores_file)
 
+@st.cache_data
+def build_home_adv(df):
     # get all teams home results
     home_results = df.groupby(["Season"])["Result"].value_counts().unstack(fill_value=0)
     home_results = home_results.rename(columns={'A': 'L', 'D': 'D', 'H': 'W'})
@@ -117,7 +116,6 @@ def get_ratings_at_date(ratings_df, teams, date):
     return ratings_at_date
 
 def get_season_matches_to_date( scores_file, season, league, date):
-
     matches = {}
     df = pd.read_csv(scores_file, usecols=["Date", "Season", "Division", "Tier", "HomeTeam",  "AwayTeam", "hGoal", "aGoal"])
     df["Date"] = pd.to_datetime(df["Date"])
@@ -127,3 +125,9 @@ def get_season_matches_to_date( scores_file, season, league, date):
         matches[ ( match["HomeTeam"], match["AwayTeam"] ) ] = ( match["hGoal"], match["aGoal"] )
 
     return matches
+
+def get_table_to_date(scores_df, season, league, date):
+    df = scores_df[  (scores_df["Season"] == season) & (scores_df["Division"] == league[1]) ]
+    df["Date"] = pd.to_datetime(df["Date"])
+    df = df[ (df["Date"] <= date) ]
+    return build_league_tables(df).loc[(season, *league)]

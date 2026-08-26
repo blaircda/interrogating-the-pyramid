@@ -43,9 +43,9 @@ end_date = max(ratings_df.index)
 start_season = min(season_dates.index)
 end_season = max(season_dates.index)
 
-tables = build_league_tables(scores_csv)
-
-home_adv = build_home_adv(scores_csv)
+scores_df = pd.read_csv(scores_csv)
+tables = build_league_tables(scores_df)
+home_adv = build_home_adv(scores_df)
 
 
 model_set = {
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     col1, col2, col3 = st.columns([0.1,0.8,0.1])
 
     with col2:
-        ratings_tab, home_adv_tab, season_sim_tab, live_season_sim_tab = st.tabs(["Historic ratings", "Home advantage", "Season simulations", "Current season simulation"])
+        ratings_tab, home_adv_tab, season_sim_tab = st.tabs(["Ratings", "Home advantage", "Season simulations"])
         with ratings_tab:
 
             s1, s2 = st.select_slider("Season range",
@@ -78,7 +78,6 @@ if __name__ == "__main__":
                 plt.close(fig)
 
         with home_adv_tab:
-
             record_tab, model_tab = st.tabs(["Historic home advantage", "Model home advantage"])
 
             with record_tab:
@@ -96,52 +95,67 @@ if __name__ == "__main__":
                 fig = plot_multi_cols(season_ratings_df, ["home_adv"], {"home_adv": "Model home advantage"})
                 st.pyplot(fig,width='stretch')
                 plt.close(fig)
-                
+                #
                 fig, ax = plt.subplots()
-
                 accum_home_success = np.cumsum(home_success)
                 av_accum_home_success = [ x/(i+1) for i,x in enumerate(accum_home_success)]
                 accum_home_winex = np.cumsum(home_winex )
                 av_accum_home_winex  = [ x/(i+1) for i,x in enumerate(accum_home_winex )]
-
                 av_discr = [x-y for x,y in zip(av_accum_home_success,av_accum_home_winex)]
-                
                 #ax.plot(av_accum_home_success, label="home_success")
                 #ax.plot(av_accum_home_winex, label="home win ex")
                 ax.plot( av_discr, label="Home Success - Home Win Ex") 
                 ax.legend()
-
                 st.pyplot(fig,width='stretch')
                 plt.close(fig)
 
         with season_sim_tab:
-
-            with st.form("simulation_control"):
-                sel_season = st.selectbox(
+            simulate = 0
+            sel_season = st.selectbox(
                 "Choose season",
                 season_list[1:],
                 index = len(season_list)-2,
                 key="sel_season")
 
-                selected = season_league_teams.loc[sel_season]
-                tier_divisions = selected.index.tolist()
+            selected = season_league_teams.loc[sel_season]
+            tier_divisions = selected.index.tolist()
 
-                sel_league = st.selectbox(
+            sel_league = st.selectbox(
                 "Choose league",
                 tier_divisions,
                 index = None,
                 format_func = lambda x:x[1],
                 key="league_sel")
 
-                if sel_league:
-                    sel_teams = season_league_teams.loc[ (sel_season,*sel_league) ]
-                    preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == sel_season ]
-                    sel_preseason_ratings = {team: preseason_ratings[team].iloc[0] for team in sel_teams }
+            if sel_league:
+                sel_teams = season_league_teams.loc[ (sel_season,*sel_league) ]
+                preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == sel_season ]
+                season_date_range = ratings_df[ (ratings_df["season"] == sel_season) & (ratings_df["division"] == sel_league[1]) ].index.unique()
+                start_date, end_date = min(season_date_range), max(season_date_range)
+
+                with st.form("simulation_control"):
+                    end_point = st.selectbox("Date range of results to include",format_func = lambda x: x.strftime('%Y-%m-%d') if not isinstance(x, str) else x,
+                        options = ["None"] + season_date_range.to_list() )
+                    Nsims_options = [1,100,1000,10000,100000]
+                    Nsims = st.selectbox("Number of simulations", Nsims_options, index=None, key = "simulator")
+                    simulate = st.form_submit_button("Simulate")
+                
+                if simulate:
+                    if end_point != "None":
+                        initial_ratings = get_ratings_at_date(ratings_df, sel_teams, end_point)
+                        matches = get_season_matches_to_date(scores_csv, sel_season, sel_league[1], end_point)
+                        st.write(f"Table as of {end_point:%Y-%m-%d}")
+                        starting_table = get_table_to_date(scores_df, sel_season, sel_league, end_point)
+                        display_actual_results(starting_table, sel_season)
+                    else:
+                        initial_ratings = {team: preseason_ratings[team].iloc[0] for team in sel_teams }
+                        matches = {}
 
                     state = {
                     "teams": sel_teams,
-                    "ratings": sel_preseason_ratings,
-                    "home_adv": preseason_ratings["home_adv"].iloc[0]
+                    "ratings": initial_ratings,
+                    "home_adv": preseason_ratings["home_adv"].iloc[0],
+                    "matches": matches
                     }
 
                     if sel_season < change_to_goal_diff:
@@ -153,73 +167,24 @@ if __name__ == "__main__":
                     else:
                         state["points_per_game"] = 3
                         state["goal_separator"] = "difference"
-
-                Nsims_options = [1,100,1000,10000,100000]
-                Nsims = st.selectbox("Number of simulations", Nsims_options, index=None, key = "simulater")
-
-                simulate = st.form_submit_button("Simulate")
-
-            if simulate and not sel_league:
-                st.write("Please choose a league")
-                
-            if simulate and sel_league:
-                actual_table = tables.loc[(sel_season,*sel_league)]
-                simulated_season = run_simulations(state, Nsims, model_set, fixtures=None)
-                display_results(simulated_season, sel_teams, Nsims)
-                display_actual_results(actual_table, sel_season)
-
-                model_errors = get_errors(actual_table, simulated_season, Nsims)
-
-                for model_name, model_error_data in model_errors.items():
-                    st.write(f"Errors for model: {model_name}")
-                    posn_mae, posn_log, points_mae, points_rmse =   model_error_data["posn_mae"], model_error_data["posn_log"], model_error_data["points_mae"], model_error_data["points_rmse"]
-                    st.write(f"Position Mean Absolute Error: {posn_mae:.2f}")
-                    st.write(f"Position Log Loss Error: {posn_log:.2f}")
-                    st.write(f"Points Mean Absolute Error: {points_mae:.2f}")
-                    st.write(f"Points Root Mean Squared Error: {points_rmse:.2f}")
-
-        with live_season_sim_tab:
-            sel_season = season_list[-1]
-            selected = season_league_teams.loc[sel_season]
-            
-            tier_divisions = selected.index.tolist()
-
-            sel_league = st.selectbox(
-            "Choose league",
-            tier_divisions,
-            index = None,
-            format_func = lambda x:x[1],
-            key="live_league_sel")
-  
-            with st.form("live sim control"):
-              if sel_league:
-                    season_date_range = ratings_df[ (ratings_df["season"] == sel_season) & (ratings_df["division"] == sel_league[1]) ]
-                    start_date, end_date = min(season_date_range.index), max(season_date_range.index)
-                    end_point = st.select_slider("Date range",format_func = lambda x: x.strftime('%Y-%m-%d'),
-                        options = season_date_range.index, value = end_date  )
-                    sel_teams = season_league_teams.loc[ (sel_season,*sel_league) ]
-                    preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == sel_season ]
-
-                    if end_point:
-                        initial_ratings = get_ratings_at_date(ratings_df, sel_teams, end_point)
-                        matches = get_season_matches_to_date(scores_csv, sel_season, sel_league[1], end_point)
-                        state = {
-                            "teams": sel_teams,
-                            "ratings": initial_ratings,
-                            "home_adv": preseason_ratings["home_adv"].iloc[0],
-                            "points_per_game": 3,
-                            "goal_separator": "difference",
-                            "matches": matches
-                        }
                         
-                    Nsims_options = [1,100,1000,10000,100000]
-                    Nsims = st.selectbox("Number of simulations", Nsims_options, index=None, key = "live_simulater")
+                    simulated_season = run_simulations(state, Nsims, model_set, fixtures=None)
+                    display_results(simulated_season, sel_teams, Nsims)
+                    
+                    actual_table = tables.loc[(sel_season,*sel_league)]
 
-                    simulate = st.form_submit_button("Simulate")
+                    if sel_season == season_list[-1]:
+                        gp = actual_table["W"].sum(axis=0) + actual_table["D"].sum(axis=0)/2
+                        full_gp = len(actual_table)*(len(actual_table)-1)
+                        if gp == full_gp:
+                            st.write("Actual results:")
+                            display_actual_results(actual_table, sel_season)
+                            model_errors = get_errors(actual_table, simulated_season, Nsims)
+                            display_errors(model_errors)
+                    else:
+                            st.write("Actual results:")
+                            display_actual_results(actual_table, sel_season)
+                            model_errors = get_errors(actual_table, simulated_season, Nsims)
+                            display_errors(model_errors)
 
-            if simulate and not sel_league:
-                st.write("Please choose a league")
-                
-            if simulate and sel_league:
-                simulated_season = run_simulations(state, Nsims, model_set, fixtures=None)
-                display_results(simulated_season, sel_teams, Nsims)
+

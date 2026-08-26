@@ -25,6 +25,34 @@ def play(team1, team2, state, model, table):
         table[team1]["D"] += 1
         table[team2]["D"] += 1
 
+def play_partial(team1, team2, state, model, table):
+    """
+    generates the result of team1 vs team2
+    uses known result if available, otherwise simulates
+    updates table and records the result in matches
+    """
+    #if (team1, team2) in state["matches"]:
+    #    g1, g2 = state["matches"][(team1, team2)]
+    #else:
+    #    g1,g2 = play_game(team1, team2, state, model)
+    g1, g2 = state["matches"].get( (team1, team2), play_game(team1, team2, state, model) )
+    # store matches for revisiting when computing ranking of tied teams
+    #matches[(team1,team2)] = {team1: g1, team2:g2}
+    # update table
+    table[team1]["GF"] += g1
+    table[team1]["GA"] += g2
+    table[team2]["GF"] += g2
+    table[team2]["GA"] += g1
+    if (g1>g2):
+        table[team1]["W"] += 1
+        table[team2]["L"] += 1
+    elif (g1<g2):
+        table[team2]["W"] += 1
+        table[team1]["L"] += 1
+    else:
+        table[team1]["D"] += 1
+        table[team2]["D"] += 1
+
 def run_season(state, model, fixtures = None):
     """
     simulates a single league season
@@ -39,14 +67,22 @@ def run_season(state, model, fixtures = None):
     table = defaultdict(lambda: {"W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0})
     #matches = {}
 
+
+    # if we are going to use partial results
+    if "matches" in state:
+        play_fn = play_partial
+    else:
+        play_fn = play
+
     if fixtures:
         for gameweek, games in fixtures.items():
             for pairing in games:
                 play(pairing[0], pairing[1], state, model, table)
     else:
         for team1, team2 in itertools.combinations(ts,2):
-            play(team1, team2, state, model, table)
-            play(team2, team1, state, model, table)
+            play_fn(team1, team2, state, model, table)
+            play_fn(team2, team1, state, model, table)
+
 
     # update table
     # taking into account historical rules 
