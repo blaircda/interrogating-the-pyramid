@@ -39,7 +39,7 @@ errors = {}
 for season in season_list[-3:-1]:
     #pre_season_date = season_dates.loc[season]["pre"]
     Nsims = 10000
-    max_tier = 1
+    max_tier = 4
     for tier in range(1,max_tier+1):
     
         sel_teams = season_league_teams.xs( (season, tier), level=[0,1] )
@@ -50,37 +50,19 @@ for season in season_list[-3:-1]:
             division_names = divisions.to_list()
     
             for div in division_names:
-                #print(season, tier, div)
+                print(season, tier, div)
                 actual_table = tables.loc[ (season, tier, div) ]
                 #print(actual_table)
                 for x in range(0,100,5):
+                    print(f"Simulation starting at {x}% of season")
                     simulated_season = simulate_season(season, tier, div, season_league_teams, scores_df, season_ratings_df, model_set, Nsims, reality_percent = x)
                     model_errors = get_errors(actual_table, simulated_season, Nsims)
                     for model_name, model_error_data in model_errors.items():
                         #posn_mae, posn_log, points_mae, points_rmse =   model_error_data["posn_mae"], model_error_data["posn_log"], model_error_data["points_mae"], model_error_data["points_rmse"]
                         # only 1 model
-                        errors[(season, x)] = model_error_data
+                        errors[(season, div, x)] = model_error_data
 
 df = pd.DataFrame.from_dict(errors, orient="index")
-print(df.to_string())
+#print(df.to_string())
 
-def plot_errors(df):
-    x = df.index#.get_level_values(1)
-
-    cols = df.columns
-    ncols = len(cols)
-    fig, axs = plt.subplots(ncols,1)
-
-    for ax, col in zip(axs, df.columns):
-        ax.plot(x, df[col], label="col")
-        ax.grid(True, alpha=0.3)
-        ax.set_xlabel("Reality percent")
-        ax.set_ylabel(col)
-
-    plt.show()
-
-for season in season_list[-3:-1]:
-    plot_errors(df.loc[season])
-
-
-
+df.to_csv("data/output/test_season_errors.csv", index=True, index_label=("Season", "Division", "SimulationStart"))

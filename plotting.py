@@ -84,3 +84,38 @@ def display_errors(model_errors):
         st.write(f"Position Log Loss Error: {posn_log:.2f}")
         st.write(f"Points Mean Absolute Error: {points_mae:.2f}")
         st.write(f"Points Root Mean Squared Error: {points_rmse:.2f}")
+
+def plot_season_sim_errors(df):
+    x = df.index    
+    cols = df.columns
+    ncols = len(cols)
+    fig, axs = plt.subplots(ncols,1,figsize=(10,8), constrained_layout=True)
+    for ax, col in zip(axs, df.columns):
+        ax.plot(x, df[col], label=col)
+        ax.grid(True, alpha=0.3)
+        ax.set_xlabel("Simulation start (percent of season)")
+        ax.set_ylabel("Error")
+        ax.set_title(col)
+
+    #plt.subplots_adjust(bottom=1, top = 2)
+
+    return fig
+
+def plot_season_start_errors(df):
+    seasons = df.index.to_flat_index()
+    x = [' '.join(ssn) for ssn in seasons]
+    cols = df.columns
+    ncols = len(cols)
+    fig, axs = plt.subplots(ncols,1,figsize=(10,8), constrained_layout=True)
+    for ax, col in zip(axs, df.columns):
+        ax.bar(x, df[col], label=col)
+        ax.grid(True, alpha=0.3)
+        ax.set_xlabel("Season")
+        ax.set_ylabel("Error")
+        ax.set_title(col)
+        #if len(x) > 3:
+        #    ax.tick_params(axis="x", labelrotation=90)
+
+
+    #plt.subplots_adjust(bottom=1, top = 2)
+    return fig
