@@ -1,27 +1,32 @@
 from main import *
+import matplotlib
+matplotlib.use("TkAgg")
 
-def simulate_season(season, tier, div, season_league_teams, season_ratings_df, model_set, Nsims=100):
-    
+import matplotlib.pyplot as plt
+
+
+def simulate_season(season, tier, div, season_league_teams, scores_df, season_ratings_df, model_set, Nsims=100, reality_percent = 0):
     sel_teams = season_league_teams[ (season, tier, div) ]
     preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == season ]
-    sel_preseason_ratings = {team: preseason_ratings[team].iloc[0] for team in sel_teams }
+    league_size = len(sel_teams)
+    season_by_date_df = get_season_matchcount_by_date(scores_df, season, (tier, div), league_size)
 
-    state = {
-    "teams": sel_teams,
-    "ratings": sel_preseason_ratings,
-    "home_adv": preseason_ratings["home_adv"].iloc[0]
-    }
-
-    if season < change_to_goal_diff:
-        state["points_per_game"] = 2
-        state["goal_separator"] = "average"
-    elif change_to_goal_diff <= season < change_to_three_points_per_win:
-        state["points_per_game"] = 2
-        state["goal_separator"] = "difference"
+    if reality_percent > 0:
+        row = season_by_date_df.loc[season_by_date_df["MatchesPlayedPercent"] > reality_percent].iloc[0]
+        #print(f"Reality percent: {reality_percent}")
+        end_point = row["Date"]
+        initial_ratings = get_ratings_at_date(ratings_df, sel_teams, end_point)
+        matches = get_season_matches_to_date(scores_df, season, div, end_point)
     else:
-        state["points_per_game"] = 3
-        state["goal_separator"] = "difference"
-        
+        initial_ratings = {team: preseason_ratings[team].iloc[0] for team in sel_teams }
+        matches = {}
+
+    state = prepare_state(
+        teams = sel_teams, ratings = initial_ratings,
+        home_adv = preseason_ratings["home_adv"].iloc[0], matches = matches,
+        season = season
+    )
+
     simulated_season = run_simulations(state, Nsims, model_set, fixtures=None)
     return simulated_season
 
@@ -31,9 +36,9 @@ model_set = {
 
 errors = {}
     
-for season in season_list[-20:-1]:
+for season in season_list[-3:-1]:
     #pre_season_date = season_dates.loc[season]["pre"]
-    Nsims = 1000
+    Nsims = 10000
     max_tier = 1
     for tier in range(1,max_tier+1):
     
@@ -45,21 +50,37 @@ for season in season_list[-20:-1]:
             division_names = divisions.to_list()
     
             for div in division_names:
-                print(season, tier, div)
-                simulated_season = simulate_season(season, tier, div, season_league_teams, season_ratings_df, model_set, Nsims)
+                #print(season, tier, div)
                 actual_table = tables.loc[ (season, tier, div) ]
                 #print(actual_table)
-                model_errors = get_errors(actual_table, simulated_season, Nsims)
-
-                for model_name, model_error_data in model_errors.items():
-                    posn_mae, posn_log, points_mae, points_rmse =   model_error_data["posn_mae"], model_error_data["posn_log"], model_error_data["points_mae"], model_error_data["points_rmse"]
-                    #print(f"Errors for model: {model_name}")
-                    #print(f"Position Mean Absolute Error: {posn_mae:.2f}")
-                    #print(f"Position Log Loss Error: {posn_log:.2f}")
-                    #print(f"Points Mean Absolute Error: {points_mae:.2f}")
-                    #print(f"Points Root Mean Squared Error: {points_rmse:.2f}")
-                    # only 1 model
-                    errors[season] = model_error_data
+                for x in range(0,100,5):
+                    simulated_season = simulate_season(season, tier, div, season_league_teams, scores_df, season_ratings_df, model_set, Nsims, reality_percent = x)
+                    model_errors = get_errors(actual_table, simulated_season, Nsims)
+                    for model_name, model_error_data in model_errors.items():
+                        #posn_mae, posn_log, points_mae, points_rmse =   model_error_data["posn_mae"], model_error_data["posn_log"], model_error_data["points_mae"], model_error_data["points_rmse"]
+                        # only 1 model
+                        errors[(season, x)] = model_error_data
 
 df = pd.DataFrame.from_dict(errors, orient="index")
-print(df)
+print(df.to_string())
+
+def plot_errors(df):
+    x = df.index#.get_level_values(1)
+
+    cols = df.columns
+    ncols = len(cols)
+    fig, axs = plt.subplots(ncols,1)
+
+    for ax, col in zip(axs, df.columns):
+        ax.plot(x, df[col], label="col")
+        ax.grid(True, alpha=0.3)
+        ax.set_xlabel("Reality percent")
+        ax.set_ylabel(col)
+
+    plt.show()
+
+for season in season_list[-3:-1]:
+    plot_errors(df.loc[season])
+
+
+

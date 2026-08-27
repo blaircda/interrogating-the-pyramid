@@ -129,3 +129,12 @@ def get_table_to_date(scores_df, season, league, date):
     df["Date"] = pd.to_datetime(df["Date"])
     df = df[ (df["Date"] <= date) ]
     return build_league_tables(df).loc[(season, *league)]
+
+def get_season_matchcount_by_date(scores_df, season, league, league_size):
+    number_matches = league_size*(league_size - 1)
+    df = scores_df[ (scores_df["Season"] == season) & (scores_df["Division"] == league[1]) ]
+    df = df.groupby("Date").size().reset_index(name="MatchesOnDate")
+    df["MatchesPlayed"] = df["MatchesOnDate"].cumsum()
+    df["MatchesPlayedPercent"] = 100*df["MatchesPlayed"]/number_matches
+    df["Date"] = pd.to_datetime(df["Date"])
+    return df

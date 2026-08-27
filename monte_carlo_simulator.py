@@ -1,7 +1,28 @@
 from season_simulator import *
+from config import *
 from time import perf_counter
 import pandas as pd
 
+# helper function to make state container
+def prepare_state(teams, ratings, home_adv, matches, season):
+    state = {
+    "teams": teams,
+    "ratings": ratings,
+    "home_adv": home_adv,
+    "matches": matches
+    }
+
+    if season < change_to_goal_diff:
+        state["points_per_game"] = 2
+        state["goal_separator"] = "average"
+    elif change_to_goal_diff <= season < change_to_three_points_per_win:
+        state["points_per_game"] = 2
+        state["goal_separator"] = "difference"
+    else:
+        state["points_per_game"] = 3
+        state["goal_separator"] = "difference"
+    return state
+    
 # helper functions for creating defaultdicts to store simulation results
 def make_posn_stats():
     #return {"W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0, "GD": 0, "PTS":0}
@@ -67,7 +88,8 @@ def get_errors(actual_table, simulation_results, Nsims):
 
         # posn errors
         posn_mae = (df["POS"] - df["xPOS"]).abs().mean()
-        df["log_err"] = -np.log( df.apply(lambda row: row[row["POS"]], axis=1) )
+        with np.errstate(divide="ignore"):
+            df["log_err"] = -np.log( df.apply(lambda row: row[row["POS"]], axis=1) )
         posn_log = df["log_err"].mean()
         # points errors
         points_mae = (df["PTS"] - df["xPTS"]).abs().mean()

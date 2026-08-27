@@ -129,17 +129,11 @@ if __name__ == "__main__":
             if sel_league:
                 sel_teams = season_league_teams.loc[ (sel_season,*sel_league) ]
                 preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == sel_season ]
-
                 league_size = len(sel_teams)
-                number_matches = league_size*(league_size - 1)
-                season_df = scores_df[ (scores_df["Season"] == sel_season) & (scores_df["Division"] == sel_league[1]) ]
-                season_by_date_df = season_df.groupby("Date").size().reset_index(name="MatchesOnDate")
-                season_by_date_df["MatchesPlayed"] = season_by_date_df["MatchesOnDate"].cumsum()
-                season_by_date_df["MatchesPlayedPercent"] = 100*season_by_date_df["MatchesPlayed"]/number_matches
-                season_by_date_df["Date"] = pd.to_datetime(season_by_date_df["Date"])
+                season_by_date_df = get_season_matchcount_by_date(scores_df, sel_season, sel_league, league_size)
                 season_date_range = season_by_date_df["Date"]
                 start_date, end_date = min(season_date_range), max(season_date_range)
-
+                
                 def format_matches_played(date):
                     if date is not None:
                         data = season_by_date_df.loc[season_by_date_df["Date"] == date, ["MatchesOnDate", "MatchesPlayed", "MatchesPlayedPercent"]].iloc[0]                        
@@ -162,7 +156,7 @@ if __name__ == "__main__":
                     simulate = st.form_submit_button("Simulate")
                 
                 if simulate:
-                    if end_point != "None":
+                    if end_point is not None:
                         initial_ratings = get_ratings_at_date(ratings_df, sel_teams, end_point)
                         matches = get_season_matches_to_date(scores_df, sel_season, sel_league[1], end_point)
                         st.write(f"Table as of {end_point:%Y-%m-%d}")
@@ -172,23 +166,12 @@ if __name__ == "__main__":
                         initial_ratings = {team: preseason_ratings[team].iloc[0] for team in sel_teams }
                         matches = {}
 
-                    state = {
-                    "teams": sel_teams,
-                    "ratings": initial_ratings,
-                    "home_adv": preseason_ratings["home_adv"].iloc[0],
-                    "matches": matches
-                    }
-
-                    if sel_season < change_to_goal_diff:
-                        state["points_per_game"] = 2
-                        state["goal_separator"] = "average"
-                    elif change_to_goal_diff <= sel_season < change_to_three_points_per_win:
-                        state["points_per_game"] = 2
-                        state["goal_separator"] = "difference"
-                    else:
-                        state["points_per_game"] = 3
-                        state["goal_separator"] = "difference"
-                        
+                    state = prepare_state(
+                        teams = sel_teams, ratings = initial_ratings,
+                        home_adv = preseason_ratings["home_adv"].iloc[0], matches = matches,
+                        season = sel_season
+                    )
+                                        
                     simulated_season = run_simulations(state, Nsims, model_set, fixtures=None)
                     display_results(simulated_season, sel_teams, Nsims)
                     
