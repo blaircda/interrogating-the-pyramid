@@ -6,9 +6,8 @@ from config import *
 
 
 @st.cache_data
-def get_seasons_daterange(scores_file):
-    df = pd.read_csv(scores_file, usecols=["Date", "Season"])
-    df = df.groupby(["Season"]).agg(
+def get_seasons_daterange(scores_df):
+    df = scores_df.groupby(["Season"]).agg(
     start=("Date", "min"),
     end=("Date", "max")
     )
@@ -17,16 +16,15 @@ def get_seasons_daterange(scores_file):
     return df
 
 @st.cache_data
-def get_seasons_tiers(scores_file):
-    df = pd.read_csv(scores_file, usecols=["Season", "Tier", "Division"])
-    df = df[["Season", "Tier", "Division"]].drop_duplicates()
+def get_seasons_tiers(scores_df):
+    df = scores_df[["Season", "Tier", "Division"]].drop_duplicates()
     #print(df.index)
     return df
 
 @st.cache_data
-def get_seasons_tiers_teams(scores_file):
-    # catch an edge case where if only round of games has been played you need to know all the teams
-    df = pd.read_csv(scores_file, usecols=["Season", "Tier", "Division", "HomeTeam", "AwayTeam"])
+def get_seasons_tiers_teams(scores_df):
+    # catch an edge case where if only one round of games has been played you need to know all the teams
+    df = scores_df[["Season", "Tier", "Division", "HomeTeam", "AwayTeam"]]
     df = df.groupby(["Season", "Tier", "Division"]).apply(lambda g: pd.unique(g[["HomeTeam", "AwayTeam"]].values.ravel()).tolist())
     return df
 
@@ -115,9 +113,9 @@ def get_ratings_at_date(ratings_df, teams, date):
 
     return ratings_at_date
 
-def get_season_matches_to_date( scores_file, season, league, date):
+def get_season_matches_to_date(scores_df, season, league, date):
     matches = {}
-    df = pd.read_csv(scores_file, usecols=["Date", "Season", "Division", "Tier", "HomeTeam",  "AwayTeam", "hGoal", "aGoal"])
+    df = scores_df[["Date", "Season", "Division", "Tier", "HomeTeam",  "AwayTeam", "hGoal", "aGoal"]]
     df["Date"] = pd.to_datetime(df["Date"])
     df = df[ (df["Season"] == season) & (df["Division"] == league) & (df["Date"] <= date) ][["HomeTeam", "AwayTeam", "hGoal", "aGoal"]]
     results = df.to_dict(orient='records')

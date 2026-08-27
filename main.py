@@ -14,16 +14,13 @@ teams_csv = "data/EnglishTeamActivePeriods.csv"
 scores_csv = "data/EnglandLeagueResults.csv"
 
 # import all teams separately
-teams = []
-
-with open(teams_csv, newline="") as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-        teams.append(row["Team"])    
+df = pd.read_csv(teams_csv, usecols=["Team"])
+teams = df["Team"].to_list()
 
 initial_ratings = {team:default_rating for team in teams}
 initial_ratings["home_adv"] = initial_home_adv
 
+# build ratings - direct from csv
 ratings, season_ratings, home_success, home_winex = build_ratings(initial_ratings, scores_csv)
 
 ratings_df = pd.DataFrame.from_dict(ratings)
@@ -33,8 +30,11 @@ ratings_df.index = pd.to_datetime(ratings_df.index)
 season_ratings_df = pd.DataFrame.from_dict(season_ratings)
 season_ratings_df = season_ratings_df.set_index('season_end')       
 
-season_dates = get_seasons_daterange(scores_csv)
-season_league_teams = get_seasons_tiers_teams(scores_csv)
+# read scores_csv into df
+scores_df = pd.read_csv(scores_csv)
+
+season_dates = get_seasons_daterange(scores_df)
+season_league_teams = get_seasons_tiers_teams(scores_df)
 season_list = season_league_teams.index.get_level_values("Season").unique().tolist()
 
 start_date = min(ratings_df.index)
@@ -43,7 +43,6 @@ end_date = max(ratings_df.index)
 start_season = min(season_dates.index)
 end_season = max(season_dates.index)
 
-scores_df = pd.read_csv(scores_csv)
 tables = build_league_tables(scores_df)
 home_adv = build_home_adv(scores_df)
 
@@ -130,12 +129,34 @@ if __name__ == "__main__":
             if sel_league:
                 sel_teams = season_league_teams.loc[ (sel_season,*sel_league) ]
                 preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == sel_season ]
-                season_date_range = ratings_df[ (ratings_df["season"] == sel_season) & (ratings_df["division"] == sel_league[1]) ].index.unique()
+
+                league_size = len(sel_teams)
+                number_matches = league_size*(league_size - 1)
+                season_df = scores_df[ (scores_df["Season"] == sel_season) & (scores_df["Division"] == sel_league[1]) ]
+                season_by_date_df = season_df.groupby("Date").size().reset_index(name="MatchesOnDate")
+                season_by_date_df["MatchesPlayed"] = season_by_date_df["MatchesOnDate"].cumsum()
+                season_by_date_df["MatchesPlayedPercent"] = 100*season_by_date_df["MatchesPlayed"]/number_matches
+                season_by_date_df["Date"] = pd.to_datetime(season_by_date_df["Date"])
+                season_date_range = season_by_date_df["Date"]
                 start_date, end_date = min(season_date_range), max(season_date_range)
 
+                def format_matches_played(date):
+                    if date is not None:
+                        data = season_by_date_df.loc[season_by_date_df["Date"] == date, ["MatchesOnDate", "MatchesPlayed", "MatchesPlayedPercent"]].iloc[0]                        
+                        #played_on_date = data.loc[:,"MatchesOnDate"].iloc[0]
+                        played_by_date = int(data["MatchesPlayed"])
+                        played_perc = data["MatchesPlayedPercent"]
+
+                        return f"{date:%Y-%m-%d} ({played_by_date:d} matches played, {played_perc:.2f}% of season)"
+                    else:
+                        return "None"
+                    
                 with st.form("simulation_control"):
-                    end_point = st.selectbox("Date range of results to include",format_func = lambda x: x.strftime('%Y-%m-%d') if not isinstance(x, str) else x,
-                        options = ["None"] + season_date_range.to_list() )
+                    end_point = st.selectbox("Date range of results to include",
+                        options = [None] + season_date_range.to_list(),
+                        #format_func = lambda x: x.strftime('%Y-%m-%d') if not isinstance(x, str) else x,
+                        format_func = format_matches_played
+                        )
                     Nsims_options = [1,100,1000,10000,100000]
                     Nsims = st.selectbox("Number of simulations", Nsims_options, index=None, key = "simulator")
                     simulate = st.form_submit_button("Simulate")
@@ -143,7 +164,7 @@ if __name__ == "__main__":
                 if simulate:
                     if end_point != "None":
                         initial_ratings = get_ratings_at_date(ratings_df, sel_teams, end_point)
-                        matches = get_season_matches_to_date(scores_csv, sel_season, sel_league[1], end_point)
+                        matches = get_season_matches_to_date(scores_df, sel_season, sel_league[1], end_point)
                         st.write(f"Table as of {end_point:%Y-%m-%d}")
                         starting_table = get_table_to_date(scores_df, sel_season, sel_league, end_point)
                         display_actual_results(starting_table, sel_season)
