@@ -192,24 +192,27 @@ if __name__ == "__main__":
                             display_errors(model_errors)
     with accuracy_tab:
 
-        season_tab, start_tab = st.tabs(["Accuracy by season", "Accuracy by start point"])
+        st.write("Based on previously run simulations (10,000 simulations each) of various seasons starting at different points")
+        st.write("Currently a non-zero start point actually means include all actual results up to and including the first match date for which the percentage of matches played exceeds the number given")
+
+        season_tab, start_tab = st.tabs(["Select season", "Select start point"])
         
         df = pd.read_csv("data/output/season_errors.csv", index_col=[0,1,2])
         #st.write(df)
 
         with season_tab:
-            seasons_checked = df.index.get_level_values(0).unique()
-            seasons_checked = set( (x,y) for x,y in zip(df.index.get_level_values(0), df.index.get_level_values(1)) )
-            sel_season_acc = st.selectbox(
+            seasons_checked = list(set( (season,div) for season,div in zip(df.index.get_level_values(0), df.index.get_level_values(1)) ))
+            seasons_checked.sort()
+            selection = st.multiselect(
                     "Choose season",
                     seasons_checked,
-                    index = len(seasons_checked)-1,
                     format_func =lambda x: f"{x[0]} {x[1]}",
                     key="sel_season_acc")
-                    
-            if sel_season_acc:
-                st.write(df.loc[sel_season_acc])
-                fig = plot_season_sim_errors(df.loc[sel_season_acc])
+            if selection:
+                fig = plot_season_sim_errors_multi(df, selection)
+                #for sel in selection:
+                #    st.write(df.loc[sel])
+                #    fig = plot_season_sim_errors(df.loc[sel])
                 st.pyplot(fig,width='stretch')
                 plt.close(fig)
         with start_tab:
@@ -220,7 +223,7 @@ if __name__ == "__main__":
                     index =0,
                     key="sel_start_acc")
 
-            st.write(df.loc[(slice(None), slice(None), sel_start_acc)])
+            #st.write(df.loc[(slice(None), slice(None), sel_start_acc)])
             fig = plot_season_start_errors(df.loc[(slice(None), slice(None), sel_start_acc)])
             st.pyplot(fig,width='stretch')
             plt.close(fig)

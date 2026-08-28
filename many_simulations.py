@@ -12,7 +12,7 @@ def simulate_season(season, tier, div, season_league_teams, scores_df, season_ra
     season_by_date_df = get_season_matchcount_by_date(scores_df, season, (tier, div), league_size)
 
     if reality_percent > 0:
-        row = season_by_date_df.loc[season_by_date_df["MatchesPlayedPercent"] > reality_percent].iloc[0]
+        row = season_by_date_df.loc[season_by_date_df["MatchesPlayedPercent"] >= reality_percent].iloc[0]
         #print(f"Reality percent: {reality_percent}")
         end_point = row["Date"]
         initial_ratings = get_ratings_at_date(ratings_df, sel_teams, end_point)
