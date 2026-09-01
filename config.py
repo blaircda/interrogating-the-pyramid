@@ -5,4 +5,4 @@ initial_home_adv = 150
 N_matches_home_adv = 2000
 default_rating = 1500
 
-many_sims_N_sims = 1000
+many_sims_N_sims = 10000

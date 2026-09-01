@@ -71,8 +71,8 @@ model_set = {
 
 errors = {}
 
-max_seasons = 2
-max_tier = 2
+max_seasons = 4
+max_tier = 4
 for season in season_list[-(max_tier+1):-1]:
     for tier in range(1,max_tier+1):
     
@@ -87,7 +87,7 @@ for season in season_list[-(max_tier+1):-1]:
                 print(season, tier, div)
                 actual_table = tables.loc[ (season, tier, div) ]
                 #print(actual_table)
-                for x in range(0,100,5):
+                for x in range(0,100,10):
                     print(f"Simulation starting at {x}% of season")
                     simulated_season = simulate_season_percent(season, tier, div, season_league_teams, scores_df, season_ratings_df, model_set, many_sims_N_sims, reality_percent = x)
                     model_errors = get_errors(actual_table, simulated_season, many_sims_N_sims)

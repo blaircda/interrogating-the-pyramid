@@ -136,6 +136,6 @@ def plot_season_start_errors(df):
         ax.set_ylabel("Error")
         ax.set_title(col)
         if len(x) > 4:
-            ax.tick_params(axis="x", labelrotation=45)
+            ax.tick_params(axis="x", labelrotation=270)
     #plt.subplots_adjust(bottom=1, top = 2)
     return fig
