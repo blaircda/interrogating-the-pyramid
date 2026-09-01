@@ -195,6 +195,7 @@ if __name__ == "__main__":
 
         # initialise their ratings prior to start of season
         preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == sel_season ]
+        
         # get a breakdown of matches by date  
         season_by_date_df = get_season_matchcount_by_date(scores_df, sel_season, sel_league, league_size)
         season_gamedays = season_by_date_df["Date"]
@@ -228,39 +229,47 @@ if __name__ == "__main__":
 
             # choose number of simulations to perform
             Nsims_options = [1,100,1000,10000,100000]
-            Nsims = st.selectbox("Number of simulations", Nsims_options, index=None, key = "simulator")
+            Nsims = st.selectbox("Number of simulations", Nsims_options, index=3, key = "simulator")
             simulate = st.form_submit_button("Simulate")
 
         if simulate:
 
             # if simulating including results up to the date chosen in results_to_date
             if results_to_date is not None:
+                # split the season fixtures by the date
+                matches_played, matches_to_play = split_season_by_date(scores_df, sel_season, sel_league[1], results_to_date)
+
                 # get initial ratings at that date 
                 initial_ratings = get_ratings_at_date(ratings_df, sel_teams, results_to_date)
-                # get all matches up to that date
-                # TO DO: change this to a split_season(..., by = date)
-                # which returns the matches up to date as results and the matches after date as fixtures for the simulation to run
-                matches = get_season_matches_to_date(scores_df, sel_season, sel_league[1], results_to_date)
+                #initial_ratings_by_ff = build_partial_ratings(initial_ratings | {"home_adv": preseason_ratings["home_adv"].iloc[0]} , matches_played)
+
+                # if simulating the current season we do not have the future fixtures accessible
+                # so set matches_to_play to None
+                # then simulation will organise remaining fixtures 
+                if len(matches_played) + len(matches_to_play) != league_size*(league_size - 1 ):
+                    matches_to_play = None
+                    
                 # display table as of results_to_date
                 st.write(f"Table as of {results_to_date:%Y-%m-%d}")
                 starting_table = get_table_to_date(scores_df, sel_season, sel_league, results_to_date)
                 display_actual_results(starting_table, sel_season)
+                
             # if simulating whole season
             else:
                 initial_ratings = {team: preseason_ratings[team].iloc[0] for team in sel_teams }
-                matches = {}
+                matches_played = None
+                matches_to_play = None
 
             # prepare the state dictionary passed to the simulation
             state = prepare_state(
                 teams = sel_teams,
                 ratings = initial_ratings,
                 home_adv = preseason_ratings["home_adv"].iloc[0],
-                 matches = matches,
                 season = sel_season
             )
 
             # run the simulations 
-            simulated_season = run_simulations(state, Nsims, model_set, fixtures=None)
+            simulated_season = run_simulations(state, Nsims, model_set, games_played = matches_played, games_to_play = matches_to_play)
             # display the resuts
             display_results(simulated_season, sel_teams, Nsims)
             # get the actual final table
@@ -288,8 +297,8 @@ if __name__ == "__main__":
     ########################################################################
     with accuracy_tab:
 
-        st.write("Based on previously run simulations (10,000 simulations each) of various seasons starting at different points")
-        st.write("Currently a non-zero start point actually means include all actual results up to and including the first match date for which the percentage of matches played exceeds the number given")
+        st.write("Based on previously run simulations of various seasons starting at different points")
+        #st.write("Currently a non-zero start point actually means include all actual results up to and including the first match date for which the percentage of matches played exceeds the number given")
 
         season_tab, start_tab = st.tabs(["Select season", "Select start point"])
         

@@ -4,12 +4,11 @@ from time import perf_counter
 import pandas as pd
 
 # helper function to make state container
-def prepare_state(teams, ratings, home_adv, matches, season):
+def prepare_state(teams, ratings, home_adv, season):
     state = {
     "teams": teams,
     "ratings": ratings,
     "home_adv": home_adv,
-    "matches": matches
     }
 
     if season < change_to_goal_diff:
@@ -31,11 +30,11 @@ def make_team_stats(league_size):
     return {i: 0 for i in range(1, league_size+1)} | make_posn_stats()
 
 # main simulation function
-def run_simulations(state, Nsims, model_set, fixtures=None):
+def run_simulations(state, Nsims, model_set, games_played=None, games_to_play = None):
     """
     performs Nsims simulations of each model in model_set
     passing the invariant data in state to the simulator
-    and optionally passing fixtures
+    and optionally passing partial results in games_played
     """
     store_team_results, store_posn_results = {}, {}
     Nmodels =len(model_set)
@@ -57,7 +56,7 @@ def run_simulations(state, Nsims, model_set, fixtures=None):
                 orig_elo = state["ratings"].copy()
 
             # run a season
-            results = run_season(state, model_fn, fixtures=fixtures)
+            results = run_season(state, model_fn, games_played=games_played)
             # add season results to team_results, posn_results
             update_results(results, team_results)
 

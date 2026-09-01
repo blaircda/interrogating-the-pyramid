@@ -56,7 +56,6 @@ def display_results(store_team_results, teams, Nsims):
     """
     display simulated results
     for each simulation model in store_team_results
-    
     """
     league_size = len(teams)+1
     for model_name, model_data in store_team_results.items():
