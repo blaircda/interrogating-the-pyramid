@@ -6,29 +6,38 @@ from config import *
 
 @st.cache_data
 def get_seasons_daterange(scores_df):
+    """
+    returns a dataframe with the start/end dates of each season
+    """
     df = scores_df.groupby(["Season"]).agg(
     start=("Date", "min"),
     end=("Date", "max")
     )
-    #df["pre"] = df["end"].shift(1)
-    #print(df)
     return df
 
 @st.cache_data
 def get_seasons_tiers(scores_df):
+    """
+    returns a dataframe with the tier/divisions for each season
+    """
     df = scores_df[["Season", "Tier", "Division"]].drop_duplicates()
-    #print(df.index)
     return df
 
 @st.cache_data
 def get_seasons_tiers_teams(scores_df):
-    # catch an edge case where if only one round of games has been played you need to know all the teams
+    """
+    returns a dataframe with the teams for each season in each tier/division
+    """
+    # need to catch an edge case where if only one round of games has been played you need to know all the teams
     df = scores_df[["Season", "Tier", "Division", "HomeTeam", "AwayTeam"]]
     df = df.groupby(["Season", "Tier", "Division"]).apply(lambda g: pd.unique(g[["HomeTeam", "AwayTeam"]].values.ravel()).tolist())
     return df
 
 @st.cache_data
-def build_league_tables(df):    
+def build_league_tables(df):
+    """
+    constructs league tables from a df containing results
+    """
     # get all teams home results
     home_results = df.groupby(["Season", "Tier", "Division", "HomeTeam"])["Result"].value_counts().unstack(fill_value=0)
     home_results = home_results.rename(columns={'A': 'L', 'D': 'D', 'H': 'W'})
@@ -82,12 +91,16 @@ def build_league_tables(df):
 
     full_tables = pd.concat([goal_average_era, goal_diff_era])
 
+    # add a position column 
     full_tables["POS"] = full_tables.groupby(level=["Season", "Tier", "Division"]).cumcount().add(1)
     full_tables = full_tables.sort_index()
     return full_tables
 
 @st.cache_data
 def build_home_adv(df):
+    """
+    returns a dataframe with aggregated season-by-season home results average
+    """
     # get all teams home results
     home_results = df.groupby(["Season"])["Result"].value_counts().unstack(fill_value=0)
     home_results = home_results.rename(columns={'A': 'L', 'D': 'D', 'H': 'W'})
@@ -104,7 +117,7 @@ def get_ratings_at_date(ratings_df, teams, date):
     """
     return dict of latest ratings of teams at date
     """
-    filtered = ratings_df[ratings_df["team"].isin(teams)  & (ratings_df.index <= date)]
+    filtered = ratings_df[ (ratings_df["team"].isin(teams))  & (ratings_df.index <= date)]
 
     ratings_at_date = {}
     for team in teams:
@@ -112,24 +125,61 @@ def get_ratings_at_date(ratings_df, teams, date):
 
     return ratings_at_date
 
-def get_season_matches_to_date(scores_df, season, league, date):
-    matches = {}
-    df = scores_df[["Date", "Season", "Division", "Tier", "HomeTeam",  "AwayTeam", "hGoal", "aGoal"]]
-    df["Date"] = pd.to_datetime(df["Date"])
-    df = df[ (df["Season"] == season) & (df["Division"] == league) & (df["Date"] <= date) ][["HomeTeam", "AwayTeam", "hGoal", "aGoal"]]
-    results = df.to_dict(orient='records')
-    for match in results:
-        matches[ ( match["HomeTeam"], match["AwayTeam"] ) ] = ( match["hGoal"], match["aGoal"] )
+def split_season_by_date(scores_df, season, league, date):
+    """
+    for specified season and league (division)
+    return the results of matches up to and including date
+    plus the remaining fixtures without the result
+    """
+    matches_played = {}
+    matches_to_play = []
 
-    return matches
+    df = scores_df[ (scores_df["Season"] == season) & (scores_df["Division"] == league) ]
+    df["Date"] = pd.to_datetime(df["Date"])
+
+    played = df[ df["Date"] <= date ][["HomeTeam", "AwayTeam", "hGoal", "aGoal"]].to_dict(orient='records')
+    for match in played:
+        matches_played[ ( match["HomeTeam"], match["AwayTeam"] ) ] = ( match["hGoal"], match["aGoal"] )
+
+    matches_to_play = list(df[ df["Date"] > date ][["HomeTeam", "AwayTeam"]].itertuples(index=False, name=None))
+    
+    return matches_played, matches_to_play
+
+def split_season_by_percent(scores_df, season, league, percent):
+    """
+    for specified season and league (division)
+    return the results of first percent matches
+    plus the remaining fixtures without the result
+    """
+    matches_played = {}
+    matches_to_play = []
+
+    df = scores_df[ (scores_df["Season"] == season) & (scores_df["Division"] == league) ]
+    N = int(len(df)*percent/100)
+
+    played = df.iloc[:N][["HomeTeam", "AwayTeam", "hGoal", "aGoal"]].to_dict(orient='records')
+    for match in played:
+        matches_played[ ( match["HomeTeam"], match["AwayTeam"] ) ] = ( match["hGoal"], match["aGoal"] )
+
+    matches_to_play = list(df.iloc[N:][["HomeTeam", "AwayTeam"]].itertuples(index=False, name=None))
+    
+    return matches_played, matches_to_play
 
 def get_table_to_date(scores_df, season, league, date):
+    """
+    for specified season and league (division)
+    return the table based on results up to and including date
+    """
     df = scores_df[  (scores_df["Season"] == season) & (scores_df["Division"] == league[1]) ]
     df["Date"] = pd.to_datetime(df["Date"])
     df = df[ (df["Date"] <= date) ]
     return build_league_tables(df).loc[(season, *league)]
 
 def get_season_matchcount_by_date(scores_df, season, league, league_size):
+    """
+    returns a dataframe of the dates of gamedays and the number of games played
+    for specified season and league (division)
+    """
     number_matches = league_size*(league_size - 1)
     df = scores_df[ (scores_df["Season"] == season) & (scores_df["Division"] == league[1]) ]
     df = df.groupby("Date").size().reset_index(name="MatchesOnDate")

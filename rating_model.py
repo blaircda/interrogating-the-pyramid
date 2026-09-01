@@ -27,7 +27,7 @@ def get_new_ratings(ratings, home_team, away_team, home_score, away_score):
 
     win_ex1 = diff_to_w[rating_diff+2000]
     win_ex2 = 1 - win_ex1
-    
+
     if home_score > away_score:
         Delta = round(K*G*win_ex2,0)
     elif home_score < away_score: # team2 wins

@@ -7,7 +7,11 @@ from config import *
 
 @st.cache_data
 def build_ratings(live_ratings, scores_csv):
-
+    """
+    given initial ratings as dict live_ratings
+    and match results in scores_csv
+    iterates through the results and records all rating changes
+    """
     # container to save every rating update
     rating_history = []
 
@@ -20,8 +24,8 @@ def build_ratings(live_ratings, scores_csv):
     home_res_hash = { "H": 1, "D": 0.5, "A": 0}
     N = N_matches_home_adv
     # counters if updating every X games rather than seasonally
-    update_home_adv_counter = 0
-    when_update_home_adv = 100   
+    #update_home_adv_counter = 0
+    #when_update_home_adv = 100   
 
     with open(scores_csv, newline="") as f:
         reader = csv.DictReader(f)
@@ -41,35 +45,36 @@ def build_ratings(live_ratings, scores_csv):
             # check if we have reached a new season
             if season != current_season:
 
-                # save the end of season ratings and model home advantage
-                snapshot = { "season_end": current_season, "season_start": season } | live_ratings
-                season_ratings.append( snapshot ) 
-
                 # update the model home advantage
                 # using previous N matches 
                 if len(home_success) > N:
                     # update home adv and save end of season ratings
-                    #print(f"\n{current_season}")
+                    #print(f"\n{current_season} home adv: ", live_ratings["home_adv"])
+
                     av_home_success = round(sum(home_success[-N:])/N,5)
                     av_home_winex = round( sum(home_winex[-N:])/N,5)
-                    #print("Average home success vs win ex:",av_home_success, av_home_winex)
-                    #print("Corresponding diffs", w_to_diff[int(100000*av_home_success)], w_to_diff[int(100000*av_home_winex)])
-                    #print("Current home advantage:", live_ratings["home_adv"])
                     discr = w_to_diff[int(100000*av_home_success)] - w_to_diff[int(100000*av_home_winex)]
                     live_ratings["home_adv"] += np.round(discr,0).astype(int)
-                    #print("New home adv: ", live_ratings["home_adv"])
+
+                    #print("Average home success vs win ex:",av_home_success, av_home_winex)
+                    #print("Corresponding diffs", w_to_diff[int(100000*av_home_success)], w_to_diff[int(100000*av_home_winex)])
+                    #print(f"{season} home adv: ", live_ratings["home_adv"])
+
+                # save the end of season ratings and model home advantage
+                snapshot = { "season_end": current_season, "season_start": season } | live_ratings
+                season_ratings.append( snapshot ) 
 
                 # set current_season to the nwe season
                 current_season = season
 
             # alternatively update home_adv every X matches
-            if len(home_success) > N and update_home_adv_counter == when_update_home_adv:
-                    pass
-                    av_home_success = round(sum(home_success[-N:])/N,5)
-                    av_home_winex = round( sum(home_winex[-N:])/N,5)
-                    discr = w_to_diff[int(100000*av_home_success)] - w_to_diff[int(100000*av_home_winex)]
-                    live_ratings["home_adv"] += np.round(discr,0).astype(int)
-                    update_home_adv_counter = 0 
+            #if len(home_success) > N and update_home_adv_counter == when_update_home_adv:
+            #        pass
+            #        av_home_success = round(sum(home_success[-N:])/N,5)
+            #        av_home_winex = round( sum(home_winex[-N:])/N,5)
+            #        discr = w_to_diff[int(100000*av_home_success)] - w_to_diff[int(100000*av_home_winex)]
+            #        live_ratings["home_adv"] += np.round(discr,0).astype(int)
+            #        update_home_adv_counter = 0 
 
             # match details
             home_team = row["HomeTeam"]
@@ -89,6 +94,24 @@ def build_ratings(live_ratings, scores_csv):
             home_success.append( home_res_hash[row["Result"]] )
             home_winex.append(win_ex_home)
 
-            update_home_adv_counter += 1
+            #update_home_adv_counter += 1
             
     return rating_history, season_ratings, home_success, home_winex
+
+def build_partial_ratings(live_ratings, matches):
+    """
+    given initial ratings as dict live_ratings
+    and match results in dict matches
+    iterates through the results and returns the final rating changes
+
+    this is used to "fast forward" ratings to a given point in the season
+    """
+    for (home_team, away_team), (home_score, away_score) in matches.items():
+        # get new ratings for the teams involved
+        rating_home_new, rating_away_new, _ = get_new_ratings(live_ratings, home_team, away_team, home_score, away_score)
+        # update live rating 
+        live_ratings[home_team] = rating_home_new
+        live_ratings[away_team] = rating_away_new 
+
+    return live_ratings
+
