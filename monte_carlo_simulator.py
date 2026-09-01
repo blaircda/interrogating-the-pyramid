@@ -21,18 +21,22 @@ def prepare_state(teams, ratings, home_adv, matches, season):
     else:
         state["points_per_game"] = 3
         state["goal_separator"] = "difference"
+        
     return state
     
 # helper functions for creating defaultdicts to store simulation results
 def make_posn_stats():
-    #return {"W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0, "GD": 0, "PTS":0}
     return {"W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0, "PTS":0}
 def make_team_stats(league_size):
     return {i: 0 for i in range(1, league_size+1)} | make_posn_stats()
 
 # main simulation function
 def run_simulations(state, Nsims, model_set, fixtures=None):
-
+    """
+    performs Nsims simulations of each model in model_set
+    passing the invariant data in state to the simulator
+    and optionally passing fixtures
+    """
     store_team_results, store_posn_results = {}, {}
     Nmodels =len(model_set)
     model_count = 1
@@ -43,6 +47,7 @@ def run_simulations(state, Nsims, model_set, fixtures=None):
     for model_name, model_fn in model_set.items():
         start = perf_counter()
         print(f"Simulating league with game model: {model_name} ({model_count}/{Nmodels})")
+
         # dicts to store simulation results
         team_results = defaultdict(lambda : make_team_stats(league_size))
 
@@ -69,7 +74,10 @@ def run_simulations(state, Nsims, model_set, fixtures=None):
     return store_team_results
     
 def get_errors(actual_table, simulation_results, Nsims):
-
+    """
+    compares actual_table to predictions of simulation_results
+    and computes some basic measurements of the discrepancy
+    """
     model_errors = {}
     
     for model_name, model_data in simulation_results.items():

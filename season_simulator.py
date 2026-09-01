@@ -61,12 +61,10 @@ def run_season(state, model, fixtures = None):
     returns the final league table
     """
     tie = 0
-    # iterate over groups and matches therein
     ts = state["teams"]
     #table = defaultdict(lambda: {"W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0, "GD": 0, "PTS":0})
     table = defaultdict(lambda: {"W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0})
     #matches = {}
-
 
     # if we are going to use partial results
     if "matches" in state:
@@ -83,10 +81,8 @@ def run_season(state, model, fixtures = None):
             play_fn(team1, team2, state, model, table)
             play_fn(team2, team1, state, model, table)
 
-
     # update table
     # taking into account historical rules 
-    
     for team in ts:
         if state["goal_separator"] == "difference":
             table[team]["GD"] = table[team]["GF"] - table[team]["GA"]
@@ -94,12 +90,10 @@ def run_season(state, model, fixtures = None):
             table[team]["GD"] = table[team]["GF"] / table[team]["GA"]
         table[team]["PTS"] = state["points_per_game"]*table[team]["W"] + table[team]["D"]
 
-    # will need to handle historical head to head, 2 points per game, use of goal differential
     table = list(sorted(table.items(),
         key=lambda item: (item[1]["PTS"], item[1]["GD"], item[1]["GF"]
         ), reverse=True))
-    #print(f"\nFinal table:")
-    #print(*table, sep="\n")
+
     return table
 
 def update_results(table, team_results):

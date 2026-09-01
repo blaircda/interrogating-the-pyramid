@@ -4,7 +4,6 @@ from config import *
 
 #Date,Season,HomeTeam,AwayTeam,Score,hGoal,aGoal,Division,Tier,Result
 
-
 @st.cache_data
 def get_seasons_daterange(scores_df):
     df = scores_df.groupby(["Season"]).agg(

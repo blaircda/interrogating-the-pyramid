@@ -5,13 +5,14 @@ import pandas as pd
 import numpy as np
 from config import *
 
-def plot_multi(df, selection):
+def plot_multi_ratings(df, selection):
     """
-    plt
+    for each team in selection
+    returns a combined plot of their historical ratings stored in df
     """
     fig, ax = plt.subplots()
 
-    ax.set_xlabel("Time")
+    #ax.set_xlabel("Time")
     ax.set_ylabel("Rating")
     
     for team in selection:
@@ -28,7 +29,9 @@ def plot_multi(df, selection):
 
 def plot_multi_cols(df, selection, labels={}):
     """
-    plt
+    for each col of df in selection
+    returns a combined plot of their data
+    with labels specified by optional dict labels 
     """
     fig, ax = plt.subplots()
 
@@ -50,12 +53,15 @@ def plot_multi_cols(df, selection, labels={}):
     return fig
 
 def display_results(store_team_results, teams, Nsims):
-    # display results direct to terminal
+    """
+    display simulated results
+    for each simulation model in store_team_results
+    
+    """
     league_size = len(teams)+1
     for model_name, model_data in store_team_results.items():
         st.write(f"\nResults for model: {model_name}")
         sorted_data = { k:v for k, v in sorted(model_data.items(), key=lambda item: (item[1]["PTS"]), reverse=True)}
-
         df = pd.DataFrame.from_dict(sorted_data, orient="index")
         cols = ["PTS", "W", "D", "L", "GF", "GA"]
         df[cols] /= Nsims
@@ -65,6 +71,9 @@ def display_results(store_team_results, teams, Nsims):
         st.write(df[["xPOS"] + cols + pos_cols.tolist() ])
 
 def display_actual_results(actual_table, season):
+    """
+    display league table 
+    """
     table = actual_table.sort_values(by="POS")
     if season < change_to_goal_diff:
         display_columns = ["POS", "W", "D", "L", "GF", "GA", "GAv", "PTS"]
@@ -113,7 +122,6 @@ def plot_season_sim_errors_multi(df, selection):
         ax.set_title(col)
         ax.legend()
     #plt.subplots_adjust(bottom=1, top = 2)
-
     return fig
 
 def plot_season_start_errors(df):
@@ -130,7 +138,5 @@ def plot_season_start_errors(df):
         ax.set_title(col)
         if len(x) > 4:
             ax.tick_params(axis="x", labelrotation=45)
-
-
     #plt.subplots_adjust(bottom=1, top = 2)
     return fig
