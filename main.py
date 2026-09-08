@@ -54,11 +54,6 @@ tables = build_league_tables(scores_df)
 
 # home advantage
 home_adv = build_home_adv(scores_df)
-
-# simulation model(s)
-model_set = {
-        "elo_static": elo_to_poisson,
-}
                         
 if __name__ == "__main__":
     st.set_page_config(layout="wide", page_title="Interrogating the pyramid")
@@ -234,6 +229,8 @@ if __name__ == "__main__":
 
         if simulate:
 
+            full_games_played =  league_size*(league_size - 1 )
+            
             # if simulating including results up to the date chosen in results_to_date
             if results_to_date is not None:
                 # split the season fixtures by the date
@@ -246,7 +243,7 @@ if __name__ == "__main__":
                 # if simulating the current season we do not have the future fixtures accessible
                 # so set matches_to_play to None
                 # then simulation will organise remaining fixtures 
-                if len(matches_played) + len(matches_to_play) != league_size*(league_size - 1 ):
+                if len(matches_played) + len(matches_to_play) != full_games_played:
                     matches_to_play = None
                     
                 # display table as of results_to_date
@@ -268,29 +265,26 @@ if __name__ == "__main__":
                 season = sel_season
             )
 
-            # run the simulations 
-            simulated_season = run_simulations(state, Nsims, model_set, games_played = matches_played, games_to_play = matches_to_play)
+            # run the simulations
+            # can extend this to loop over multiple models if present
+            # models_used = ["elo_static"]
+            # model_data = {}
+            # for model in models_used:
+            #   model_data[model] = run_simulations(...)
+            # and similar loop in the error calculation
+            
+            simulated_season = run_simulations(state, Nsims, model_name = "elo_static", games_played = matches_played, games_to_play = matches_to_play)
             # display the resuts
+            st.write("Simulation results:")
             display_results(simulated_season, sel_teams, Nsims)
             # get the actual final table
             actual_table = tables.loc[(sel_season,*sel_league)]
-
-            # the most recent season may be incomplete
-            # brute force checking this 
-            if sel_season == season_list[-1]:
-                games_played = actual_table["W"].sum(axis=0) + actual_table["D"].sum(axis=0)/2
-                full_games_played = len(actual_table)*(len(actual_table)-1)
-                if games_played == full_games_played:
-                    st.write("Actual results:")
-                    display_actual_results(actual_table, sel_season)
-                    model_errors = get_errors(actual_table, simulated_season, Nsims)
-                    display_errors(model_errors)
-            # otherwise nothing to check
-            else:
-                    st.write("Actual results:")
-                    display_actual_results(actual_table, sel_season)
-                    model_errors = get_errors(actual_table, simulated_season, Nsims)
-                    display_errors(model_errors)
+            games_played = actual_table["W"].sum(axis=0) + actual_table["D"].sum(axis=0)/2
+            if games_played == full_games_played:
+                st.write("Actual results:")
+                display_actual_results(actual_table, sel_season)
+                model_errors = get_errors(actual_table, simulated_season, Nsims)
+                display_errors(model_errors)
 
     ########################################################################
     # Tab: Season Simulations
