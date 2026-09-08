@@ -1,4 +1,4 @@
-from season_simulator import *
+from .season_simulator import *
 from config import *
 from time import perf_counter
 import pandas as pd

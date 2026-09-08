@@ -1,92 +1,23 @@
-import csv
 import pandas as pd
-import numpy as np
 import streamlit as st
+import matplotlib.pyplot as plt
 from config import *
-from plotting import *
-from import_process import *
-from groupings import *
-from monte_carlo_simulator import *
-from season_simulator import *
-from game_simulator import *
+from import_process import (
+    process_data,
+    get_ratings_at_date, split_season_by_date,
+    get_table_to_date, get_table_with_elo_to_date, get_season_matchcount_by_date
+)
+from plotting import (
+    plot_multi_ratings, plot_multi_cols,
+    display_results, display_actual_results, display_errors,
+    plot_season_sim_errors, plot_season_sim_errors_multi, plot_season_start_errors
+    )
+from simulation.monte_carlo_simulator import (
+    prepare_state, run_simulations, get_errors
+)
 
 teams_csv = "data/EnglishTeamActivePeriods.csv"
 scores_csv = "data/EnglandLeagueResults.csv"
-
-########################################################################
-# Data imports
-########################################################################
-
-# import all teams and set their default rating
-teams = pd.read_csv(teams_csv, usecols=["Team"])["Team"].to_list()
-initial_ratings = {team:default_rating for team in teams}
-initial_ratings["home_adv"] = initial_home_adv
-
-# build full ratings - direct from csv
-ratings, season_ratings, home_success, home_winex = build_ratings(initial_ratings, scores_csv)
-
-ratings_df = pd.DataFrame.from_dict(ratings).set_index('date') 
-ratings_df.index = pd.to_datetime(ratings_df.index)
-
-start_date, end_date = min(ratings_df.index), max(ratings_df.index)
-
-season_ratings_df = pd.DataFrame.from_dict(season_ratings)   
-
-season_ratings_start = (
-    season_ratings_df
-    .set_index('season_start')
-    .drop(columns="season_end")
-    .stack()
-    .rename("Rstart")   
-)
-
-season_ratings_end = (
-    season_ratings_df
-    .dropna(subset=["season_end"])  
-    .set_index('season_end')
-    .drop(columns="season_start")
-    .stack()
-    .rename("Rend")
-)
-
-# compute averages of home success (from actual results) and model home win expectancy
-# and their discrepancy 
-accum_home_success = np.cumsum(home_success)
-av_accum_home_success = [ x/(i+1) for i,x in enumerate(accum_home_success)]
-accum_home_winex = np.cumsum(home_winex )
-av_accum_home_winex  = [ x/(i+1) for i,x in enumerate(accum_home_winex )]
-av_discr = [x-y for x,y in zip(av_accum_home_success,av_accum_home_winex)]
-
-# read scores_csv into df
-scores_df = pd.read_csv(scores_csv)
-
-season_dates = get_seasons_daterange(scores_df)
-season_league_teams = get_seasons_tiers_teams(scores_df)
-season_list = season_dates.index.tolist()
-start_season = min(season_list)
-end_season = max(season_list)
-
-# tables
-tables = build_league_tables(scores_df)
-tables = (
-    tables
-    .join(season_ratings_start, on=["Season", "Team"])
-    .join(season_ratings_end, on=["Season", "Team"])
-)
-tables["Rstart"] = tables["Rstart"].astype("Int64")
-tables["Rend"] = tables["Rend"].astype("Int64")
-tables["Rdelta_start"] = (
-    tables["Rstart"]
-    - tables.groupby(level=["Season", "Tier", "Division"])["Rstart"].transform("max")
-)
-tables["Rdelta_end"] = (
-    tables["Rend"]
-    - tables.groupby(level=["Season", "Tier", "Division"])["Rend"].transform("max")
-)
-tables["Rchange"] = tables["Rend"] - tables["Rstart"]
-
-# home advantage
-home_adv = build_home_adv(scores_df)
 
 
 ########################################################################
@@ -94,6 +25,21 @@ home_adv = build_home_adv(scores_df)
 ########################################################################
                         
 if __name__ == "__main__":
+    data = process_data(teams_csv, scores_csv)
+
+    teams = data.teams
+    season_list = data.seasons
+    season_ratings_start, season_ratings_end = data.season_ratings
+    ratings_df = data.ratings
+    scores_df = data.scores 
+    home_adv = data.home_adv
+    av_discr = data.home_adv_discr
+    tables = data.tables
+    season_league_teams = data.leagues
+
+    start_season = min(season_list)
+    end_season = max(season_list) 
+    
     st.set_page_config(layout="wide", page_title="Interrogating the pyramid")
     # control width of content display 
     padl, content, padr = st.columns([0.1,0.8,0.1])
@@ -213,6 +159,13 @@ if __name__ == "__main__":
     # Tab: Historical tabs
     ########################################################################
     with tables_tab:
+
+        tables_by_date_tab, all_tables_tab = st.tabs(["Tables by date", "All tables together"])
+
+    with tables_by_date_tab:
+        st.write("Historical tables, on any date")
+        st.write("Caveat: these are calculated from the match results only ignoring points deductions")
+        
         # choose a season
         # initial season excluded
         sel_season = st.selectbox(
@@ -266,6 +219,9 @@ if __name__ == "__main__":
             table = tables.loc[(sel_season,*sel_league)]
 
         display_actual_results(table, sel_season)
+
+    with all_tables_tab:
+        st.dataframe(tables)
 
 
     ########################################################################

@@ -1,6 +1,6 @@
 from collections import defaultdict
-from game_simulator import *
 import itertools
+from .game_simulator import *
 
 def play(team1, team2, state, model, table):
     """

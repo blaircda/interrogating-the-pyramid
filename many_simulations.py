@@ -1,9 +1,28 @@
-from main import *
-#import matplotlib
-#matplotlib.use("TkAgg")
-#import matplotlib.pyplot as plt
+import pandas as pd
+from config import *
+from import_process import (
+    process_data, build_partial_ratings,
+    get_ratings_at_date, split_season_by_date, split_season_by_percent,
+)
+from simulation.monte_carlo_simulator import (
+    prepare_state, run_simulations, get_errors
+)
 
-def simulate_season(season, tier, div, season_league_teams, scores_df, season_ratings_df, model_name, Nsims=100, reality_percent = 0):
+teams_csv = "data/EnglishTeamActivePeriods.csv"
+scores_csv = "data/EnglandLeagueResults.csv"
+data = process_data(teams_csv, scores_csv)
+
+teams = data.teams
+season_list = data.seasons
+season_ratings_start, season_ratings_end = data.season_ratings
+ratings_df = data.ratings
+scores_df = data.scores 
+home_adv = data.home_adv
+av_discr = data.home_adv_discr
+tables = data.tables
+season_league_teams = data.leagues
+
+def simulate_season(season, tier, div, season_league_teams, scores_df, season_ratings_start, model_name, Nsims=100, reality_percent = 0):
     """
     simulate a season taking into account results up to and including the earliest date s.t. reality_percent percent of matches have been played
     """
@@ -36,7 +55,7 @@ def simulate_season(season, tier, div, season_league_teams, scores_df, season_ra
     simulated_season = run_simulations(state, Nsims, model_name, games_played = matches_played, games_to_play = matches_to_play)
     return simulated_season
 
-def simulate_season_percent(season, tier, div, season_league_teams, scores_df, season_ratings_df, model_name, Nsims=100, reality_percent = 0):
+def simulate_season_percent(season, tier, div, season_league_teams, scores_df, season_ratings_start, model_name, Nsims=100, reality_percent = 0):
     """
     simulate a season taking into account the actual results of the first reality_percent percent matches
     """
@@ -87,7 +106,7 @@ for season in season_list[-(max_tier+1):-1]:
                 #print(actual_table)
                 for x in range(0,100,10):
                     print(f"Simulation starting at {x}% of season")
-                    simulated_season = simulate_season_percent(season, tier, div, season_league_teams, scores_df, season_ratings_df, "elo_static", many_sims_N_sims, reality_percent = x)
+                    simulated_season = simulate_season_percent(season, tier, div, season_league_teams, scores_df, season_ratings_start, "elo_static", many_sims_N_sims, reality_percent = x)
                     model_errors = get_errors(actual_table, simulated_season, many_sims_N_sims)
                     errors[(season, div, x)] = model_errors
 
