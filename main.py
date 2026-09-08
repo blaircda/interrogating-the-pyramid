@@ -75,6 +75,15 @@ tables = (
 )
 tables["Rstart"] = tables["Rstart"].astype("Int64")
 tables["Rend"] = tables["Rend"].astype("Int64")
+tables["Rdelta_start"] = (
+    tables["Rstart"]
+    - tables.groupby(level=["Season", "Tier", "Division"])["Rstart"].transform("max")
+)
+tables["Rdelta_end"] = (
+    tables["Rend"]
+    - tables.groupby(level=["Season", "Tier", "Division"])["Rend"].transform("max")
+)
+tables["Rchange"] = tables["Rend"] - tables["Rstart"]
 
 # home advantage
 home_adv = build_home_adv(scores_df)
@@ -94,7 +103,7 @@ if __name__ == "__main__":
     ########################################################################
     with content:
         # define tabs 
-        ratings_tab, home_adv_tab, season_sim_tab, backtest_tab = st.tabs(["Ratings", "Home advantage", "Season simulations", "Backtests"])
+        ratings_tab, tables_tab, home_adv_tab, season_sim_tab, backtest_tab = st.tabs(["Historical ratings", "Historical tables", "Historical vs model home advantage", "Season simulations", "Backtests"])
 
     ########################################################################
     # Tab: Ratings
@@ -187,6 +196,78 @@ if __name__ == "__main__":
             st.pyplot(fig,width='stretch')
             plt.close(fig)
 
+
+    # helper function to format date selection 
+    def format_matches_played(date):
+        if date is not None:
+            data = season_by_date_df.loc[season_by_date_df["Date"] == date, ["MatchesOnDate", "MatchesPlayed", "MatchesPlayedPercent"]].iloc[0]                        
+            #played_on_date = data.loc[:,"MatchesOnDate"].iloc[0]
+            played_by_date = int(data["MatchesPlayed"])
+            played_perc = data["MatchesPlayedPercent"]
+            return f"{date:%Y-%m-%d} ({played_by_date:d} matches played, {played_perc:.2f}% of season)"
+
+        else:
+            return "None"
+            
+    ########################################################################
+    # Tab: Historical tabs
+    ########################################################################
+    with tables_tab:
+        # choose a season
+        # initial season excluded
+        sel_season = st.selectbox(
+            "Choose season",
+            season_list,
+            index = len(season_list)-1,
+            key="tab_sel_season"
+            )
+        # get the leagues and teams for selected season
+        selected = season_league_teams.loc[sel_season]
+        tier_divisions = selected.index.tolist()
+        # this is a list of tuples (int tier, str division_name)
+        # e.g. [ (1, "Premier League"), (2, "EFL Championship"), ... ] 
+        # choose a league
+        sel_league = st.selectbox(
+            "Choose league",
+            tier_divisions,
+            index = 0,
+            format_func = lambda x:x[1],
+            key="tab_sel_league"
+            )
+
+        # select the teams from the league
+        sel_teams = season_league_teams.loc[ (sel_season,*sel_league) ]
+        league_size = len(sel_teams)
+        # initialise their ratings prior to start of season
+        preseason_ratings = season_ratings_start.loc[sel_season]
+
+        # get a breakdown of matches by date  
+        season_by_date_df = get_season_matchcount_by_date(scores_df, sel_season, sel_league, league_size)
+        season_gamedays = season_by_date_df["Date"].to_list()
+
+        # choose simulation start date
+        table_date = st.selectbox(
+            "Table at date",
+            options = season_gamedays,
+            index =len(season_gamedays)-1,
+            format_func = format_matches_played,
+            key = "tab_date_select"
+            )
+        
+        if table_date is not None:
+            # split the season fixtures by the date
+            matches_played, matches_to_play = split_season_by_date(scores_df, sel_season, sel_league[1], table_date)
+            # get initial ratings at that date 
+            initial_ratings = get_ratings_at_date(ratings_df, sel_teams, table_date)                
+            # display table as of results_to_date
+            st.write(f"Table as of {table_date:%Y-%m-%d}")
+            table = get_table_with_elo_to_date(ratings_df, scores_df, sel_season, sel_league, table_date, preseason_ratings.loc[sel_teams])
+        else:
+            table = tables.loc[(sel_season,*sel_league)]
+
+        display_actual_results(table, sel_season)
+
+
     ########################################################################
     # Tab: Season Simulations
     ########################################################################
@@ -221,26 +302,12 @@ if __name__ == "__main__":
         # select the teams from the league
         sel_teams = season_league_teams.loc[ (sel_season,*sel_league) ]
         league_size = len(sel_teams)
-
         # initialise their ratings prior to start of season
         preseason_ratings = season_ratings_start.loc[sel_season]
         
         # get a breakdown of matches by date  
         season_by_date_df = get_season_matchcount_by_date(scores_df, sel_season, sel_league, league_size)
         season_gamedays = season_by_date_df["Date"]
-        start_date, end_date = min(season_gamedays), max(season_gamedays)
-
-        # helper function to format date selection 
-        def format_matches_played(date):
-            if date is not None:
-                data = season_by_date_df.loc[season_by_date_df["Date"] == date, ["MatchesOnDate", "MatchesPlayed", "MatchesPlayedPercent"]].iloc[0]                        
-                #played_on_date = data.loc[:,"MatchesOnDate"].iloc[0]
-                played_by_date = int(data["MatchesPlayed"])
-                played_perc = data["MatchesPlayedPercent"]
-                return f"{date:%Y-%m-%d} ({played_by_date:d} matches played, {played_perc:.2f}% of season)"
-
-            else:
-                return "None"
 
         ################################################################
         # Form: Simulation Launch
