@@ -117,13 +117,17 @@ def get_ratings_at_date(ratings_df, teams, date):
     """
     return dict of latest ratings of teams at date
     """
-    filtered = ratings_df[ (ratings_df["team"].isin(teams))  & (ratings_df.index <= date)]
+    filtered = ratings_df[
+        ratings_df["team"].isin(teams) &
+        (ratings_df.index <= date)
+    ].sort_index()
 
-    ratings_at_date = {}
-    for team in teams:
-        ratings_at_date[team] = int(filtered[(filtered["team"]==team)].iloc[-1]["rating"])
-
-    return ratings_at_date
+    return (
+        filtered.groupby("team")["rating"]
+        .last()
+        .astype(int)
+        .to_dict()
+    )
 
 def split_season_by_date(scores_df, season, league, date):
     """
@@ -173,8 +177,22 @@ def get_table_to_date(scores_df, season, league, date):
     df = scores_df[  (scores_df["Season"] == season) & (scores_df["Division"] == league[1]) ]
     df["Date"] = pd.to_datetime(df["Date"])
     df = df[ (df["Date"] <= date) ]
-    return build_league_tables(df).loc[(season, *league)]
+    return  build_league_tables(df).loc[(season, *league)]
 
+def get_table_with_elo_to_date(ratings_df, scores_df, season, league, date, initial_ratings):
+    """
+    for specified season and league (division)
+    return the table based on results up to and including date
+    including the ELO ratings
+    """
+    table = get_table_to_date(scores_df, season, league, date)
+
+    table["Rstart"] = initial_ratings
+    
+    rats = get_ratings_at_date(ratings_df, table.index.to_list(), date)
+    table["Rend"] = pd.Series(rats)
+    return table
+    
 def get_season_matchcount_by_date(scores_df, season, league, league_size):
     """
     returns a dataframe of the dates of gamedays and the number of games played

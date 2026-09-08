@@ -8,7 +8,9 @@ def simulate_season(season, tier, div, season_league_teams, scores_df, season_ra
     simulate a season taking into account results up to and including the earliest date s.t. reality_percent percent of matches have been played
     """
     sel_teams = season_league_teams[ (season, tier, div) ]
-    preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == season ]
+    preseason_ratings = season_ratings_start.loc[ season ]
+    initial_ratings = {team: preseason_ratings.loc[team] for team in sel_teams }
+    home_adv = preseason_ratings.loc["home_adv"]
     league_size = len(sel_teams)
     season_by_date_df = get_season_matchcount_by_date(scores_df, season, (tier, div), league_size)
 
@@ -27,7 +29,7 @@ def simulate_season(season, tier, div, season_league_teams, scores_df, season_ra
     state = prepare_state(
         teams = sel_teams,
         ratings = initial_ratings,
-        home_adv = preseason_ratings["home_adv"].iloc[0],
+        home_adv = home_adv,
         season = sel_seasonys
     )
 
@@ -39,9 +41,9 @@ def simulate_season_percent(season, tier, div, season_league_teams, scores_df, s
     simulate a season taking into account the actual results of the first reality_percent percent matches
     """
     sel_teams = season_league_teams[ (season, tier, div) ]
-    preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == season ]
-    initial_ratings = {team: preseason_ratings[team].iloc[0] for team in sel_teams }
-    home_adv = preseason_ratings["home_adv"].iloc[0]
+    preseason_ratings = season_ratings_start.loc[ season ]
+    initial_ratings = {team: preseason_ratings.loc[team] for team in sel_teams }
+    home_adv = preseason_ratings.loc["home_adv"]
     
     league_size = len(sel_teams)
 

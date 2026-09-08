@@ -19,12 +19,14 @@ def plot_multi_ratings(df, selection):
         team_data = df[df["team"] == team]
         ax.plot(team_data.index, team_data["rating"], label=team)
 
+    ax.grid(True, alpha=0.3)
+
     ax.legend(
         loc="upper center",
         bbox_to_anchor=(0.5, -0.1),
         ncols=4
     )
-    
+
     return fig
 
 def plot_multi_cols(df, selection, labels={}):
@@ -44,6 +46,8 @@ def plot_multi_cols(df, selection, labels={}):
 
     ax.tick_params(axis='x', labelrotation=90)
     ax.set_xticks(col_data.index[::10])
+    ax.grid(True, alpha=0.3)
+
     ax.legend(
         #loc="upper center",
         #bbox_to_anchor=(0.5, -0.1),
@@ -73,9 +77,9 @@ def display_actual_results(actual_table, season):
     """
     table = actual_table.sort_values(by="POS")
     if season < change_to_goal_diff:
-        display_columns = ["POS", "W", "D", "L", "GF", "GA", "GAv", "PTS"]
+        display_columns = ["POS", "W", "D", "L", "GF", "GA", "GAv", "PTS", "Rstart", "Rend"]
     else:
-        display_columns = ["POS", "W", "D", "L", "GF", "GA", "GD", "PTS"]
+        display_columns = ["POS", "W", "D", "L", "GF", "GA", "GD", "PTS", "Rstart", "Rend"]
     st.write(table[display_columns])
 
 def display_errors(model_errors):

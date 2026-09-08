@@ -30,7 +30,24 @@ ratings_df.index = pd.to_datetime(ratings_df.index)
 
 start_date, end_date = min(ratings_df.index), max(ratings_df.index)
 
-season_ratings_df = pd.DataFrame.from_dict(season_ratings).set_index('season_end')       
+season_ratings_df = pd.DataFrame.from_dict(season_ratings)   
+
+season_ratings_start = (
+    season_ratings_df
+    .set_index('season_start')
+    .drop(columns="season_end")
+    .stack()
+    .rename("Rstart")   
+)
+
+season_ratings_end = (
+    season_ratings_df
+    .dropna(subset=["season_end"])  
+    .set_index('season_end')
+    .drop(columns="season_start")
+    .stack()
+    .rename("Rend")
+)
 
 # compute averages of home success (from actual results) and model home win expectancy
 # and their discrepancy 
@@ -51,9 +68,21 @@ end_season = max(season_list)
 
 # tables
 tables = build_league_tables(scores_df)
+tables = (
+    tables
+    .join(season_ratings_start, on=["Season", "Team"])
+    .join(season_ratings_end, on=["Season", "Team"])
+)
+tables["Rstart"] = tables["Rstart"].astype("Int64")
+tables["Rend"] = tables["Rend"].astype("Int64")
 
 # home advantage
 home_adv = build_home_adv(scores_df)
+
+
+########################################################################
+# Streamlit App
+########################################################################
                         
 if __name__ == "__main__":
     st.set_page_config(layout="wide", page_title="Interrogating the pyramid")
@@ -65,7 +94,7 @@ if __name__ == "__main__":
     ########################################################################
     with content:
         # define tabs 
-        ratings_tab, home_adv_tab, season_sim_tab, accuracy_tab = st.tabs(["Ratings", "Home advantage", "Season simulations", "Accuracy assessments"])
+        ratings_tab, home_adv_tab, season_sim_tab, backtest_tab = st.tabs(["Ratings", "Home advantage", "Season simulations", "Backtests"])
 
     ########################################################################
     # Tab: Ratings
@@ -136,11 +165,13 @@ if __name__ == "__main__":
             st.write(f"Updating model home advantage at start of every season based on previous {N_matches_home_adv} matches")
 
             # plot model home advantage over time
-            fig = plot_multi_cols(
-                    season_ratings_df,
-                    ["home_adv"],
-                    {"home_adv": "Model home advantage"}
-                    )
+            data = season_ratings_end.xs("home_adv", level=1)
+            fig, ax = plt.subplots()
+            ax.plot(data, label="Model home advantage")
+            ax.set_xticks(data.index[::10])
+            ax.tick_params(axis='x', labelrotation=90)
+            ax.grid(True, alpha=0.3)
+            ax.legend()        
             st.pyplot(fig,width='stretch')
             plt.close(fig)
 
@@ -148,7 +179,10 @@ if __name__ == "__main__":
             fig, ax = plt.subplots()
             #ax.plot(av_accum_home_success, label="home_success")
             #ax.plot(av_accum_home_winex, label="home win ex")
-            ax.plot( av_discr, label="Home Success - Home Win Ex") 
+            X = 50
+            ax.plot( av_discr[X:], label="Actual Home Success - Home Win Ex")
+            ax.set_xlabel(f"Number of games (first {X} excluded)")
+            ax.grid(True, alpha=0.3)
             ax.legend()
             st.pyplot(fig,width='stretch')
             plt.close(fig)
@@ -189,7 +223,7 @@ if __name__ == "__main__":
         league_size = len(sel_teams)
 
         # initialise their ratings prior to start of season
-        preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == sel_season ]
+        preseason_ratings = season_ratings_start.loc[sel_season]
         
         # get a breakdown of matches by date  
         season_by_date_df = get_season_matchcount_by_date(scores_df, sel_season, sel_league, league_size)
@@ -230,7 +264,6 @@ if __name__ == "__main__":
         if simulate:
 
             full_games_played =  league_size*(league_size - 1 )
-            
             # if simulating including results up to the date chosen in results_to_date
             if results_to_date is not None:
                 # split the season fixtures by the date
@@ -248,12 +281,12 @@ if __name__ == "__main__":
                     
                 # display table as of results_to_date
                 st.write(f"Table as of {results_to_date:%Y-%m-%d}")
-                starting_table = get_table_to_date(scores_df, sel_season, sel_league, results_to_date)
+                starting_table = get_table_with_elo_to_date(ratings_df, scores_df, sel_season, sel_league, results_to_date, preseason_ratings.loc[sel_teams])
                 display_actual_results(starting_table, sel_season)
                 
             # if simulating whole season
             else:
-                initial_ratings = {team: preseason_ratings[team].iloc[0] for team in sel_teams }
+                initial_ratings = preseason_ratings
                 matches_played = None
                 matches_to_play = None
 
@@ -261,7 +294,7 @@ if __name__ == "__main__":
             state = prepare_state(
                 teams = sel_teams,
                 ratings = initial_ratings,
-                home_adv = preseason_ratings["home_adv"].iloc[0],
+                home_adv = preseason_ratings.loc["home_adv"],
                 season = sel_season
             )
 
@@ -289,7 +322,7 @@ if __name__ == "__main__":
     ########################################################################
     # Tab: Season Simulations
     ########################################################################
-    with accuracy_tab:
+    with backtest_tab:
 
         st.write("Based on previously run simulations of various seasons starting at different points")
         #st.write("Currently a non-zero start point actually means include all actual results up to and including the first match date for which the percentage of matches played exceeds the number given")
