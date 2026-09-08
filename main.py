@@ -30,7 +30,24 @@ ratings_df.index = pd.to_datetime(ratings_df.index)
 
 start_date, end_date = min(ratings_df.index), max(ratings_df.index)
 
-season_ratings_df = pd.DataFrame.from_dict(season_ratings).set_index('season_end')       
+season_ratings_df = pd.DataFrame.from_dict(season_ratings)   
+
+season_ratings_start = (
+    season_ratings_df
+    .set_index('season_start')
+    .drop(columns="season_end")
+    .stack()
+    .rename("Rstart")   
+)
+
+season_ratings_end = (
+    season_ratings_df
+    .dropna(subset=["season_end"])  
+    .set_index('season_end')
+    .drop(columns="season_start")
+    .stack()
+    .rename("Rend")
+)
 
 # compute averages of home success (from actual results) and model home win expectancy
 # and their discrepancy 
@@ -51,14 +68,30 @@ end_season = max(season_list)
 
 # tables
 tables = build_league_tables(scores_df)
+tables = (
+    tables
+    .join(season_ratings_start, on=["Season", "Team"])
+    .join(season_ratings_end, on=["Season", "Team"])
+)
+tables["Rstart"] = tables["Rstart"].astype("Int64")
+tables["Rend"] = tables["Rend"].astype("Int64")
+tables["Rdelta_start"] = (
+    tables["Rstart"]
+    - tables.groupby(level=["Season", "Tier", "Division"])["Rstart"].transform("max")
+)
+tables["Rdelta_end"] = (
+    tables["Rend"]
+    - tables.groupby(level=["Season", "Tier", "Division"])["Rend"].transform("max")
+)
+tables["Rchange"] = tables["Rend"] - tables["Rstart"]
 
 # home advantage
 home_adv = build_home_adv(scores_df)
 
-# simulation model(s)
-model_set = {
-        "elo_static": elo_to_poisson,
-}
+
+########################################################################
+# Streamlit App
+########################################################################
                         
 if __name__ == "__main__":
     st.set_page_config(layout="wide", page_title="Interrogating the pyramid")
@@ -70,7 +103,7 @@ if __name__ == "__main__":
     ########################################################################
     with content:
         # define tabs 
-        ratings_tab, home_adv_tab, season_sim_tab, accuracy_tab = st.tabs(["Ratings", "Home advantage", "Season simulations", "Accuracy assessments"])
+        ratings_tab, tables_tab, home_adv_tab, season_sim_tab, backtest_tab = st.tabs(["Historical ratings", "Historical tables", "Historical vs model home advantage", "Season simulations", "Backtests"])
 
     ########################################################################
     # Tab: Ratings
@@ -141,11 +174,13 @@ if __name__ == "__main__":
             st.write(f"Updating model home advantage at start of every season based on previous {N_matches_home_adv} matches")
 
             # plot model home advantage over time
-            fig = plot_multi_cols(
-                    season_ratings_df,
-                    ["home_adv"],
-                    {"home_adv": "Model home advantage"}
-                    )
+            data = season_ratings_end.xs("home_adv", level=1)
+            fig, ax = plt.subplots()
+            ax.plot(data, label="Model home advantage")
+            ax.set_xticks(data.index[::10])
+            ax.tick_params(axis='x', labelrotation=90)
+            ax.grid(True, alpha=0.3)
+            ax.legend()        
             st.pyplot(fig,width='stretch')
             plt.close(fig)
 
@@ -153,10 +188,85 @@ if __name__ == "__main__":
             fig, ax = plt.subplots()
             #ax.plot(av_accum_home_success, label="home_success")
             #ax.plot(av_accum_home_winex, label="home win ex")
-            ax.plot( av_discr, label="Home Success - Home Win Ex") 
+            X = 50
+            ax.plot( av_discr[X:], label="Actual Home Success - Home Win Ex")
+            ax.set_xlabel(f"Number of games (first {X} excluded)")
+            ax.grid(True, alpha=0.3)
             ax.legend()
             st.pyplot(fig,width='stretch')
             plt.close(fig)
+
+
+    # helper function to format date selection 
+    def format_matches_played(date):
+        if date is not None:
+            data = season_by_date_df.loc[season_by_date_df["Date"] == date, ["MatchesOnDate", "MatchesPlayed", "MatchesPlayedPercent"]].iloc[0]                        
+            #played_on_date = data.loc[:,"MatchesOnDate"].iloc[0]
+            played_by_date = int(data["MatchesPlayed"])
+            played_perc = data["MatchesPlayedPercent"]
+            return f"{date:%Y-%m-%d} ({played_by_date:d} matches played, {played_perc:.2f}% of season)"
+
+        else:
+            return "None"
+            
+    ########################################################################
+    # Tab: Historical tabs
+    ########################################################################
+    with tables_tab:
+        # choose a season
+        # initial season excluded
+        sel_season = st.selectbox(
+            "Choose season",
+            season_list,
+            index = len(season_list)-1,
+            key="tab_sel_season"
+            )
+        # get the leagues and teams for selected season
+        selected = season_league_teams.loc[sel_season]
+        tier_divisions = selected.index.tolist()
+        # this is a list of tuples (int tier, str division_name)
+        # e.g. [ (1, "Premier League"), (2, "EFL Championship"), ... ] 
+        # choose a league
+        sel_league = st.selectbox(
+            "Choose league",
+            tier_divisions,
+            index = 0,
+            format_func = lambda x:x[1],
+            key="tab_sel_league"
+            )
+
+        # select the teams from the league
+        sel_teams = season_league_teams.loc[ (sel_season,*sel_league) ]
+        league_size = len(sel_teams)
+        # initialise their ratings prior to start of season
+        preseason_ratings = season_ratings_start.loc[sel_season]
+
+        # get a breakdown of matches by date  
+        season_by_date_df = get_season_matchcount_by_date(scores_df, sel_season, sel_league, league_size)
+        season_gamedays = season_by_date_df["Date"].to_list()
+
+        # choose simulation start date
+        table_date = st.selectbox(
+            "Table at date",
+            options = season_gamedays,
+            index =len(season_gamedays)-1,
+            format_func = format_matches_played,
+            key = "tab_date_select"
+            )
+        
+        if table_date is not None:
+            # split the season fixtures by the date
+            matches_played, matches_to_play = split_season_by_date(scores_df, sel_season, sel_league[1], table_date)
+            # get initial ratings at that date 
+            initial_ratings = get_ratings_at_date(ratings_df, sel_teams, table_date)                
+            # display table as of results_to_date
+            st.write(f"Table as of {table_date:%Y-%m-%d}")
+            table = get_table_with_elo_to_date(ratings_df, scores_df, sel_season, sel_league, table_date, preseason_ratings.loc[sel_teams])
+        else:
+            table = tables.loc[(sel_season,*sel_league)]
+
+        display_actual_results(table, sel_season)
+
 
     ########################################################################
     # Tab: Season Simulations
@@ -192,26 +302,12 @@ if __name__ == "__main__":
         # select the teams from the league
         sel_teams = season_league_teams.loc[ (sel_season,*sel_league) ]
         league_size = len(sel_teams)
-
         # initialise their ratings prior to start of season
-        preseason_ratings = season_ratings_df[ season_ratings_df["season_start"] == sel_season ]
+        preseason_ratings = season_ratings_start.loc[sel_season]
         
         # get a breakdown of matches by date  
         season_by_date_df = get_season_matchcount_by_date(scores_df, sel_season, sel_league, league_size)
         season_gamedays = season_by_date_df["Date"]
-        start_date, end_date = min(season_gamedays), max(season_gamedays)
-
-        # helper function to format date selection 
-        def format_matches_played(date):
-            if date is not None:
-                data = season_by_date_df.loc[season_by_date_df["Date"] == date, ["MatchesOnDate", "MatchesPlayed", "MatchesPlayedPercent"]].iloc[0]                        
-                #played_on_date = data.loc[:,"MatchesOnDate"].iloc[0]
-                played_by_date = int(data["MatchesPlayed"])
-                played_perc = data["MatchesPlayedPercent"]
-                return f"{date:%Y-%m-%d} ({played_by_date:d} matches played, {played_perc:.2f}% of season)"
-
-            else:
-                return "None"
 
         ################################################################
         # Form: Simulation Launch
@@ -234,6 +330,7 @@ if __name__ == "__main__":
 
         if simulate:
 
+            full_games_played =  league_size*(league_size - 1 )
             # if simulating including results up to the date chosen in results_to_date
             if results_to_date is not None:
                 # split the season fixtures by the date
@@ -246,17 +343,17 @@ if __name__ == "__main__":
                 # if simulating the current season we do not have the future fixtures accessible
                 # so set matches_to_play to None
                 # then simulation will organise remaining fixtures 
-                if len(matches_played) + len(matches_to_play) != league_size*(league_size - 1 ):
+                if len(matches_played) + len(matches_to_play) != full_games_played:
                     matches_to_play = None
                     
                 # display table as of results_to_date
                 st.write(f"Table as of {results_to_date:%Y-%m-%d}")
-                starting_table = get_table_to_date(scores_df, sel_season, sel_league, results_to_date)
+                starting_table = get_table_with_elo_to_date(ratings_df, scores_df, sel_season, sel_league, results_to_date, preseason_ratings.loc[sel_teams])
                 display_actual_results(starting_table, sel_season)
                 
             # if simulating whole season
             else:
-                initial_ratings = {team: preseason_ratings[team].iloc[0] for team in sel_teams }
+                initial_ratings = preseason_ratings
                 matches_played = None
                 matches_to_play = None
 
@@ -264,38 +361,35 @@ if __name__ == "__main__":
             state = prepare_state(
                 teams = sel_teams,
                 ratings = initial_ratings,
-                home_adv = preseason_ratings["home_adv"].iloc[0],
+                home_adv = preseason_ratings.loc["home_adv"],
                 season = sel_season
             )
 
-            # run the simulations 
-            simulated_season = run_simulations(state, Nsims, model_set, games_played = matches_played, games_to_play = matches_to_play)
+            # run the simulations
+            # can extend this to loop over multiple models if present
+            # models_used = ["elo_static"]
+            # model_data = {}
+            # for model in models_used:
+            #   model_data[model] = run_simulations(...)
+            # and similar loop in the error calculation
+            
+            simulated_season = run_simulations(state, Nsims, model_name = "elo_static", games_played = matches_played, games_to_play = matches_to_play)
             # display the resuts
+            st.write("Simulation results:")
             display_results(simulated_season, sel_teams, Nsims)
             # get the actual final table
             actual_table = tables.loc[(sel_season,*sel_league)]
-
-            # the most recent season may be incomplete
-            # brute force checking this 
-            if sel_season == season_list[-1]:
-                games_played = actual_table["W"].sum(axis=0) + actual_table["D"].sum(axis=0)/2
-                full_games_played = len(actual_table)*(len(actual_table)-1)
-                if games_played == full_games_played:
-                    st.write("Actual results:")
-                    display_actual_results(actual_table, sel_season)
-                    model_errors = get_errors(actual_table, simulated_season, Nsims)
-                    display_errors(model_errors)
-            # otherwise nothing to check
-            else:
-                    st.write("Actual results:")
-                    display_actual_results(actual_table, sel_season)
-                    model_errors = get_errors(actual_table, simulated_season, Nsims)
-                    display_errors(model_errors)
+            games_played = actual_table["W"].sum(axis=0) + actual_table["D"].sum(axis=0)/2
+            if games_played == full_games_played:
+                st.write("Actual results:")
+                display_actual_results(actual_table, sel_season)
+                model_errors = get_errors(actual_table, simulated_season, Nsims)
+                display_errors(model_errors)
 
     ########################################################################
     # Tab: Season Simulations
     ########################################################################
-    with accuracy_tab:
+    with backtest_tab:
 
         st.write("Based on previously run simulations of various seasons starting at different points")
         #st.write("Currently a non-zero start point actually means include all actual results up to and including the first match date for which the percentage of matches played exceeds the number given")

@@ -41,6 +41,8 @@ def build_ratings(live_ratings, scores_csv):
             # on first read set the initial season
             if current_season is None:
                 current_season = season
+                snapshot = { "season_end": None, "season_start": season } | live_ratings
+                season_ratings.append( snapshot ) 
 
             # check if we have reached a new season
             if season != current_season:
@@ -97,6 +99,7 @@ def build_ratings(live_ratings, scores_csv):
             #update_home_adv_counter += 1
             
     return rating_history, season_ratings, home_success, home_winex
+
 
 def build_partial_ratings(live_ratings, matches):
     """
