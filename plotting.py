@@ -20,7 +20,9 @@ def plot_multi_ratings(df, selection):
         ax.plot(team_data.index, team_data["rating"], label=team)
 
     ax.grid(True, alpha=0.3)
-
+    locator = mdates.AutoDateLocator(minticks=4, maxticks=8)
+    ax.xaxis.set_major_locator(locator)
+    ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(locator))
     ax.legend(
         loc="upper center",
         bbox_to_anchor=(0.5, -0.1),
@@ -45,7 +47,9 @@ def plot_multi_cols(df, selection, labels={}):
         ax.plot(col_data.index, col_data, label=labels.get(col, col))
 
     ax.tick_params(axis='x', labelrotation=90)
-    ax.set_xticks(col_data.index[::10])
+    N = max(1, len(col_data.index) // 10)
+
+    ax.set_xticks(col_data.index[::N])
     ax.grid(True, alpha=0.3)
 
     ax.legend(
@@ -54,6 +58,26 @@ def plot_multi_cols(df, selection, labels={}):
         #ncols=4
     )
     
+    return fig
+
+def plot_model_home_adv(data):
+    fig, ax = plt.subplots()
+    ax.plot(data, label="Model home advantage")
+    ax.set_xticks(data.index[::10])
+    ax.tick_params(axis='x', labelrotation=90)
+    ax.grid(True, alpha=0.3)
+    ax.legend()        
+    return fig
+
+def plot_model_home_adv_compare(data, exclude_games=50):
+    # plot comparison between model home win ex and actual home success
+    fig, ax = plt.subplots()
+    #ax.plot(av_accum_home_success, label="home_success")
+    #ax.plot(av_accum_home_winex, label="home win ex")
+    ax.plot( data[exclude_games:], label="Actual Home Success - Home Win Ex")
+    ax.set_xlabel(f"Number of games (first {exclude_games} excluded)")
+    ax.grid(True, alpha=0.3)
+    ax.legend()
     return fig
 
 def display_results(model_data, teams, Nsims):
@@ -71,7 +95,7 @@ def display_results(model_data, teams, Nsims):
     df["xPOS"] = sum( pos * df[pos] for pos in pos_cols )
     st.write(df[["xPOS"] + cols + pos_cols.tolist() ])
 
-def display_actual_results(actual_table, season):
+def display_league_table(actual_table, season):
     """
     display league table 
     """
@@ -81,6 +105,7 @@ def display_actual_results(actual_table, season):
     else:
         display_columns = ["POS", "W", "D", "L", "GF", "GA", "GD", "PTS", "Rstart", "Rend"]
     st.write(table[display_columns])
+    st.write(table)
 
 def display_errors(model_errors):
     st.write(f"\nErrors")

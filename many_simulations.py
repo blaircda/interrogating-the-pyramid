@@ -90,7 +90,7 @@ errors = {}
 
 max_seasons = 4
 max_tier = 4
-for season in season_list[-(max_tier+1):-1]:
+for season in season_list[-(max_seasons+1):-1]:
     for tier in range(1,max_tier+1):
     
         sel_teams = season_league_teams.xs( (season, tier), level=[0,1] )

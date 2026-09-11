@@ -19,6 +19,7 @@ class HistoricalData:
     home_adv_discr: list
     tables: pd.DataFrame
     leagues: pd.DataFrame
+    tiers: pd.DataFrame
 
 @st.cache_data
 def process_data( teams_csv, scores_csv ) -> HistoricalData:
@@ -66,6 +67,7 @@ def process_data( teams_csv, scores_csv ) -> HistoricalData:
     scores_df = pd.read_csv(scores_csv)
     season_list = list(scores_df["Season"].unique())
     season_league_teams = get_seasons_tiers_teams(scores_df)
+    tiers_by_season = get_seasons_tiers(scores_df).set_index("Season")
 
     # tables
     tables = build_league_tables_with_ratings(scores_df, season_ratings_start, season_ratings_end)
@@ -82,6 +84,7 @@ def process_data( teams_csv, scores_csv ) -> HistoricalData:
         home_adv = home_adv,
         home_adv_discr = av_discr,
         tables = tables,
+        tiers = tiers_by_season,
         leagues = season_league_teams
     )
 
@@ -234,34 +237,40 @@ def build_league_tables(df):
     """
     # get all teams home results
     home_results = df.groupby(["Season", "Tier", "Division", "HomeTeam"])["Result"].value_counts().unstack(fill_value=0)
-    home_results = home_results.rename(columns={'A': 'L', 'D': 'D', 'H': 'W'})
+    home_results = home_results.rename(columns={'A': 'LH', 'D': 'DH', 'H': 'WH'})
     home_results.rename_axis(index={home_results.index.names[-1]: 'Team'}, inplace=True)
-
+    # deal with edge case if not all results have accumulated yet
+    for c in [ "WH", "DH", "LH"]:
+        home_results[c] = home_results.get(c,0)
+        
     # get all teams away results
     away_results = df.groupby(["Season", "Tier", "Division", "AwayTeam"])["Result"].value_counts().unstack(fill_value=0)
-    away_results = away_results.rename(columns={'A': 'W', 'D': 'D', 'H': 'L'})
+    away_results = away_results.rename(columns={'A': 'WA', 'D': 'DA', 'H': 'LA'})
     away_results.rename_axis(index={away_results.index.names[-1]: 'Team'}, inplace=True)
-
-    # combine them
-    full_results = home_results.add(away_results, fill_value=0)
-
-    # deals with edge case where table is being built for small number of opening fixtures and not all results have occured
+    # deal with edge case if not all results have accumulated yet
+    for c in [ "WA", "DA", "LA"]:
+        away_results[c] = away_results.get(c,0)
+        
+    # combine home and away
+    full_results = pd.concat([home_results, away_results[["WA", "DA", "LA"]]], axis=1)
     for c in [ "W", "D", "L"]:
-        full_results[c] = full_results.get( c, 0 )
-    
+        full_results[c] = full_results[[ c+"H", c+"A"]].sum(axis=1)
+            
     # get all teams goals for and against at home
     home_results_goals = df.groupby(["Season", "Tier", "Division", "HomeTeam"])[["hGoal", "aGoal"]].sum()
-    home_results_goals = home_results_goals.rename(columns={'hGoal': 'GF', 'aGoal': 'GA'})
+    home_results_goals = home_results_goals.rename(columns={'hGoal': 'GFH', 'aGoal': 'GAH'})
     home_results_goals.rename_axis(index={home_results_goals.index.names[-1]: 'Team'}, inplace=True)
 
     # get all teams goals against and for away
     away_results_goals = df.groupby(["Season", "Tier", "Division", "AwayTeam"])[["hGoal", "aGoal"]].sum()
-    away_results_goals = away_results_goals.rename(columns={'hGoal': 'GA', 'aGoal': 'GF'})
+    away_results_goals = away_results_goals.rename(columns={'hGoal': 'GAA', 'aGoal': 'GFA'})
     away_results_goals.rename_axis(index={away_results_goals.index.names[-1]: 'Team'}, inplace=True)
 
     # combine them
-    full_results_goals = home_results_goals.add(away_results_goals, fill_value=0)
-
+    full_results_goals = pd.concat([home_results_goals, away_results_goals[["GFA", "GAA"]]], axis=1).fillna(0)
+    full_results_goals["GF"] = full_results_goals[["GFH", "GFA"]].sum(axis=1)
+    full_results_goals["GA"] = full_results_goals[["GAH", "GAA"]].sum(axis=1)
+    
     # now build full table
     full_tables = pd.concat([full_results, full_results_goals], axis=1)
     full_tables["GD"] = full_tables["GF"] - full_tables["GA"]
@@ -273,10 +282,12 @@ def build_league_tables(df):
     two_point_era = full_tables[ seasons < change_to_three_points_per_win ]
     if not two_point_era.empty:
         two_point_era["PTS"] = 2*full_tables["W"] + full_tables["D"]
+        two_point_era["PTS_RULE"] = 2
 
     three_point_era = full_tables[ seasons >= change_to_three_points_per_win ]
     if not three_point_era.empty:
         three_point_era["PTS"] = 3*full_tables["W"] + full_tables["D"]
+        three_point_era["PTS_RULE"] = 3
 
     full_tables = pd.concat([two_point_era, three_point_era])
     
@@ -285,8 +296,26 @@ def build_league_tables(df):
 
     full_tables = pd.concat([goal_average_era, goal_diff_era])
 
+    full_tables["GOAL_RULE"] = "Diff"
+    full_tables.loc[seasons < change_to_goal_diff, "GOAL_RULE"] = "Av"
+
     # add a position column 
     full_tables["POS"] = full_tables.groupby(level=["Season", "Tier", "Division"]).cumcount().add(1)
+    # add an absolute pyramid position column
+    # between 1921 and 1958 there are 2 tier 3 divisions
+    # order by position and then tie break by points, goal av, goal for
+    full_tables = full_tables.sort_values(by=["Tier", "POS", "PTS", "GAv", "GF"], ascending=[True, True, False, False, False])
+    full_tables["POSPyr"] = full_tables.groupby(level=["Season"]).cumcount().add(1)
+
+    # per game stats
+    full_tables["MP"] = full_tables["W"] + full_tables["D"] + full_tables["L"]
+    cols = ["GF", "GA", "PTS", "W", "D", "L"]
+    full_tables[[f"{c}pg" for c in cols]] = full_tables[cols].div(full_tables["MP"], axis=0)
+    # home/away per game stats
+    cols = ["WH", "DH", "LH", "WA", "DA", "LA", "GFH", "GAH", "GFA", "GAA"]
+    full_tables[[f"{c}pg" for c in cols]] = full_tables[cols].mul(2).div(full_tables["MP"], axis=0)
+    full_tables["Gpg"] = full_tables[["GFpg", "GApg"]].sum(axis=1)
+    
     full_tables = full_tables.sort_index()
     return full_tables
 
@@ -303,15 +332,34 @@ def build_league_tables_with_ratings(scores_df, season_ratings_start, season_rat
     )
     tables["Rstart"] = tables["Rstart"].astype("Int64")
     tables["Rend"] = tables["Rend"].astype("Int64")
-    tables["Rdelta_start"] = (
-        tables["Rstart"]
-        - tables.groupby(level=["Season", "Tier", "Division"])["Rstart"].transform("max")
+    tables["Rchange"] = tables["Rend"] - tables["Rstart"]
+
+    # difference vs max rating in league
+    tables["Rbelow_start"] = (
+            tables["Rstart"]
+            - tables.groupby(level=["Season", "Tier", "Division"])["Rstart"].transform("max")
     )
-    tables["Rdelta_end"] = (
+    tables["Rbelow_end"] = (
         tables["Rend"]
         - tables.groupby(level=["Season", "Tier", "Division"])["Rend"].transform("max")
     )
-    tables["Rchange"] = tables["Rend"] - tables["Rstart"]
+
+    # rank in league by rating
+    tables["Rstart_rank"] = (
+        tables.groupby(["Season", "Tier", "Division"])["Rstart"]
+        .rank(method="min", ascending=False).astype("Int64")
+    )
+    tables["Rend_rank"] = (
+        tables.groupby(["Season", "Tier", "Division"])["Rend"]
+        .rank(method="min", ascending=False).astype("Int64")
+    )
+    tables["Rrank_change"] = tables["Rstart_rank"] - tables["Rend_rank"]
+
+    # rank in pyramid by rating
+    tables["RPyr_start"] = tables.groupby(level=["Season"])["Rstart"].rank("min", ascending=False)
+    tables["RPyr_end"] = tables.groupby(level=["Season"])["Rend"].rank("min", ascending=False)
+    tables["RPyr_change"] = tables["RPyr_start"] - tables["RPyr_end"]
+
     return tables
 
 @st.cache_data
