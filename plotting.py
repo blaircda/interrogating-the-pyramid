@@ -105,7 +105,6 @@ def display_league_table(actual_table, season):
     else:
         display_columns = ["POS", "W", "D", "L", "GF", "GA", "GD", "PTS", "Rstart", "Rend"]
     st.write(table[display_columns])
-    st.write(table)
 
 def display_errors(model_errors):
     st.write(f"\nErrors")
