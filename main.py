@@ -242,7 +242,7 @@ if __name__ == "__main__":
     ########################################################################
     with stats_tab:
         st.header("Statistics")
-        scatter_tab, corrs_tab, trends_tab, team_trends_tab, records_tab = st.tabs(["Relationships", "Trends (collective)", "Trends (by team)", "Correlations", "Records"])
+        scatter_tab, trends_tab, team_trends_tab, corrs_tab, records_tab = st.tabs(["Relationships", "Trends (collective)", "Trends (by team)", "Correlations", "Records"])
         incomplete_seasons = ["1939/1940", "2026/2027"]
         tables_data = tables.drop(incomplete_seasons, level="Season")
         seasons = tables_data.index.get_level_values("Season")
