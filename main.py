@@ -90,6 +90,13 @@ def filter_by_season_and_teams(df, s1, s2, teams):
         filtered = df[ df["team"].isin(teams) & df["season"].between(s1, s2) ]
         return filtered
         
+def select_tier_by_season(season, tiers, key):
+    l_tiers = get_tiers_by_season(season, tiers)
+    max_tiers = l_tiers[-1][0]
+    tier_choice = ["All"] + list(range(1,max_tiers+1))
+    choose_tier = st.selectbox("Tier?", tier_choice, index= 0, key=f"{key}_tier")
+    return choose_tier
+
 ########################################################################
 # Streamlit App
 ########################################################################
@@ -207,7 +214,7 @@ if __name__ == "__main__":
     with trends_tab:
         s1, s2 = select_season_range(seasons_l, "collective_trends")
 
-        choose_tier = st.selectbox("Tier?", ["All", 1,2,3,4], index= 0, key="collective_trends_tier")
+        choose_tier = select_tier_by_season(s2, tiers_by_season, "collective_trends")
 
         sel = st.selectbox("Choose data to plot",
                 stats_fundamental.keys(),
@@ -266,35 +273,25 @@ if __name__ == "__main__":
             st.write("Please choose distinct options")
         else:
             if s1==s2:
-                sel_season = s1
-                df = tables_data[ seasons ==  sel_season ]
-                fig = plot_scatter(df, selx, sely, hue="Division", selection=sel_season)
-                st.pyplot(fig)
-                plt.close(fig)
-
-                fig = plot_reg_values(df, selx, sely, selection=sel_season)
-                st.pyplot(fig)
-                plt.close(fig)
-                
-                l_tiers = get_tiers_by_season(sel_season, tiers_by_season)
-                for tier, div in l_tiers:
-                    fig = plot_reg_values(df[ df.index.get_level_values("Division")==div], selx, sely, selection=f"{div} {sel_season}")
-                    st.pyplot(fig)
-                    plt.close(fig)
+                selection = sel_season
             else:
-                df = tables_data[ (seasons >= s1) & ( seasons <= s2) ]
-                fig = plot_scatter(df, selx, sely, hue="Tier", selection=f"{s1} to {s2}")
-                st.pyplot(fig)
-                plt.close(fig)
-                        
-                fig = plot_reg_values(df, selx, sely, selection=f"{s1} to {s2}")
-                st.pyplot(fig)
-                plt.close(fig)
+                selection = f"{s1} to {s2}"
+                
+            df = tables_data[ (seasons >= s1) & ( seasons <= s2) ]
+            fig = plot_scatter(df, selx, sely, hue="Tier", selection=f"{s1} to {s2}")
+            st.pyplot(fig)
+            plt.close(fig)
+                    
+            fig = plot_reg_values(df, selx, sely, selection=f"{s1} to {s2}")
+            st.pyplot(fig)
+            plt.close(fig)
 
-                for n in range(1,5):
-                    fig = plot_reg_values(df[ df.index.get_level_values("Tier")==n], selx, sely, selection=f"Tier {n} {s1} to {s2}")
-                    st.pyplot(fig)
-                    plt.close(fig)                    
+            l_tiers = get_tiers_by_season(s2, tiers_by_season)
+            for tier, div in l_tiers:
+                fig = plot_reg_values(df[ df.index.get_level_values("Division")==div], selx, sely, selection=f"{div} {s1} to {s2}")
+                st.pyplot(fig)
+                plt.close(fig)                
+
 
     with team_trends_tab:        
         s1, s2 = select_season_range(seasons_l, "team_trends")
@@ -331,7 +328,7 @@ if __name__ == "__main__":
                 key=f"corr_multi_sel"
             )
 
-        choose_tier = st.selectbox("Tier?", ["All", 1,2,3,4], index= 0, key="corr_tier_sel")
+        choose_tier = select_tier_by_season(s2, tiers_by_season, "corrs")
 
         if choose_tier == "All":
             df = tables_data[
@@ -367,7 +364,7 @@ if __name__ == "__main__":
         else:
             sort_order = not record_stats.get(sel)[1]
 
-        choose_tier = st.selectbox("Tier?", ["All", 1,2,3,4], index= 0)
+        choose_tier = select_tier_by_season(s2, tiers_by_season, "records")
 
         if choose_tier == "All":
             df =  tables_data[
