@@ -1,5 +1,5 @@
 import numpy as np
-
+from rating_model import get_new_ratings
 def play_game(team1, team2, state, model_fn):
     """
     returns goals only
@@ -82,7 +82,25 @@ def elo_to_poisson(team1, team2, state):
     else: # team2 is better
         return np.random.poisson(lam2), np.random.poisson(lam1)
 
+def elo_to_poisson_dynamic(team1, team2, state):
+    """
+    model function to simulate elo predicted result using Poisson distributions
+    and update ratings based on result
+    """
+    g1, g2 = elo_to_poisson(team1, team2, state)
+
+    ratings = {
+        team1: state["ratings"][team1],
+        team2: state["ratings"][team2],
+        "home_adv": state["home_adv"]
+    }
+    state["ratings"][team1], state["ratings"][team2],_ = get_new_ratings(ratings, team1, team2, g1, g2)
+    
+    return g1, g2
+
+
 
 model_set = {
-"elo_static": { "function": elo_to_poisson, "update_elo": False }
+"elo_static": { "function": elo_to_poisson, "update_elo": False },
+"elo_dynamic": { "function": elo_to_poisson_dynamic, "update_elo": True }
 }

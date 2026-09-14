@@ -44,7 +44,7 @@ def run_season(state, model, games_played = None, games_to_play = None):
     table = defaultdict(lambda: {"W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0})
     #matches = {}
 
-    if games_played is not None:
+    if games_played:
         for (team1, team2), (score1, score2) in games_played.items():
             update_table(team1, team2, score1, score2, table)
         games_played_set = set(games_played)

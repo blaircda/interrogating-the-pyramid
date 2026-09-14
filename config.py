@@ -7,5 +7,5 @@ default_rating = 1500
 
 many_sims_N_sims = 100
 
-
+LIVE_SEASON = "2026/2027"
 

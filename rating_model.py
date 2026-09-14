@@ -5,9 +5,10 @@ diff_to_w = [round(1/( 10**(-diff/400)+1),2) for diff in range(-2000,2001)]
 w_to_diff = [ -400*np.log10( (1-W/100000)/(W/100000) ) for W in range(1,100000)]
     
 # lookup table for goal margin of victory c.f. eloratings.net
-#gd_adj = [1,1,1.5,1.75] + [1.75 + (N-3)/8 for N in range(4,14)]
+gd_adj = [1,1,1.5,1.75] + [1.75 + (N-3)/8 for N in range(4,50)]
 # the highest margin of victory in the database is 13
-gd_adj = [1, 1, 1.5, 1.75, 1.875, 2.0, 2.125, 2.25, 2.375, 2.5, 2.625, 2.75, 2.875, 3.0]
+# higher margins may occur in simulations!
+#gd_adj = [1, 1, 1.5, 1.75, 1.875, 2.0, 2.125, 2.25, 2.375, 2.5, 2.625, 2.75, 2.875, 3.0]
 
 def get_new_ratings(ratings, home_team, away_team, home_score, away_score):
     """

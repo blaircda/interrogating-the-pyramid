@@ -1,5 +1,6 @@
 from time import perf_counter
 import pandas as pd
+import numpy as np
 from collections import defaultdict
 from .season_simulator import (
     run_season, update_results, model_set,

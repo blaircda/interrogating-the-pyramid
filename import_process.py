@@ -314,7 +314,7 @@ def build_league_tables(df):
     # home/away per game stats
     cols = ["WH", "DH", "LH", "WA", "DA", "LA", "GFH", "GAH", "GFA", "GAA"]
     full_tables[[f"{c}pg" for c in cols]] = full_tables[cols].mul(2).div(full_tables["MP"], axis=0)
-    full_tables["Gpg"] = full_tables[["GFpg", "GApg"]].sum(axis=1)
+    full_tables["Gpg"] = full_tables[["GFHpg", "GAHpg"]].sum(axis=1)
     
     full_tables = full_tables.sort_index()
     return full_tables
@@ -408,6 +408,7 @@ def split_season_by_date(scores_df, season, league, date):
     df["Date"] = pd.to_datetime(df["Date"])
 
     played = df[ df["Date"] <= date ][["HomeTeam", "AwayTeam", "hGoal", "aGoal"]].to_dict(orient='records')
+    
     for match in played:
         matches_played[ ( match["HomeTeam"], match["AwayTeam"] ) ] = ( match["hGoal"], match["aGoal"] )
 
