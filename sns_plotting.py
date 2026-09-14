@@ -20,8 +20,8 @@ stats_fundamental = {
     "Rstart": ("Initial rating",False),
     "Rend": ("Final rating",False), 
     "Rchange": ("Change in rating",False),
-    "Rbelow_start": ("Initial diff to max rating (league)",False),
-    "Rbelow_end": ("Final diff to max rating (league)",False),
+    "Rbelow_start": ("Initial diff to max rating (league)",True),
+    "Rbelow_end": ("Final diff to max rating (league)",True),
     "PTSpg": ("Points per game",False),
     "GFpg": ("Goals for per game",False),
     "GApg": ("Goals against per game",False),
@@ -43,7 +43,7 @@ stats_fundamental = {
 
 table_labels = stats_positional | stats_fundamental 
 
-def format_title(ax, x, y, hue, selection):
+def format_title_scatter(ax, x, y, hue, selection):
     title = ""
     
     if hue is not None:
@@ -52,8 +52,19 @@ def format_title(ax, x, y, hue, selection):
         title += f"{table_labels.get(y,y)[0]} vs {table_labels.get(x,x)[0]}"
     if selection:
         title+=f"\n{selection}"
-    ax.set_title(title)   
+    ax.set_title(title)
 
+def format_title_seasons(ax, x, y, hue, selection):
+    title = ""
+    
+    if hue is not None:
+        title += f"{table_labels.get(y,y)[0]} vs Season by {hue}"
+    else:
+        title += f"{table_labels.get(y,y)[0]} vs Season"
+    if selection:
+        title+=f"\n{selection}"
+    ax.set_title(title)
+    
 def format_legend(ax, hue, xpos, ypos):
     if hue is not None:
         ax.legend(
@@ -67,7 +78,7 @@ def format_seasons(ax,x,y,seasons):
     """
     format seasons axis
     """
-    ax.set_xlabel(table_labels.get(x,x)[0])
+    ax.set_xlabel("Season")
     ax.set_ylabel(table_labels.get(y,y)[0])
     labels = [t.get_text() for t in ax.get_xticklabels()]
     N = max(1, len(seasons) // 10)
@@ -75,6 +86,23 @@ def format_seasons(ax,x,y,seasons):
     ax.set_xticks(seasons[::N])
     ax.set_xticklabels(seasons[::N])
     ax.tick_params(axis="x", labelbottom=True, rotation=90)
+
+def format_ax_pos(ax,x,y,df):
+    posn_labels = ["POS", "Rstart_rank", "Rend_rank", "POSPyr", "RPyr_start", "RPyr_end"]
+
+    if x in posn_labels:
+        max_pos = int(df[x].max())+1
+        N = max(1, max_pos // 5)
+        posl = list(range(1, max_pos, N))
+        ax.set_xlim(max_pos, 0)
+        ax.set_xticks(posl) 
+    if y in posn_labels:
+        max_pos =int(df[y].max())+1
+        N = max(1, max_pos // 5)
+        posl = list(range(1, max_pos, N))
+        ax.set_ylim(max_pos, 0)
+        ax.set_yticks(posl) 
+
 
 def plot_scatter(df, x, y, hue, selection=None):
     
@@ -92,14 +120,9 @@ def plot_scatter(df, x, y, hue, selection=None):
     ax.set_xlabel(table_labels.get(x,x)[0])
     ax.set_ylabel(table_labels.get(y,y)[0])
 
-    if x == "POS":
-        ax.set_xlim(df["POS"].max()+1, 0)
-        ax.set_xticks([1,5,10,15,20])
-    if y == "POS":
-        ax.set_ylim(df["POS"].max()+1, 0)
-        ax.set_yticks([1,5,10,15,20])
+    format_ax_pos(ax,x,y,df)
         
-    format_title(ax, x, y, hue, selection)
+    format_title_scatter(ax, x, y, hue, selection)
     format_legend(ax, hue, 0.5,-0.1)
     return fig
 
@@ -119,12 +142,7 @@ def plot_line(df, x, y, hue, selection=None):
     ax.set_xlabel(table_labels.get(x,x)[0])
     ax.set_ylabel(table_labels.get(y,y)[0])
 
-    if x == "POS":
-        ax.set_xlim(df["POS"].max()+1, 0)
-        ax.set_xticks([1,5,10,15,20])
-    if y == "POS":
-        ax.set_ylim(df["POS"].max()+1, 0)
-        ax.set_yticks([1,5,10,15,20])
+    format_ax_pos(ax,x,y,df)
             
     format_title(ax, x, y, hue, selection)
     format_legend(ax, hue, 0.5,-0.1)
@@ -156,7 +174,8 @@ def plot_line_all_seasons(df, x, y, hue, style=None, selection=None):
     ax.grid(True, alpha = 0.3)
 
     format_seasons(ax,x,y, seasons)
-    format_title(ax, x, y, hue, selection)
+    format_ax_pos(ax,x,y,df)
+    format_title_seasons(ax, x, y, hue, selection)
     format_legend(ax, hue, 0.5,-0.3)
     
     return fig
@@ -187,7 +206,8 @@ def plot_team_line_all_seasons(df, x, y, hue, style=None, selection=None, annota
     ax.grid(True, alpha = 0.3)
 
     format_seasons(ax,x,y, seasons)
-    format_title(ax, x, y, hue, selection)
+    format_ax_pos(ax,x,y,df)
+    format_title_seasons(ax, x, y, hue, selection)
     format_legend(ax, hue, 0.5,-0.3)
     if annotate_tier:
         for team, group in df.groupby(level="Team"):

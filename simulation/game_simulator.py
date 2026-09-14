@@ -81,3 +81,8 @@ def elo_to_poisson(team1, team2, state):
         return  np.random.poisson(lam1), np.random.poisson(lam2)
     else: # team2 is better
         return np.random.poisson(lam2), np.random.poisson(lam1)
+
+
+model_set = {
+"elo_static": { "function": elo_to_poisson, "update_elo": False }
+}

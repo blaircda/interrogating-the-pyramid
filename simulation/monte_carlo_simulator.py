@@ -1,11 +1,12 @@
-from .season_simulator import *
-from config import *
 from time import perf_counter
 import pandas as pd
+from collections import defaultdict
+from .season_simulator import (
+    run_season, update_results, model_set,
+    elo_to_poisson
+)
+from config import *
 
-model_set = {
-"elo_static": { "function": elo_to_poisson, "update_elo": False }
-}
 
 # helper function to make state container
 def prepare_state(teams, ratings, home_adv, season):

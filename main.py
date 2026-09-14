@@ -371,14 +371,29 @@ if __name__ == "__main__":
             f"Statistics ({len(table_labels)} options)",
                 table_labels.keys(),
                 default = ["Rstart", "Rend"],
-                max_selections = 8,
+                max_selections = 50,
                 format_func = lambda x: table_labels.get(x,x)[0],
                 key=f"corr_multi_sel"
             )
-        df = tables_data[sel]
-        fig = plot_heatmap(df)
-        st.pyplot(fig)
-        plt.close(fig)
+
+        s1, s2 = select_season_range(seasons_l, "corrs")
+        choose_tier = st.selectbox("Tier?", ["All", 1,2,3,4], index= 0, key="corr_tier_sel")
+
+        if choose_tier == "All":
+            df = tables_data[
+                (seasons>=s1) & (seasons<=s2)
+            ]
+        else:
+            df = tables_data[
+                (tables_data.index.get_level_values("Tier")==choose_tier) &
+                (seasons>=s1) & (seasons<=s2)
+            ]
+                
+        if len(sel)>1:
+            df = df[sel]
+            fig = plot_heatmap(df)
+            st.pyplot(fig)
+            plt.close(fig)
 
     with records_tab:
         exclude_stats = ["POS", "Rstart_rank", "Rend_rank", "POSPyr", "RPyr_start", "RPyr_end"]
