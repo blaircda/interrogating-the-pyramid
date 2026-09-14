@@ -1,5 +1,6 @@
 import numpy as np
 from rating_model import get_new_ratings
+
 def play_game(team1, team2, state, model_fn):
     """
     returns goals only

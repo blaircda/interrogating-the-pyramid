@@ -2,12 +2,12 @@ from collections import defaultdict
 import itertools
 from .game_simulator import *
 
-def play(team1, team2, state, model, table):
+def play(team1, team2, state, model_fn, table):
     """
     generates the result of team1 vs team2
     updates table and records the result in matches
     """
-    g1,g2 = play_game(team1, team2, state, model)
+    g1,g2 = model_fn(team1, team2, state)
     # store matches for revisiting when computing ranking of tied teams
     #matches[(team1,team2)] = {team1: g1, team2:g2}
     # update table
@@ -28,7 +28,7 @@ def update_table(team1, team2, g1, g2, table):
         table[team1]["D"] += 1
         table[team2]["D"] += 1
 
-def run_season(state, model, games_played = None, games_to_play = None):
+def run_season(state, model_fn, games_played = None, games_to_play = None):
     """
     simulates a single league season
     using invariant data in state
@@ -55,7 +55,7 @@ def run_season(state, model, games_played = None, games_to_play = None):
         games_to_play = set( itertools.permutations(ts,2) ) - games_played_set
 
     for team1, team2 in games_to_play:
-            play(team1, team2, state, model, table)
+            play(team1, team2, state, model_fn, table)
 
     # finalise table
     # taking into account historical rules 
