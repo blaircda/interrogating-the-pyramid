@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
+import os
 from config import *
 from import_process import (
     process_data,
@@ -125,6 +126,8 @@ if __name__ == "__main__":
     # Tab: Ratings
     ########################################################################
     with ratings_tab:
+        st.header("Team ratings")
+        st.write("Based on ELO-style model")
         s1, s2 = select_season_range(season_list, "ratings")
         sel_teams = multiselect_teams(teams, "ratings")
         filtered_ratings = filter_by_season_and_teams(ratings_df, s1, s2, sel_teams)
@@ -148,10 +151,9 @@ if __name__ == "__main__":
     # Tab: Historical tables
     ########################################################################
     with tables_tab:
+        st.header("Tables")
 
-        tables_by_date_tab, all_tables_tab = st.tabs(["Tables by date", "All tables together"])
-
-    with tables_by_date_tab:
+#    with tables_by_date_tab:
         st.write("Historical tables, on any date")
         st.write("Caveat: these are calculated from the match results only ignoring points deductions")
 
@@ -188,8 +190,8 @@ if __name__ == "__main__":
 
         display_league_table(table, sel_season)
 
-    with all_tables_tab:
-        st.dataframe(tables)
+#with all_tables_tab:
+#        st.dataframe(tables)
 
     ########################################################################
     # Tab: Statistics
@@ -203,48 +205,45 @@ if __name__ == "__main__":
         seasons_l = seasons.unique()
         
     with trends_tab:
-        df = tables_data
-        with st.expander("All seasons/all tiers"):
-            st.subheader("All season - all tier line plots showing average, max, min")
-            # ALL SEASONS, ALL TIERS
-            sel = st.selectbox("Choose data to plot",
-                    stats_fundamental.keys(),
-                    index = 0,
-                    format_func = lambda x : stats_fundamental.get(x,x)[0],
-                    key="sel_table_data"
-                )
+        s1, s2 = select_season_range(seasons_l, "collective_trends")
 
-            fig = plot_line_all_seasons(df, "Season", sel, hue=None)
-            st.pyplot(fig)
-            plt.close(fig)
+        choose_tier = st.selectbox("Tier?", ["All", 1,2,3,4], index= 0, key="collective_trends_tier")
 
-            fig = plot_line_all_seasons(df, "Season", sel, hue="Tier")
-            st.pyplot(fig)
-            plt.close(fig)
-
-        with st.expander("All seasons/specific tier"):
-            # ALL SEASONS, PICK TIER
-            st.subheader("All season - specific tier line plots showing average, max, min")
-            tiers = [1,2,3,4]
-            sel_tier = st.selectbox("Choose tier",
-                    tiers,
-                    index = 0,
-                    key="sel_tier_table_data"
+        sel = st.selectbox("Choose data to plot",
+                stats_fundamental.keys(),
+                index = 0,
+                format_func = lambda x : stats_fundamental.get(x,x)[0],
+                key="sel_table_data"
             )
-            df = df[ df.index.get_level_values("Tier")==sel_tier]
-            sel2 = st.selectbox("Choose data to plot",
-                    table_labels.keys(),
-                    index = 0,
-                    format_func = lambda x : table_labels.get(x,x)[0],
-                    key="sel_table_data_2"
-            )
-            fig = plot_line_all_seasons(df, "Season", sel2, hue=None)
-            st.pyplot(fig)
-            plt.close(fig)
-            fig = plot_line_all_seasons(df, "Season", sel2, hue="Division")
-            st.pyplot(fig)
-            plt.close(fig)
             
+        if choose_tier == "All":
+            df = tables_data[
+                (seasons>=s1) & (seasons<=s2)
+            ]
+            hue="Tier"
+            selection=None
+        else:
+            df = tables_data[
+                (tables_data.index.get_level_values("Tier")==choose_tier) &
+                (seasons>=s1) & (seasons<=s2)
+            ]
+            hue="Division"
+            selection=f"Tier {choose_tier}"
+            
+        fig = plot_line_all_seasons(df, "Season", sel, hue=None, selection=selection)
+        st.pyplot(fig)
+        plt.close(fig)
+
+        fig = plot_line_all_seasons(df, "Season", sel, hue=hue, selection=selection)
+        st.pyplot(fig)
+        plt.close(fig)
+        fig = plot_line_all_seasons(df, "Season", sel, hue="GOAL_RULE", selection=selection)
+        st.pyplot(fig)
+        plt.close(fig)
+        fig = plot_line_all_seasons(df, "Season", sel, hue="PTS_RULE", selection=selection)
+        st.pyplot(fig)
+        plt.close(fig)
+                       
     with scatter_tab:
         s1,s2 = select_season_range(seasons_l, "relns")
         
@@ -321,6 +320,8 @@ if __name__ == "__main__":
         plt.close(fig)
 
     with corrs_tab:
+        s1, s2 = select_season_range(seasons_l, "corrs")
+
         sel = st.multiselect(
             f"Statistics ({len(table_labels)} options)",
                 table_labels.keys(),
@@ -330,7 +331,6 @@ if __name__ == "__main__":
                 key=f"corr_multi_sel"
             )
 
-        s1, s2 = select_season_range(seasons_l, "corrs")
         choose_tier = st.selectbox("Tier?", ["All", 1,2,3,4], index= 0, key="corr_tier_sel")
 
         if choose_tier == "All":
@@ -352,7 +352,8 @@ if __name__ == "__main__":
     with records_tab:
         exclude_stats = ["POS", "Rstart_rank", "Rend_rank", "POSPyr", "RPyr_start", "RPyr_end"]
         record_stats = { k:v for k,v in table_labels.items() if k not in exclude_stats }
-        
+        s1, s2 = select_season_range(seasons_l, "records")
+                
         sel = st.selectbox("Choose statistic",
             record_stats.keys(),
             index = 0,
@@ -369,9 +370,14 @@ if __name__ == "__main__":
         choose_tier = st.selectbox("Tier?", ["All", 1,2,3,4], index= 0)
 
         if choose_tier == "All":
-            df = tables_data.sort_values(by=sel, ascending=sort_order).head(20)
+            df =  tables_data[
+                (seasons>=s1) & (seasons<=s2)
+                ].sort_values(by=sel, ascending=sort_order).head(20)
         else:
-            df = tables_data[ (tables_data.index.get_level_values("Tier")==choose_tier) ].sort_values(by=sel, ascending=sort_order).head(20)
+            df =  tables_data[
+                (seasons>=s1) & (seasons<=s2)
+                &  (tables_data.index.get_level_values("Tier")==choose_tier)
+                ].sort_values(by=sel, ascending=sort_order).head(20)
         sel_name = record_stats.get(sel)[0]
         df = df.rename(columns={sel:sel_name})
         st.write(df[["POS", sel_name]] )
@@ -380,6 +386,8 @@ if __name__ == "__main__":
     # Tab: Season Simulations
     ########################################################################
     with season_sim_tab:
+        st.header("Simulations")
+        st.write("Based on Monte Carlo modelling of rating implied win expectancy via Poisson statistics")
         sim_launch_tab, home_adv_tab, backtest_tab = st.tabs(["Run simulation", "Historic vs model home advantage", "Backtests"])
     with sim_launch_tab:
         
@@ -421,7 +429,7 @@ if __name__ == "__main__":
             full_games_played =  league_size*(league_size - 1 )
 
             # simulating an ongoing season
-            if sel_season == LIVE_SEASON:
+            if sel_season == live_season:
                 # simulating the whole season
                 if sim_start_date is None:
                     matches_played = None
@@ -440,7 +448,7 @@ if __name__ == "__main__":
                     # get initial ratings at that date 
                     initial_ratings = get_ratings_at_date(ratings_df, sel_teams, sim_start_date)
             # simulating a completed season
-            elif sel_season != LIVE_SEASON:
+            elif sel_season != live_season:
                 # simulating the whole season
                 if sim_start_date is None:
                     # get all fixtures in historical order for compatibility with dynamic rating updates in simulation
@@ -467,7 +475,7 @@ if __name__ == "__main__":
                 season = sel_season
             )
 
-            if sel_season != LIVE_SEASON:
+            if sel_season != live_season:
                 # get the actual final table
                 actual_table = tables.loc[(sel_season,*sel_league)]
                 st.write("Actual results:")
@@ -488,7 +496,7 @@ if __name__ == "__main__":
                 st.write("Simulation results:")
                 display_results(simulated_season, sel_teams, Nsims)
                 #games_played = actual_table["W"].sum(axis=0) + actual_table["D"].sum(axis=0)/2
-                if sel_season != LIVE_SEASON:
+                if sel_season != live_season:
                     model_errors = get_errors(actual_table, simulated_season, Nsims)
                     display_errors(model_errors)
 
@@ -500,45 +508,52 @@ if __name__ == "__main__":
         st.write("Based on previously run simulations of various seasons starting at different points")
         #st.write("Currently a non-zero start point actually means include all actual results up to and including the first match date for which the percentage of matches played exceeds the number given")
 
-        season_tab, start_tab = st.tabs(["Select season", "Select start point"])
-        
-        df = pd.read_csv("data/output/season_errors.csv", index_col=[0,1,2])
+        path = "data/output/"
+        files = [x for x in os.listdir(path) if x.endswith(".csv")]
+        choose_backtest_file = st.selectbox(
+            "Choose error file",
+            files,
+            index=0,
+            key="choose_error"
+        )        
+        df = pd.read_csv(path+choose_backtest_file, index_col=[0,1,2])
         #st.write(df)
+        season_tab, start_tab = st.tabs(["Select season", "Select start point"])
 
-    ########################################################################
-    # subtab: Season information by start point
-    ########################################################################
-    with season_tab:
-        seasons_checked = list(set( (season,div) for season,div in zip(df.index.get_level_values(0), df.index.get_level_values(1)) ))
-        seasons_checked.sort()
-        selection = st.multiselect(
-                "Choose season",
-                seasons_checked,
-                format_func =lambda x: f"{x[0]} {x[1]}",
-                key="sel_season_acc")
-        if selection:
-            fig = plot_season_sim_errors_multi(df, selection)
-            #for sel in selection:
-            #    st.write(df.loc[sel])
-            #    fig = plot_season_sim_errors(df.loc[sel])
+        ########################################################################
+        # subtab: Season information by start point
+        ########################################################################
+        with season_tab:
+            seasons_checked = list(set( (season,div) for season,div in zip(df.index.get_level_values(0), df.index.get_level_values(1)) ))
+            seasons_checked.sort()
+            selection = st.multiselect(
+                    "Choose season",
+                    seasons_checked,
+                    format_func =lambda x: f"{x[0]} {x[1]}",
+                    key="sel_season_acc")
+            if selection:
+                fig = plot_season_sim_errors_multi(df, selection)
+                #for sel in selection:
+                #    st.write(df.loc[sel])
+                #    fig = plot_season_sim_errors(df.loc[sel])
+                st.pyplot(fig,width='stretch')
+                plt.close(fig)
+
+        ########################################################################
+        # subtab: Start point information by season
+        ########################################################################
+        with start_tab:
+            start_points = df.index.get_level_values(2).unique()
+            sel_start_acc = st.selectbox(
+                    "Choose simulation start (percentage of season)",
+                    start_points,
+                    index =0,
+                    key="sel_start_acc")
+
+            #st.write(df.loc[(slice(None), slice(None), sel_start_acc)])
+            fig = plot_season_start_errors(df.loc[(slice(None), slice(None), sel_start_acc)])
             st.pyplot(fig,width='stretch')
             plt.close(fig)
-
-    ########################################################################
-    # subtab: Start point information by season
-    ########################################################################
-    with start_tab:
-        start_points = df.index.get_level_values(2).unique()
-        sel_start_acc = st.selectbox(
-                "Choose simulation start (percentage of season)",
-                start_points,
-                index =0,
-                key="sel_start_acc")
-
-        #st.write(df.loc[(slice(None), slice(None), sel_start_acc)])
-        fig = plot_season_start_errors(df.loc[(slice(None), slice(None), sel_start_acc)])
-        st.pyplot(fig,width='stretch')
-        plt.close(fig)
         
     ########################################################################
     # subtab: Home Advantage

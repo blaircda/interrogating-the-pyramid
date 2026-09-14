@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from config import *
 from import_process import (
     process_data, build_partial_ratings,
@@ -17,8 +18,6 @@ season_list = data.seasons
 season_ratings_start, season_ratings_end = data.season_ratings
 ratings_df = data.ratings
 scores_df = data.scores 
-home_adv = data.home_adv
-av_discr = data.home_adv_discr
 tables = data.tables
 season_league_teams = data.leagues
 
@@ -49,7 +48,7 @@ def simulate_season(season, tier, div, season_league_teams, scores_df, season_ra
         teams = sel_teams,
         ratings = initial_ratings,
         home_adv = home_adv,
-        season = sel_seasonys
+        season = season
     )
 
     simulated_season = run_simulations(state, Nsims, model_name, games_played = matches_played, games_to_play = matches_to_play)
@@ -66,13 +65,8 @@ def simulate_season_percent(season, tier, div, season_league_teams, scores_df, s
     
     league_size = len(sel_teams)
 
-    if reality_percent > 0:
-        #print(f"Reality percent: {reality_percent}")
-        matches_played, matches_to_play = split_season_by_percent(scores_df, season, div, reality_percent)
-        initial_ratings = build_partial_ratings(initial_ratings | {"home_adv": home_adv}, matches_played)
-    else:
-        matches_played = None
-        matches_to_play = None
+    matches_played, matches_to_play = split_season_by_percent(scores_df, season, div, reality_percent)
+    initial_ratings = build_partial_ratings(initial_ratings | {"home_adv": home_adv}, matches_played)
         
     # prepare the state dictionary passed to the simulation
     state = prepare_state(
@@ -85,32 +79,44 @@ def simulate_season_percent(season, tier, div, season_league_teams, scores_df, s
     simulated_season = run_simulations(state, Nsims, model_name, games_played = matches_played, games_to_play = matches_to_play)
     return simulated_season
 
+def simulation_loop( models_used, seasons_to_sim, max_tier, descr):
+    for model in models_used:
+        errors = {}
+        for season in seasons_to_sim:
+            for tier in range(1,max_tier+1):
+                sel_teams = season_league_teams.xs( (season, tier), level=[0,1] )
 
-errors = {}
+                divisions = sel_teams.index.get_level_values("Division")
 
-max_seasons = 4
-max_tier = 4
-for season in season_list[-(max_seasons+1):-1]:
-    for tier in range(1,max_tier+1):
-    
-        sel_teams = season_league_teams.xs( (season, tier), level=[0,1] )
-    
-        divisions = sel_teams.index.get_level_values("Division")
-    
-        if not divisions.empty:
-            division_names = divisions.to_list()
-    
-            for div in division_names:
-                print(season, tier, div)
-                actual_table = tables.loc[ (season, tier, div) ]
-                #print(actual_table)
-                for x in range(0,100,10):
-                    print(f"Simulation starting at {x}% of season")
-                    simulated_season = simulate_season_percent(season, tier, div, season_league_teams, scores_df, season_ratings_start, "elo_static", many_sims_N_sims, reality_percent = x)
-                    model_errors = get_errors(actual_table, simulated_season, many_sims_N_sims)
-                    errors[(season, div, x)] = model_errors
+                if not divisions.empty:
+                    division_names = divisions.to_list()
 
-df = pd.DataFrame.from_dict(errors, orient="index")
-#print(df.to_string())
+                    for div in division_names:
+                        print(season, tier, div)
+                        actual_table = tables.loc[ (season, tier, div) ]
 
-df.to_csv("data/output/test_season_errors.csv", index=True, index_label=("Season", "Division", "SimulationStart"))
+                        for x in range(0,100,25):
+                            print(f"Simulation starting at {x}% of season")
+                            simulated_season = simulate_season_percent(
+                                season, tier, div,
+                                season_league_teams, scores_df, season_ratings_start,
+                                model, many_sims_N_sims, reality_percent = x)
+                            model_errors = get_errors(actual_table, simulated_season, many_sims_N_sims)
+                            errors[(season, div, x)] = model_errors
+
+        savefile = "data/output/"+model+"_"+descr+"_errors.csv"
+        df = pd.DataFrame.from_dict(errors, orient="index")
+        df.to_csv(savefile, index=True, index_label=("Season", "Division", "SimulationStart"))
+
+max_seasons = 5
+max_tier = 2
+models_used = ["elo_static", "elo_dynamic"]
+
+# pick seasons at random
+seasons_to_sim =  np.random.choice(season_list[1:-1], size=max_seasons, replace=False)
+descr = f"random_{max_seasons}_seasons_{max_tier}_tiers_{many_sims_N_sims}_sims"
+simulation_loop(models_used, seasons_to_sim, max_tier, descr)
+# pick most recent complete seasons
+seasons_to_sim = season_list[-(max_seasons+1):-1]
+descr = f"recent_{max_seasons}_seasons_{max_tier}_tiers_{many_sims_N_sims}_sims"
+simulation_loop(models_used, seasons_to_sim, max_tier, descr)

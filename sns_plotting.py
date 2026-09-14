@@ -217,13 +217,27 @@ def plot_team_line_all_seasons(df, x, y, hue, style=None, selection=None, annota
                 season = idx[0]
                 tier = idx[1]
                 val = group.loc[idx, y]
+                ax.axvline(
+                        season,
+                        color="tomato",
+                        linewidth=0.,
+                        linestyle="--"
+                        )
                 ax.annotate(
                     f"T{tier}",
                     (season, val),
-                    xytext=(3, 15),
+                    xytext=(12, 5),
                     ha="center",
                     textcoords="offset points",
-                    arrowprops=dict(arrowstyle="->")
+                    arrowprops=dict(
+                                color='tomato',  # Arrow color
+                                width=0.5,  # Shaft width
+                                headwidth=3,  # Head width
+                                headlength=2,  # Head length
+                                linewidth=0.2,            # Thickness of the outline
+                                #connectionstyle='arc3,rad=+0.5'
+                            ),
+                    color="tomato"
                 )
         
     return fig
