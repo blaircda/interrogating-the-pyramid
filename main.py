@@ -53,7 +53,10 @@ def select_season_division(seasons, tiers, key):
     return sel_season, sel_tier_league
 
 def get_tiers_by_season(season, tiers):
-    td = [tuple(y) for y in tiers.loc[season].values]
+
+    tier_div_flat = tiers.loc[season].values.ravel().tolist()
+    
+    td = [(t,d) for t,d in zip(tier_div_flat[::2], tier_div_flat[1::2]) ]
     tier_divisions =  sorted( td, key = lambda x:x[0] )
     # this is a list of tuples (int tier, str division_name)
     # e.g. (1, "Premier League"), (2, "EFL Championship"), ... ] 

@@ -339,10 +339,10 @@ def plot_reg_values(df, x, y, selection=None):
         ax.set_yticks([1,5,10,15,20])
         
     ax.grid(True, alpha = 0.3)
-    ax.set_xlabel(table_labels.get(x,x)[0])
-    ax.set_ylabel(table_labels.get(y,y)[0])
+    ax.set_xlabel(table_labels.get(x,(x,x))[0])
+    ax.set_ylabel(table_labels.get(y,(y,y))[0])
 
-    title = f"Linear regression of {table_labels.get(y,y)[0]} vs {table_labels.get(x,x)[0]}"
+    title = f"Linear regression of {table_labels.get(y,(y,y))[0]} vs {table_labels.get(x,(x,x))[0]}"
     if selection:
         title+=f"\n{selection}"
 
