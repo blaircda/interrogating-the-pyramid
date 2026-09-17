@@ -282,11 +282,15 @@ def build_league_tables(df):
     two_point_era = full_tables[ seasons < change_to_three_points_per_win ]
     if not two_point_era.empty:
         two_point_era["PTS"] = 2*full_tables["W"] + full_tables["D"]
+        two_point_era["PTSH"] = 2*full_tables["WH"] + full_tables["DH"]
+        two_point_era["PTSA"] = 2*full_tables["WA"] + full_tables["DA"]
         two_point_era["PTS_RULE"] = 2
 
     three_point_era = full_tables[ seasons >= change_to_three_points_per_win ]
     if not three_point_era.empty:
         three_point_era["PTS"] = 3*full_tables["W"] + full_tables["D"]
+        three_point_era["PTSH"] = 3*full_tables["WH"] + full_tables["DH"]
+        three_point_era["PTSA"] = 3*full_tables["WA"] + full_tables["DA"]
         three_point_era["PTS_RULE"] = 3
 
     full_tables = pd.concat([two_point_era, three_point_era])
@@ -307,14 +311,20 @@ def build_league_tables(df):
     full_tables = full_tables.sort_values(by=["Tier", "POS", "PTS", "GAv", "GF"], ascending=[True, True, False, False, False])
     full_tables["POSPyr"] = full_tables.groupby(level=["Season"]).cumcount().add(1)
 
-    # per game stats
+    #  per game stats
+    # for completeness use separate home and away counts
     full_tables["MP"] = full_tables["W"] + full_tables["D"] + full_tables["L"]
     cols = ["GF", "GA", "PTS", "W", "D", "L"]
     full_tables[[f"{c}pg" for c in cols]] = full_tables[cols].div(full_tables["MP"], axis=0)
+    full_tables["G"] = full_tables[["GF", "GA"]].sum(axis=1)
+    full_tables["Gpg"] = full_tables[["GF", "GA"]].sum(axis=1).div(full_tables["MP"], axis=0)
     # home/away per game stats
-    cols = ["WH", "DH", "LH", "WA", "DA", "LA", "GFH", "GAH", "GFA", "GAA"]
-    full_tables[[f"{c}pg" for c in cols]] = full_tables[cols].mul(2).div(full_tables["MP"], axis=0)
-    full_tables["Gpg"] = full_tables[["GFHpg", "GAHpg"]].sum(axis=1)
+    full_tables["MPH"] = full_tables["WH"] + full_tables["DH"] + full_tables["LH"]
+    full_tables["MPA"] = full_tables["WA"] + full_tables["DA"] + full_tables["LA"]
+    for n in ["H", "A"]:
+        cols_n = [col+n for col in cols]
+        full_tables[[f"{c}pg" for c in cols_n]] = full_tables[cols_n].div(full_tables["MP"+n], axis=0)
+    
     
     full_tables = full_tables.sort_index()
     return full_tables
@@ -342,6 +352,15 @@ def build_league_tables_with_ratings(scores_df, season_ratings_start, season_rat
     tables["Rbelow_end"] = (
         tables["Rend"]
         - tables.groupby(level=["Season", "Tier", "Division"])["Rend"].transform("max")
+    )
+    # difference vs mean rating in league
+    tables["Rdiff_to_mean_start"] = (
+        tables["Rbelow_start"]
+        - tables.groupby(["Season", "Tier", "Division"])["Rbelow_start"].transform("mean")
+    )
+    tables["Rdiff_to_mean_end"] = (
+        tables["Rbelow_end"]
+        - tables.groupby(["Season", "Tier", "Division"])["Rbelow_end"].transform("mean")
     )
 
     # rank in league by rating

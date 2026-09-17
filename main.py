@@ -17,7 +17,8 @@ from plotting import (
 from sns_plotting import (
     table_labels, stats_positional, stats_fundamental,
     plot_line, plot_line_all_seasons,plot_team_line_all_seasons,
-    plot_reg_values, plot_scatter, plot_heatmap
+    plot_reg_values, plot_scatter, plot_reg_values_seasons,
+    plot_heatmap
 )   
 from simulation.monte_carlo_simulator import (
     prepare_state, run_simulations, get_errors
@@ -239,20 +240,26 @@ if __name__ == "__main__":
             ]
             hue="Division"
             selection=f"Tier {choose_tier}"
-            
-        fig = plot_line_all_seasons(df, "Season", sel, hue=None, selection=selection)
-        st.pyplot(fig)
-        plt.close(fig)
 
-        fig = plot_line_all_seasons(df, "Season", sel, hue=hue, selection=selection)
-        st.pyplot(fig)
-        plt.close(fig)
-        fig = plot_line_all_seasons(df, "Season", sel, hue="GOAL_RULE", selection=selection)
-        st.pyplot(fig)
-        plt.close(fig)
-        fig = plot_line_all_seasons(df, "Season", sel, hue="PTS_RULE", selection=selection)
-        st.pyplot(fig)
-        plt.close(fig)
+        with st.expander(f"{table_labels[sel][0]} by Season"):
+            fig = plot_line_all_seasons(df, "Season", sel, hue=None, selection=selection)
+            st.pyplot(fig)
+            plt.close(fig)
+        with st.expander(f"{table_labels[sel][0]} by Season by {hue}"):
+            fig = plot_line_all_seasons(df, "Season", sel, hue=hue, selection=selection)
+            st.pyplot(fig)
+            plt.close(fig)
+
+        with st.expander(f"Linear regression of {table_labels[sel][0]} by Season"):
+            fig = plot_reg_values_seasons(df, "Season", sel, selection=selection)
+            st.pyplot(fig)
+            plt.close(fig)
+        #fig = plot_line_all_seasons(df, "Season", sel, hue="GOAL_RULE", selection=selection)
+        #st.pyplot(fig)
+        #plt.close(fig)
+        #fig = plot_line_all_seasons(df, "Season", sel, hue="PTS_RULE", selection=selection)
+        #st.pyplot(fig)
+        #plt.close(fig)
                        
     with scatter_tab:
         s1,s2 = select_season_range(seasons_l, "relns")

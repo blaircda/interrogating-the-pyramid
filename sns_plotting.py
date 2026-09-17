@@ -1,5 +1,6 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy.stats import linregress
 
 # wrappers for basic sns plots
@@ -23,6 +24,8 @@ stats_fundamental = {
     "Rbelow_start": ("Initial diff to max rating (league)",True),
     "Rbelow_end": ("Final diff to max rating (league)",True),
     "PTSpg": ("Points per game",False),
+    "PTSHpg": ("Points per home game",False),
+    "PTSApg": ("Points per away game",False),
     "GFpg": ("Goals for per game",False),
     "GApg": ("Goals against per game",False),
     "Gpg": ("Total goals per game",False),
@@ -55,12 +58,17 @@ def format_title_scatter(ax, x, y, hue, selection):
     ax.set_title(title)
 
 def format_title_seasons(ax, x, y, hue, selection):
-    title = ""
-    
+    title = f"{table_labels.get(y,y)[0]} vs Season"    
     if hue is not None:
-        title += f"{table_labels.get(y,y)[0]} vs Season by {hue}"
-    else:
-        title += f"{table_labels.get(y,y)[0]} vs Season"
+        title += f" by {hue}"
+    if selection:
+        title+=f"\n{selection}"
+    ax.set_title(title)
+    
+def format_compare_title_seasons(ax, x, y1, y2, hue, selection):
+    title = f"{table_labels.get(y1,y1)[0]},{table_labels.get(y2,y2)[0]} vs Season"
+    if hue is not None:
+        title += " by {hue}"
     if selection:
         title+=f"\n{selection}"
     ax.set_title(title)
@@ -74,13 +82,13 @@ def format_legend(ax, hue, xpos, ypos):
         ncols=4
         )  
 
-def format_seasons(ax,x,y,seasons):
+def format_seasons(ax, y, seasons):
     """
     format seasons axis
     """
     ax.set_xlabel("Season")
     ax.set_ylabel(table_labels.get(y,y)[0])
-    labels = [t.get_text() for t in ax.get_xticklabels()]
+    #labels = [t.get_text() for t in ax.get_xticklabels()]
     N = max(1, len(seasons) // 10)
     ticks = seasons[::N]
     ax.set_xticks(seasons[::N])
@@ -102,7 +110,6 @@ def format_ax_pos(ax,x,y,df):
         posl = list(range(1, max_pos, N))
         ax.set_ylim(max_pos, 0)
         ax.set_yticks(posl) 
-
 
 def plot_scatter(df, x, y, hue, selection=None):
     
@@ -173,7 +180,7 @@ def plot_line_all_seasons(df, x, y, hue, style=None, selection=None):
 
     ax.grid(True, alpha = 0.3)
 
-    format_seasons(ax,x,y, seasons)
+    format_seasons(ax,y, seasons)
     format_ax_pos(ax,x,y,df)
     format_title_seasons(ax, x, y, hue, selection)
     format_legend(ax, hue, 0.5,-0.3)
@@ -181,6 +188,59 @@ def plot_line_all_seasons(df, x, y, hue, style=None, selection=None):
     return fig
 
 
+def plot_compare_line_all_seasons(df, x, y1, y2, hue, style=None, selection=None):
+
+    seasons = (
+        df.index.get_level_values("Season")
+          .unique()
+          .sort_values()
+    )
+    
+    fig, ax1 = plt.subplots()
+    
+    sns.lineplot(
+        data=df,
+        x=x,
+        y=y1,
+        hue=hue,
+        style=style,
+        color='steelblue',
+        estimator="mean",
+        errorbar=None,
+        #errorbar=lambda x: (x.min(), x.max()),
+        ax = ax1
+    )
+
+    #ax1.grid(True, alpha = 0.3)
+    #format_title_seasons(ax1, x, y, hue, selection)
+    #format_legend(ax, hue, 0.5,-0.3)
+
+    ax2 = ax1.twinx()
+
+    sns.lineplot(
+        data=df,
+        x=x,
+        y=y2,
+        hue=hue,
+        style=style,
+        color="darkred",
+        estimator="mean",
+        errorbar= None,
+        #errorbar=lambda x: (x.min(), x.max()),
+        ax = ax2
+    )
+    
+    format_seasons(ax1, x, y1, seasons)
+    format_ax_pos(ax1, x, y1, df)
+    format_ax_pos(ax2, x, y2, df)
+    format_compare_title_seasons(ax1, x, y1, y2, hue, selection)
+    ax1.yaxis.label.set_color('steelblue')
+    ax2.yaxis.label.set_color('darkred')
+    ax1.tick_params(axis='y', colors='steelblue')
+    ax2.tick_params(axis='y', colors='darkred')
+    
+    return fig
+    
 def plot_team_line_all_seasons(df, x, y, hue, style=None, selection=None, annotate_tier =False):
 
     seasons = (
@@ -205,7 +265,7 @@ def plot_team_line_all_seasons(df, x, y, hue, style=None, selection=None, annota
 
     ax.grid(True, alpha = 0.3)
 
-    format_seasons(ax,x,y, seasons)
+    format_seasons(ax,y, seasons)
     format_ax_pos(ax,x,y,df)
     format_title_seasons(ax, x, y, hue, selection)
     format_legend(ax, hue, 0.5,-0.3)
@@ -304,6 +364,7 @@ def plot_reg(df, x, y, selection=None):
     return fig
 
 def plot_reg_values(df, x, y, selection=None):
+
     res = linregress(df[x], df[y])
 
     fig, ax = plt.subplots()
@@ -349,6 +410,72 @@ def plot_reg_values(df, x, y, selection=None):
     ax.set_title(title)
 
     return fig
+
+def plot_reg_values_seasons(df, x, y, selection=None):
+    df = df.copy()
+    df = df.groupby(["Season"])[[y]].mean()
+    
+    seasons = (
+        df.index.get_level_values("Season")
+          .unique()
+          .sort_values()
+    )
+
+    int_to_season = {i: season for i, season in enumerate(seasons)}
+
+    df["t"] = np.arange(len(df.index))
+    res = linregress(df["t"], df[y])
+
+    fig, ax = plt.subplots()
+        
+    sns.regplot(
+        data=df,
+        x="t",
+        y=y,
+        ax = ax
+    )
+
+    stats_text = (
+        f"Slope: {res.slope:.4f}\n"
+        f"Intercept: {res.intercept:.4f}\n"
+        f"Std Error: {res.stderr:.4f}\n"
+        f"R²: {res.rvalue**2:.4f}"
+    )
+
+    ax.text(
+        1.05, 0.95,           
+        stats_text, 
+        transform=ax.transAxes, # position text rel to bounding box 
+        fontsize=10, 
+        verticalalignment='top',
+        bbox=dict(boxstyle='round,pad=0.5', facecolor='white', alpha=0.8, edgecolor='gray')
+    )
+
+    if y == "POS":
+        ax.set_ylim(df["POS"].max()+1, 0)
+        ax.set_yticks([1,5,10,15,20])
+    
+    ax.grid(True, alpha = 0.3)
+    #format_seasons(ax,y,seasons)
+    ax.set_xlabel("Season")
+    ax.set_ylabel(table_labels.get(y,y)[0])
+    #labels = [int_to_season[t.get_text()] for t in ax.get_xticklabels()]
+    print(list(ax.get_xticks()))
+    labels = [int_to_season.get(int(i), "") for i in ax.get_xticks()]
+    N = max(1, len(seasons) // 10)
+    #ticks = seasons[::N]
+    #ax.set_xticks(seasons[::N])
+    ax.set_xticklabels(labels)
+    ax.tick_params(axis="x", labelbottom=True, rotation=90)
+
+    title = f"Linear regression of {table_labels.get(y,(y,y))[0]} vs Season"
+    if selection:
+        title+=f"\n{selection}"
+
+    ax.set_title(title)
+
+    return fig
+
 
 def plot_heatmap(df):
     df = df.corr()
