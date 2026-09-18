@@ -1,0 +1,1 @@
+{"pred": 0.4157000046649931, "eqn": "Forecasted WHpg = 0.4939 - (0.0015 * NSeason) + (0.1636 * WHpg_Av10)", "params": {"ridge__alpha": 1.0, "selector__k": 2}, "val_score": 0.022072241486332626}

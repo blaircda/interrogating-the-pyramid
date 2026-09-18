@@ -477,8 +477,27 @@ def plot_reg_values_seasons(df, x, y, selection=None):
     return fig
 
 
-def plot_heatmap(df):
-    df = df.corr()
-    fig, ax = plt.subplots()
-    sns.heatmap(df, annot=True, ax=ax)
+def plot_heatmap_df(df):
+    return plot_heatmap(df.corr(), strength=0)
+
+def plot_heatmap( corrs, strength = 0.9):
+    corrs = corrs.sort_index(axis=0).sort_index(axis=1)
+    strong_corr = corrs[(abs(corrs) >= strength) & (corrs != 1.0)]
+    # mask = np.tril(np.ones_like(corrs, dtype=bool))    
+    fig, ax = plt.subplots( figsize = (15,15) )
+    sns.heatmap(
+        strong_corr, 
+        mask=None,
+        annot=True,
+        fmt=".2f",
+        cmap='coolwarm',
+        vmin=-1, vmax=1,
+        square=True,
+        linewidths=0.5,
+        ax=ax
+    )
+    ax.xaxis.tick_top()          
+    ax.xaxis.set_label_position('top')
+    ax.tick_params(axis='x', labelrotation=45)
+    
     return fig

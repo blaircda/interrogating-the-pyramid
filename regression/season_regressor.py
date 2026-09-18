@@ -17,6 +17,12 @@ def drop_incomplete_seasons(df, seasons):
     return df
 
 def make_lags(df, cols, lags):
+    """
+    make lag cols
+    """
+    if not cols:
+        return df.copy() 
+        
     lagged = pd.concat(
         {
             f"{c}_{lag}": df[c].shift(lag)
@@ -29,6 +35,12 @@ def make_lags(df, cols, lags):
     return df
 
 def make_rolling_avs(df, cols, windows):
+    """
+    make rolling ave cols
+    """
+    if not cols:
+        return df.copy()
+        
     rolled = pd.concat(
         {
             f"{c}_Av{w}": df[c].rolling(window=w).mean().shift(1) 
@@ -42,12 +54,11 @@ def make_rolling_avs(df, cols, windows):
             
 def get_season_means( df, cols = None ):
     df = df.copy()
-    if cols is None:
+    if not cols:
         cols = df.columns
     df = df.groupby("Season")[cols].mean()
     df["NSeason"] = np.arange(len(df.index))
     return df
-
 ########################################################################
 # ridge regressor
 ########################################################################
@@ -131,13 +142,14 @@ def ridge_regress_with_feature_gridsearch(df, target, df_future, verbose=True):
     # Plot actual target
     y.plot(ax=ax, label="Actual Data")
     ax.plot(y_pred, label="Ridge model")
-    ax.set_title(f"{target} (Ridge Regression)\n")
-    ax.set_ylabel(f"{target}Prop")
+    ax.set_title(f"{target} (Ridge Regression)")#+best_forecast+"\n"+f"Best params: {best_params}"+"\n"+f"Validation score: {best_score:.4f}")
+    ax.set_ylabel(f"{target}")
     ax.text(
         0.025, -0.125,           
         best_forecast+"\n"+f"Best params: {best_params}"+"\n"+f"Validation score: {best_score:.4f}", 
         transform=ax.transAxes, # position text rel to bounding box 
-        fontsize=10, 
+        fontsize=10,
+        wrap=True,
         verticalalignment='top',
         horizontalalignment='left',
         bbox=dict(boxstyle='round,pad=0.5', facecolor='white', alpha=0.8, edgecolor='gray')
@@ -174,15 +186,16 @@ def regress_seasons( tables, target, base_cols, lag_cols, ave_cols, leaky_cols, 
     # average at season level over all
     df = get_season_means( tables[ base_cols ] )
     # lag/average selected features
-    df = make_lags(df,  lag_cols, [1,2])
-    df = make_rolling_avs(df, lag_cols, [5,10])
+    df = make_lags(df, lag_cols, [1,2])
+    df = make_rolling_avs(df, ave_cols, [5,10])
+
+    corrs = df.corr()
 
     # force target into list so can write one loop over it
     if not isinstance(target, list):
         target = [target]
 
     predictions = {}
-    figures = {}
     
     for var in target:
         # after lagging remove features which contain future (i.e. end of season) information
@@ -202,10 +215,10 @@ def regress_seasons( tables, target, base_cols, lag_cols, ave_cols, leaky_cols, 
             "fig": fig,
             "eqn": eqn,
             "params": params,
-            "val_score": score
+            "val_score": score,
         }
         
-    return predictions
+    return predictions, corrs
     
 def regress_seasons_tier(tier, tables, target, base_cols, lag_cols, ave_cols, leaky_cols, future_split):
     """

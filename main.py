@@ -18,7 +18,7 @@ from sns_plotting import (
     table_labels, stats_positional, stats_fundamental,
     plot_line, plot_line_all_seasons,plot_team_line_all_seasons,
     plot_reg_values, plot_scatter, plot_reg_values_seasons,
-    plot_heatmap
+    plot_heatmap_df
 )   
 from simulation.monte_carlo_simulator import (
     prepare_state, run_simulations, get_errors
@@ -352,7 +352,7 @@ if __name__ == "__main__":
                 
         if len(sel)>1:
             df = df[sel]
-            fig = plot_heatmap(df)
+            fig = plot_heatmap_df(df)
             st.pyplot(fig)
             plt.close(fig)
 
@@ -515,7 +515,7 @@ if __name__ == "__main__":
         st.write("Based on previously run simulations of various seasons starting at different points")
         #st.write("Currently a non-zero start point actually means include all actual results up to and including the first match date for which the percentage of matches played exceeds the number given")
 
-        path = "data/output/"
+        path = "data/output/sim_errors/"
         files = [x for x in os.listdir(path) if x.endswith(".csv")]
         choose_backtest_file = st.selectbox(
             "Choose error file",
