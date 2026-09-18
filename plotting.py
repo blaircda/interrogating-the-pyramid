@@ -10,7 +10,7 @@ def plot_multi_ratings(df, selection):
     for each team in selection
     returns a combined plot of their historical ratings stored in df
     """
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8,6), constrained_layout=True)
 
     #ax.set_xlabel("Time")
     ax.set_ylabel("Rating")
@@ -37,7 +37,7 @@ def plot_multi_cols(df, selection, labels={}):
     returns a combined plot of their data
     with labels specified by optional dict labels 
     """
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8,6), constrained_layout=True)
 
     #ax.set_xlabel("Time")
     #ax.set_ylabel("")
@@ -61,7 +61,7 @@ def plot_multi_cols(df, selection, labels={}):
     return fig
 
 def plot_model_home_adv(data):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8,6), constrained_layout=True)
     ax.plot(data, label="Model home advantage")
     ax.set_xticks(data.index[::10])
     ax.tick_params(axis='x', labelrotation=90)
@@ -71,7 +71,7 @@ def plot_model_home_adv(data):
 
 def plot_model_home_adv_compare(data, exclude_games=50):
     # plot comparison between model home win ex and actual home success
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8,6), constrained_layout=True)
     #ax.plot(av_accum_home_success, label="home_success")
     #ax.plot(av_accum_home_winex, label="home win ex")
     ax.plot( data[exclude_games:], label="Actual Home Success - Home Win Ex")

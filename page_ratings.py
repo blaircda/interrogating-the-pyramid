@@ -34,7 +34,7 @@ tiers_by_season = data.tiers
 start_season = min(season_list)
 end_season = max(season_list) 
 
-st.set_page_config(layout="wide", page_title="Stats | Interrogating the pyramid")
+st.set_page_config(layout="wide", page_title="Ratings | Interrogating the pyramid")
 # control width of content display 
 #padl, content, padr = st.columns([0.1,0.8,0.1])
 

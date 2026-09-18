@@ -114,7 +114,7 @@ def format_ax_pos(ax,x,y,df):
 
 def plot_scatter(df, x, y, hue, selection=None):
     
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8,6), constrained_layout=True)
     
     sns.scatterplot(
         data=df,
@@ -136,7 +136,7 @@ def plot_scatter(df, x, y, hue, selection=None):
 
 def plot_line(df, x, y, hue, selection=None):
     
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8,6), constrained_layout=True)
     
     sns.lineplot(
         data=df,
@@ -165,7 +165,7 @@ def plot_line_all_seasons(df, x, y, hue, style=None, selection=None):
           .sort_values()
     )
     
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8,6), constrained_layout=True)
 
     sns.lineplot(
         data=df,
@@ -197,7 +197,7 @@ def plot_compare_line_all_seasons(df, x, y1, y2, hue, style=None, selection=None
           .sort_values()
     )
     
-    fig, ax1 = plt.subplots()
+    fig, ax1 = plt.subplots(figsize=(8,6), constrained_layout=True)
     
     sns.lineplot(
         data=df,
@@ -250,7 +250,7 @@ def plot_team_line_all_seasons(df, x, y, hue, style=None, selection=None, annota
           .sort_values()
     )
     
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8,6), constrained_layout=True)
 
     sns.lineplot(
         data=df,
@@ -336,7 +336,7 @@ def relplot_line_all_seasons(df, x, y, hue, selection=None):
     return g
     
 def plot_reg(df, x, y, selection=None):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8,6), constrained_layout=True)
     
     sns.regplot(
         data=df,
@@ -369,7 +369,7 @@ def plot_reg_values(df, x, y, selection=None):
 
     res = linregress(df[x], df[y])
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8,6), constrained_layout=True)
 
     x_values = df[x].sort_values()
     y_values = res.intercept + res.slope * x_values
@@ -435,7 +435,7 @@ def plot_reg_values_seasons(df, x, y, selection=None):
     df["t"] = np.arange(len(df.index))
     res = linregress(df["t"], df[y])
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8,6), constrained_layout=True)
 
     x_values = df["t"].sort_values()
     y_values = res.intercept + res.slope * x_values
