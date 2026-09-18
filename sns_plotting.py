@@ -1,6 +1,7 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+import streamlit as st
 from scipy.stats import linregress
 
 # wrappers for basic sns plots
@@ -91,8 +92,8 @@ def format_seasons(ax, y, seasons):
     #labels = [t.get_text() for t in ax.get_xticklabels()]
     N = max(1, len(seasons) // 10)
     ticks = seasons[::N]
-    ax.set_xticks(seasons[::N])
-    ax.set_xticklabels(seasons[::N])
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(ticks)
     ax.tick_params(axis="x", labelbottom=True, rotation=90)
 
 def format_ax_pos(ax,x,y,df):
@@ -341,6 +342,7 @@ def plot_reg(df, x, y, selection=None):
         data=df,
         x=x,
         y=y,
+        ci=None,
         ax = ax
     )
 
@@ -368,13 +370,20 @@ def plot_reg_values(df, x, y, selection=None):
     res = linregress(df[x], df[y])
 
     fig, ax = plt.subplots()
-        
-    sns.regplot(
-        data=df,
-        x=x,
-        y=y,
-        ax = ax
-    )
+
+    x_values = df[x].sort_values()
+    y_values = res.intercept + res.slope * x_values
+
+    ax.scatter(df[x], df[y])
+    ax.plot(x_values, y_values)
+
+    #sns.regplot(
+    #    data=df,
+    #    x=x,
+    #    y=y,
+    #    ci=None,
+    #    ax = ax
+    #)
 
     stats_text = (
         f"Slope: {res.slope:.4f}\n"
@@ -427,13 +436,21 @@ def plot_reg_values_seasons(df, x, y, selection=None):
     res = linregress(df["t"], df[y])
 
     fig, ax = plt.subplots()
+
+    x_values = df["t"].sort_values()
+    y_values = res.intercept + res.slope * x_values
+
+    ax.scatter(df["t"], df[y])
+    ax.plot(x_values, y_values)
+
         
-    sns.regplot(
-        data=df,
-        x="t",
-        y=y,
-        ax = ax
-    )
+    #sns.regplot(
+    #    data=df,
+    #    x="t",
+    #    y=y,
+    #    ci=None,
+    #    ax = ax
+    #)
 
     stats_text = (
         f"Slope: {res.slope:.4f}\n"
@@ -476,7 +493,7 @@ def plot_reg_values_seasons(df, x, y, selection=None):
 
     return fig
 
-
+@st.cache_data
 def plot_heatmap_df(df):
     return plot_heatmap(df.corr(), strength=0)
 

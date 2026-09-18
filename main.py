@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 import os
+import json
 from config import *
 from import_process import (
     process_data,
@@ -101,11 +102,23 @@ def select_tier_by_season(season, tiers, key):
     choose_tier = st.selectbox("Tier?", tier_choice, index= 0, key=f"{key}_tier")
     return choose_tier
 
+@st.cache_data
+def get_sorted_tables( table_df, sort_param, sort_order, tier = None, N = 20):
+    df = table_df.copy()
+    if tier:
+        df =  df[
+             (df.index.get_level_values("Tier")==tier)
+            ].sort_values(by=sort_param, ascending=sort_order).head(20)
+
+    else:
+        df = df.sort_values(by=sort_param, ascending=sort_order).head(20)
+    return df
+        
 ########################################################################
 # Streamlit App
 ########################################################################
                         
-if __name__ == "__main__":
+def main():
     data = process_data(teams_csv, scores_csv)
 
     teams = data.teams
@@ -131,7 +144,7 @@ if __name__ == "__main__":
     ########################################################################
     with content:
         # define tabs 
-        ratings_tab, tables_tab, stats_tab, season_sim_tab = st.tabs(["Historical ratings", "Historical tables", "Damned Lies United","Season simulations"])
+        ratings_tab, tables_tab, stats_tab, season_sim_tab, regr_tab = st.tabs(["Historical ratings", "Historical tables", "Damned Lies United","Season simulations", "Predictions from regression"])
 
     ########################################################################
     # Tab: Ratings
@@ -250,10 +263,10 @@ if __name__ == "__main__":
             st.pyplot(fig)
             plt.close(fig)
 
-        with st.expander(f"Linear regression of {table_labels[sel][0]} by Season"):
-            fig = plot_reg_values_seasons(df, "Season", sel, selection=selection)
-            st.pyplot(fig)
-            plt.close(fig)
+        #with st.expander(f"Linear regression of {table_labels[sel][0]} by Season"):
+        #    fig = plot_reg_values_seasons(df, "Season", sel, selection=selection)
+        #    st.pyplot(fig)
+        #    plt.close(fig)
         #fig = plot_line_all_seasons(df, "Season", sel, hue="GOAL_RULE", selection=selection)
         #st.pyplot(fig)
         #plt.close(fig)
@@ -264,8 +277,20 @@ if __name__ == "__main__":
     with scatter_tab:
         s1,s2 = select_season_range(seasons_l, "relns")
         
-        #sel_season, sel_league = select_season_division(seasons_l, tiers_by_season, "stats")
-        #league_teams = get_teams_by_season_and_div(sel_season, sel_league, season_league_teams)
+        choose_tier = select_tier_by_season(s2, tiers_by_season, "scatter")
+
+        if choose_tier == "All":
+            df = tables_data[
+                (seasons>=s1) & (seasons<=s2)
+            ]
+            hue="Tier"
+        else:
+            df = tables_data[
+                (tables_data.index.get_level_values("Tier")==choose_tier) &
+                (seasons>=s1) & (seasons<=s2)
+            ]
+            hue="None"
+
         selx = st.selectbox("Choose data to plot",
                 table_labels.keys(),
                 index = 0,
@@ -287,8 +312,7 @@ if __name__ == "__main__":
             else:
                 selection = f"{s1} to {s2}"
                 
-            df = tables_data[ (seasons >= s1) & ( seasons <= s2) ]
-            fig = plot_scatter(df, selx, sely, hue="Tier", selection=f"{s1} to {s2}")
+            fig = plot_scatter(df, selx, sely, hue=hue, selection=f"{s1} to {s2}")
             st.pyplot(fig)
             plt.close(fig)
                     
@@ -296,11 +320,11 @@ if __name__ == "__main__":
             st.pyplot(fig)
             plt.close(fig)
 
-            l_tiers = get_tiers_by_season(s2, tiers_by_season)
-            for tier, div in l_tiers:
-                fig = plot_reg_values(df[ df.index.get_level_values("Division")==div], selx, sely, selection=f"{div} {s1} to {s2}")
-                st.pyplot(fig)
-                plt.close(fig)                
+            #l_tiers = get_tiers_by_season(s2, tiers_by_season)
+            #for tier, div in l_tiers:
+            #    fig = plot_reg_values(df[ df.index.get_level_values("Division")==div], selx, sely, selection=f"{div} {s1} to {s2}")
+            #    st.pyplot(fig)
+            #    plt.close(fig)                
 
 
     with team_trends_tab:        
@@ -319,7 +343,7 @@ if __name__ == "__main__":
         )
 
         if len(sel_teams) == 1:
-            annotate_tier = True
+            annotate_tier = False
         else:
             annotate_tier = False            
         fig = plot_team_line_all_seasons(df, "Season", sel, hue="Team", annotate_tier = annotate_tier)
@@ -377,14 +401,16 @@ if __name__ == "__main__":
         choose_tier = select_tier_by_season(s2, tiers_by_season, "records")
 
         if choose_tier == "All":
-            df =  tables_data[
+            df = tables_data[
                 (seasons>=s1) & (seasons<=s2)
-                ].sort_values(by=sel, ascending=sort_order).head(20)
+            ]
         else:
-            df =  tables_data[
+            df = tables_data[
+                (tables_data.index.get_level_values("Tier")==choose_tier) &
                 (seasons>=s1) & (seasons<=s2)
-                &  (tables_data.index.get_level_values("Tier")==choose_tier)
-                ].sort_values(by=sel, ascending=sort_order).head(20)
+            ]
+
+        df = get_sorted_tables( df, sel, sort_order, N= 20)
         sel_name = record_stats.get(sel)[0]
         df = df.rename(columns={sel:sel_name})
         st.write(df[["POS", sel_name]] )
@@ -609,3 +635,64 @@ if __name__ == "__main__":
         st.pyplot(fig)
         plt.close(fig)
 
+    ########################################################################
+    # Tab: Regressions
+    ########################################################################
+    with regr_tab:
+        st.write("Based on ridge regression with feature and parameter grid search")
+        regr_ha_tab, regr_pl_tab = st.tabs(["Predicting home advantage", "Predicting PL 2026/2027"])
+        path = "data/output/regr/"
+
+    with regr_ha_tab:
+        st.subheader("All seasons, all tiers")
+        with open(path+"All_Seasons_All_Tiers_WHpg.json", "r") as f:
+            data = json.load(f)
+        st.write(f"Predicted WHpg for 2026/2027: {data['pred']:.4f}")
+        st.image(path+"All_Seasons_All_Tiers_WHpg.png")
+        for n in range(1,5):
+            st.subheader(f"Tier {n}")
+            with open(path+f"All_Seasons_Tier_{n}_WHpg.json", "r") as f:
+                data = json.load(f)
+            st.write(f"Predicted WHpg for 2026/2027: {data['pred']:.4f}")
+            st.image(path+f"All_Seasons_Tier_{n}_WHpg.png")
+
+
+    with regr_pl_tab:
+
+        st.subheader("Predicted table from regression")
+        df = (
+            pd.read_csv(path+"PL.csv", index_col=0)
+            .rename(columns={"PTS_wd": "PTS"})
+            .sort_values(by="PTS", ascending=False)
+        )
+        st.dataframe(df)
+
+        st.write(f"Game discrepancy: { 100*(df['W'].sum() + 0.5*df['D'].sum() - 380)/380:.2f}% of season missing")
+        
+        selSeason = "2026/2027"
+        selT1 = tables.xs(
+            (selSeason, 1),
+            level=["Season", "Tier"]
+            ).index.get_level_values("Team").unique()
+
+        choose_team = st.selectbox(
+            "See details for team:",
+            selT1,
+            index=0,
+            key="pl_reg_choose_team"
+        )
+            
+        targets = ["Wpg", "Dpg", "GFpg", "GApg", "Rend"]
+        for target in targets:
+            st.image(path+"PL_"+choose_team+"_"+target+".png")
+
+        #files = [x for x in os.listdir(path) if x.endswith(".csv")]
+
+#import cProfile
+#import pstats
+
+if __name__ == "__main__":
+    main()
+    #cProfile.run("main()", "profile.out")
+    #stats = pstats.Stats("profile.out")
+    #stats.sort_stats("cumtime").print_stats(30)
