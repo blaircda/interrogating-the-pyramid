@@ -41,8 +41,6 @@ st.set_page_config(layout="wide", page_title="Ratings | Interrogating the pyrami
 #with content:
 
 st.header("Ratings")
-st.write("Based on an ELO-style model")
-
 ratings_tab, home_adv_tab = st.tabs(["Ratings", "Model home advantage"])
 
 with ratings_tab:

@@ -1,20 +1,14 @@
 # interrogating-the-pyramid
-English football historic result data analysis/simulation
-(work in progress)
 
 See: https://interrogating-the-pyramid.streamlit.app/
 
-Data: sourced from https://github.com/seanelvidge/England-football-results
+## What is this?
 
-## Some unnecessary background
+Macro-level stats, visualisations and attempted predictions for the top 4 tiers of the English football pyramid using an ELO-style ratings model
 
-When I was a child I found a fascinating book in my grandparents' attic, where you could generate football league seasons by rolling dice to produce scores, using a pencil to fill in a grid of the results before calculating by hand the surprises of the final table. Luckily my uncles had grown bored of this exercise halfway through, so I was able to finish the book (being an Irish child in the late 1990s, I cheated in favour of Manchester United). I forget if this was just for the top division or for the full league system - either way with the book being a couple of decades old, many of the teams appearing were unfamiliar and mysterious to me. This was perhaps my introduction to the strange historical depths of the intangible cultural heritage that is the English football pyramid. (I suspect my enjoyment of this structure shares something with my enjoyment of novels with maps and appendices.)
+**Data used:** English top 4 tiers results from https://github.com/seanelvidge/England-football-results
 
-## The idea
-
-Construct an ELO rating system from first principles, test it on any season of the English football top 4 divisions, apply it to current and future seasons
-
-## ELO structure
+## What is the rating model? 
 
 Given a match between a home team with rating $R_H$ and an away team with match $R_A$, the home team win expectancy is calculated via:
 
@@ -27,9 +21,11 @@ $R_{\text{new}} = R + K \cdot G \cdot ( O - W)$
 
 where the outcome $O$ is 1 for a win, $0.5$ for a draw and $0$ for a loss; $K$ is a constant which determines how many points are involved in the update, and $G$ is a function of the goal difference of the result.
 
-The constant $K$ is currently 20, and the goal difference factor $G$ used is that of eloratings.net, where $G = 1$ if a draw or one-goal victory, $G=1.5$ for a two-goal victory, and $G= 1.75 + (g-3)/8$ for a victory by $g \geq 3$ goals.
+**Current model:** $K =20$, $G$ follows www.eloratings.net, where $G = 1$ if a draw or one-goal victory, $G=1.5$ for a two-goal victory, and $G= 1.75 + (g-3)/8$ for a victory by $g \geq 3$ goals. Teams start with an initial rating of 1500.
 
 Teams start with a rating of 1500, and the home advantage $\Delta_H$ is initially set to 150.
+
+### What happens with home advantage?
 Over time the discrepancy between the average actual home outcomes and the average home win expectancy can be used to update $\Delta_H$.
 I do this as follows:
 
@@ -40,7 +36,18 @@ I do this as follows:
 
 For sensible choices of $N$ and the intervals at which to update, this leads to a rolling average home win expectancy which tracks that observed in actual results.
 
-## Season simulation model
+## What statistics can I look at?
 
-For each league, the teams are assigned the ratings calculated using the above method up till the end of the previous season.
-Then I generate the scorelines of each match via Poisson distributions chosen to reproduce the Elo win expectancy as explained here https://github.com/blaircda/world-cup-sim/blob/main/Elo_to_Poisson.md
+**Ratings over time**
+
+**Graphs of relationships and trends (collective and team-wise)** for statistics such as ratings, rating changes, match results, goals for/against...
+
+**Leage tables at any date** (n.b. excluding point deductions at the moment)
+
+## What can be simulated?
+
+Any league season from any start date. Using Monte Carlo simulations in which I generate the scorelines of each match via Poisson distributions chosen to reproduce the Elo win expectancy as explained here https://github.com/blaircda/world-cup-sim/blob/main/Elo_to_Poisson.md
+
+## What else can be predicted?
+
+Predicted is surely over-selling it, but using time series regression: collective (tier-wise) home win proportion, and individual Premier League 2026/2027 teams' win, draw and goal for/against.
