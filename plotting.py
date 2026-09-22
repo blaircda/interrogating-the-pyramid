@@ -80,12 +80,15 @@ def plot_model_home_adv_compare(data, exclude_games=50):
     ax.legend()
     return fig
 
+def plot_row(row):
+    print(row)
+
 def display_results(model_data, teams, Nsims):
     """
     display simulated results
     for each simulation model in store_team_results
     """
-    league_size = len(teams)+1
+    league_size = len(teams)
     sorted_data = { k:v for k, v in sorted(model_data.items(), key=lambda item: (item[1]["PTS"]), reverse=True)}
     df = pd.DataFrame.from_dict(sorted_data, orient="index")
     cols = ["PTS", "W", "D", "L", "GF", "GA"]
@@ -93,7 +96,35 @@ def display_results(model_data, teams, Nsims):
     pos_cols = df.columns[df.columns.map(lambda x: isinstance(x, int))]
     df[pos_cols] = df[pos_cols]/Nsims
     df["xPOS"] = sum( pos * df[pos] for pos in pos_cols )
-    st.write(df[["xPOS"] + cols + pos_cols.tolist() ])
+    st.dataframe(df[["xPOS"] + cols + pos_cols.tolist() ])
+
+    fig, axs = plt.subplots(
+                        nrows = league_size//2,
+                        ncols = 2,
+                        figsize = (10,15),
+                        constrained_layout=True
+                )
+    for team, ax in zip(df.index, axs.flat):
+        ax.bar( [n for n in pos_cols], df.loc[team][pos_cols] )
+        ax.set_title(f"{team}")
+        ax.set_xlim(0, league_size+1)
+        ax.set_xticks(list( range(1,league_size+1) ))
+        ax.tick_params(axis='x', labelsize=6)
+        ax.set_ylim(0,1)
+    fig.suptitle("Position probabilities")
+    #fig.subplots_adjust(
+    #    left = 0,  # the left side of the subplots of the figure
+    #    right = 1,   # the right side of the subplots of the figure
+    #    bottom = 0.05,  # the bottom of the subplots of the figure
+    #    top = 0.95,    # the top of the subplots of the figure
+    #    wspace = 0.1,  # the amount of width reserved for space between subplots,
+    #    # expressed as a fraction of the average axis width
+    #    hspace = 2,  # the amount of height reserved for space between subplots,
+    #    # expressed as a fraction of the average axis height
+    #)
+    st.pyplot(fig,width='stretch')
+    plt.close(fig)
+
 
 def display_league_table(actual_table, season):
     """

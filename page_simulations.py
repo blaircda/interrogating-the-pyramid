@@ -84,7 +84,7 @@ with sim_launch_tab:
 
     if simulate:
 
-        full_games_played =  league_size*(league_size - 1 )
+        #full_games_played =  league_size*(league_size - 1 )
 
         # simulating an ongoing season
         if sel_season == live_season:
@@ -140,7 +140,7 @@ with sim_launch_tab:
             display_league_table(actual_table, sel_season)
 
         # run the simulations
-        # can extend this to loop over multiple models if present
+        # loop over multiple models if desired
         models_used = ["elo_static", "elo_dynamic"]
         for model in models_used:
             st.subheader(f"Model: {model}")
