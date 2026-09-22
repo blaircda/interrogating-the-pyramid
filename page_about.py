@@ -52,5 +52,5 @@ st.write("""
 st.subheader("What else can be predicted?")
 
 st.write("""
-        Predicted is surely over-selling it, but I display the some results for time series regression on collective (tier-wise) home win proportion, and individual Premier League 2026/2027 teams' win, draw and goal for/against proportion.
+        Predicted may be over-selling it, but I display some (non-interactive) results for time series regression on collective (tier-wise) home win proportion, and individual Premier League 2026/2027 teams' win, draw and goal for/against proportion.
         """)

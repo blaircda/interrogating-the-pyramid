@@ -50,4 +50,4 @@ Any league season from any start date. Using Monte Carlo simulations in which I 
 
 ## What else can be predicted?
 
-Predicted is surely over-selling it, but using time series regression: collective (tier-wise) home win proportion, and individual Premier League 2026/2027 teams' win, draw and goal for/against.
+Predicted may be over-selling it, but I display some (non-interactive) results for time series regression on collective (tier-wise) home win proportion, and individual Premier League 2026/2027 teams' win, draw and goal for/against proportion.
