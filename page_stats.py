@@ -116,17 +116,17 @@ with scatter_tab:
             (tables_data.index.get_level_values("Tier")==choose_tier) &
             (seasons>=s1) & (seasons<=s2)
         ]
-        hue="None"
+        hue=None
 
     selx = st.selectbox("Choose data to plot",
             table_labels.keys(),
-            index = 0,
+            index = 8,
             format_func = lambda x : table_labels.get(x,x)[0],
             key="selx_table_data"
         )
     sely = st.selectbox("Choose data to plot",
             table_labels.keys(),
-            index = 1,
+            index = 9,
             format_func = lambda x : table_labels.get(x,x)[0],
             key="sely_table_data"
         )
@@ -169,7 +169,7 @@ with team_trends_tab:
     )
 
     if len(sel_teams) == 1:
-        annotate_tier = False
+        annotate_tier = True
     else:
         annotate_tier = False            
     fig = plot_team_line_all_seasons(df, "Season", sel, hue="Team", annotate_tier = annotate_tier)

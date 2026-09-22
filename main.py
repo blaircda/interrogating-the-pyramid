@@ -8,7 +8,7 @@ sim_page = st.Page("page_simulations.py", title="Simulations", icon=":material/s
 regr_page = st.Page("page_regressions.py", title="Regressions", icon=":material/chart_data:")
 
 pg = st.navigation([
-        about_page, ratings_page, stats_page, tables_page, sim_page, regr_page
+        about_page, ratings_page, tables_page, stats_page, sim_page, regr_page
         ])
 pg.run()
 
