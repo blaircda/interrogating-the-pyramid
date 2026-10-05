@@ -27,16 +27,16 @@ def get_new_ratings(ratings, home_team, away_team, home_score, away_score):
     rating_diff = home_team_rating - away_team_rating + home_adv
 
     win_ex1 = diff_to_w[rating_diff+2000]
-    win_ex2 = 1 - win_ex1
 
     if home_score > away_score:
-        Delta = round(K*G*win_ex2,0)
+        outcome1 = 1
     elif home_score < away_score: # team2 wins
-        Delta = -round(K*G*win_ex1,0)
+        outcome1 = 0
     else: # draw
-        Delta = round(K*(0.5-win_ex1),0)
+        outcome1 = 0.5
 
-    home_team_rating = home_team_rating + int(Delta)
-    away_team_rating = away_team_rating - int(Delta)
+    Delta = K*G*(outcome1 - win_ex1)
+    home_team_rating += int(Delta)
+    away_team_rating -= int(Delta)
 
     return home_team_rating, away_team_rating, win_ex1

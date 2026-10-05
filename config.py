@@ -1,11 +1,9 @@
-change_to_goal_diff = "1976/1977"
-change_to_three_points_per_win = "1981/1982"
+CHANGE_TO_GOAL_DIFF = "1976/1977"
+CHANGE_TO_THREE_POINTS_PER_WIN = "1981/1982"
 
-initial_home_adv = 150
-N_matches_home_adv = 2000
-default_rating = 1500
+INITIAL_HOME_ADV = 150
+N_MATCHES_HOME_ADV = 2000
+DEFAULT_RATING = 1500
 
-many_sims_N_sims = 10000
-
-live_season = "2026/2027"
+LIVE_SEASON = "2026/2027"
 

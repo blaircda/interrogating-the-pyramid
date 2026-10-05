@@ -82,8 +82,8 @@ with home_adv_tab:
 # Model Home Advantage
 ########################################################################
     st.subheader("Model home advantage")
-    st.write(f"Starting from initial home advantage {initial_home_adv} rating points")
-    st.write(f"Updating model home advantage at start of every season based on previous {N_matches_home_adv} matches")
+    st.write(f"Starting from initial home advantage {INITIAL_HOME_ADV} rating points")
+    st.write(f"Updating model home advantage at start of every season based on previous {N_MATCHES_HOME_ADV} matches")
 
     # plot model home advantage over time
     fig = plot_model_home_adv( season_ratings_end.xs("home_adv", level=1) )

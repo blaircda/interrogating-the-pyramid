@@ -92,11 +92,11 @@ def display_results(model_data, teams, Nsims):
     sorted_data = { k:v for k, v in sorted(model_data.items(), key=lambda item: (item[1]["PTS"]), reverse=True)}
     df = pd.DataFrame.from_dict(sorted_data, orient="index")
     cols = ["PTS", "W", "D", "L", "GF", "GA"]
-    df[cols] /= Nsims
+    #df[cols] /= Nsims
     pos_cols = df.columns[df.columns.map(lambda x: isinstance(x, int))]
-    df[pos_cols] = df[pos_cols]/Nsims
-    df["xPOS"] = sum( pos * df[pos] for pos in pos_cols )
-    st.dataframe(df[["xPOS"] + cols + pos_cols.tolist() ])
+    #df[pos_cols] = df[pos_cols]/Nsims
+    #df["xPOS"] = sum( pos * df[pos] for pos in pos_cols )
+    st.dataframe(df[["POS"] + cols + pos_cols.tolist() ])
 
     fig, axs = plt.subplots(
                         nrows = league_size//2,
@@ -131,11 +131,43 @@ def display_league_table(actual_table, season):
     display league table 
     """
     table = actual_table.sort_values(by="POS")
-    if season < change_to_goal_diff:
+    if season < CHANGE_TO_GOAL_DIFF:
         display_columns = ["POS", "W", "D", "L", "GF", "GA", "GAv", "PTS", "Rstart", "Rend"]
     else:
         display_columns = ["POS", "W", "D", "L", "GF", "GA", "GD", "PTS", "Rstart", "Rend"]
     st.write(table[display_columns])
+
+def get_errors(actual_table, simulation_results, Nsims):
+    """
+    compares actual_table to predictions of simulation_results
+    and computes some basic measurements of the discrepancy
+    """
+    
+    df = pd.DataFrame.from_dict(simulation_results, orient="index")
+    cols = ["POS", "PTS", "W", "D", "L", "GF", "GA"]
+    #df[cols] /= Nsims
+    pos_cols = df.columns[df.columns.map(lambda x: isinstance(x, int))]
+    df[pos_cols] = df[pos_cols]/Nsims
+    #df["xPOS"] = sum( pos * df[pos] for pos in pos_cols )
+    new_col_names = { c: "x"+c for c in cols }
+    df = df.rename(columns=new_col_names)
+    df["POS"] = actual_table["POS"]
+    df["PTS"] = actual_table["PTS"]
+
+    #st.write(df[["POS", "xPOS", "PTS", "xPTS"]])
+
+    # posn errors
+    posn_mae = (df["POS"] - df["xPOS"]).abs().mean()
+    with np.errstate(divide="ignore"):
+        df["log_err"] = -np.log( df.apply(lambda row: row[row["POS"]], axis=1) )
+    posn_log = df["log_err"].mean()
+    # points errors
+    points_mae = (df["PTS"] - df["xPTS"]).abs().mean()
+    points_rmse = np.sqrt( ( (df["PTS"] - df["xPTS"]) ** 2).mean() )
+
+    model_errors = { "posn_mae": posn_mae, "posn_log":posn_log, "points_mae":points_mae, "points_rmse":points_rmse }
+
+    return model_errors
 
 def display_errors(model_errors):
     st.write(f"\nErrors")
