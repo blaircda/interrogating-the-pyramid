@@ -6,12 +6,12 @@ st.header("Interrogating the Pyramid")
 st.subheader("What is this?")
 
 st.write("""Macro-level stats, visualisations and attempted predictions for the top 4 tiers of the English football pyramid using an ELO-style ratings model
-    \n **Data used:** English top 4 tiers results from https://github.com/seanelvidge/England-football-results
+    \n**Data used:** English top 4 tiers results from https://github.com/seanelvidge/England-football-results
     """)
 
 st.subheader("What is the rating model?")
 
-st.write("""**ELO model:** Given a match between a home team with rating $R_H$ and an away team with match $R_A$, the home team win expectancy is calculated via
+st.write("""**Elo-style model:** Given a match between a home team with rating $R_H$ and an away team with match $R_A$, the home team win expectancy is calculated via
     \n$W_H = 1/ ( 1 + 10^{-d/400})$ with $d = R_H - R_A + \Delta_H$
     \nwhere $\Delta_H$ is a home advantage factor. The away team win expectancy is $W_A = 1 - W_H$.
     \nFor each team, the new rating is 

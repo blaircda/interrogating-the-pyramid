@@ -4,7 +4,7 @@ See: https://interrogating-the-pyramid.streamlit.app/
 
 ## What is this?
 
-Macro-level stats, visualisations and attempted predictions for the top 4 tiers of the English football pyramid using an ELO-style ratings model
+Macro-level stats, visualisations and attempted predictions for the top 4 tiers of the English football pyramid using an Elo-style ratings model
 
 **Data used:** English top 4 tiers results from https://github.com/seanelvidge/England-football-results
 
