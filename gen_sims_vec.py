@@ -67,7 +67,7 @@ def simulation_loop( models_used, seasons_to_sim, max_tier, descr):
                         print(season, tier, div)
                         actual_table = tables.loc[ (season, tier, div) ]
 
-                        for x in range(0,100,25):
+                        for x in range(0,100,10):
                             print(f"Simulation starting at {x}% of season")
                             simulated_season = simulate_season_percent(
                                 season, tier, div,

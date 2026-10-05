@@ -59,7 +59,7 @@ def run_season_vec(
     """
         
     start = perf_counter()
-    print(f"\n\n\nSimulating league with game model: {model} - vectorised")
+    print(f"\nSimulating league with game model: {model} - vectorised")
 
     # initialise an empty league table  
     start_table = { team: {"W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0}  for team in ratings}
@@ -182,7 +182,7 @@ def run_season_vec(
     results = { k:v for k,v in sorted(results.items(), key = lambda item: -item[1]["PTS"]) }
 
     elapsed = perf_counter() - start
-    print(f"Simulation finished in {elapsed:.6f} s\n\n\n")
+    print(f"Simulation finished in {elapsed:.6f}s\n")
 
     return results
     
