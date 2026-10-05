@@ -10,7 +10,7 @@ from import_process import (
 )
 from plotting import (
     plot_multi_cols, display_results,
-    display_league_table, display_errors,
+    display_league_table, get_errors, display_errors,
     plot_season_sim_errors, plot_season_sim_errors_multi, plot_season_start_errors
     )
 from helpers import (
@@ -18,9 +18,7 @@ from helpers import (
     select_season_range, select_season_division, select_tier_by_season,
     get_sorted_tables, get_teams_by_season_and_div, format_matches_played
 )
-from simulation.monte_carlo_simulator import (
-    prepare_state, run_simulations, get_errors
-)
+from simulation.vectorise_mc_sim import run_season_vec
 
 teams_csv = "data/EnglishTeamActivePeriods.csv"
 scores_csv = "data/EnglandLeagueResults.csv"
@@ -87,7 +85,7 @@ with sim_launch_tab:
         #full_games_played =  league_size*(league_size - 1 )
 
         # simulating an ongoing season
-        if sel_season == live_season:
+        if sel_season == LIVE_SEASON:
             # simulating the whole season
             if sim_start_date is None:
                 matches_played = None
@@ -95,7 +93,6 @@ with sim_launch_tab:
                 # then the simulator will iterate over all permutations
                 # in principle is not good for dynamic rating updates
                 matches_to_play = None
-                initial_ratings = preseason_ratings
             else:
                 # split the season fixtures by the date
                 matches_played, matches_to_play = split_season_by_date(scores_df, sel_season, sel_league[1], sim_start_date)
@@ -103,37 +100,25 @@ with sim_launch_tab:
                 # then the simulator will iterate over all permutations
                 # in principle is not good for dynamic rating updates
                 matches_to_play = None
-                # get initial ratings at that date 
-                initial_ratings = get_ratings_at_date(ratings_df, sel_teams, sim_start_date)
+
         # simulating a completed season
-        elif sel_season != live_season:
+        elif sel_season != LIVE_SEASON:
             # simulating the whole season
             if sim_start_date is None:
                 # get all fixtures in historical order for compatibility with dynamic rating updates in simulation
                 matches_played, matches_to_play = split_season_by_date(scores_df, sel_season, sel_league[1], season_gamedays[0]- pd.Timedelta("1 day"))
-                initial_ratings = preseason_ratings
             else:
                 # split the season fixtures by the date
                 matches_played, matches_to_play = split_season_by_date(scores_df, sel_season, sel_league[1], sim_start_date)
                 matches_to_play = None
-                # get initial ratings at that date 
-                initial_ratings = get_ratings_at_date(ratings_df, sel_teams, sim_start_date)
 
         if sim_start_date:
             # display table as of results_to_date
             starting_table = get_table_with_elo_to_date(ratings_df, scores_df, sel_season, sel_league, sim_start_date, preseason_ratings.loc[sel_teams])
             st.write(f"Table as of {sim_start_date:%Y-%m-%d}")
             display_league_table(starting_table, sel_season)
-            
-        # prepare the state dictionary passed to the simulation
-        state = prepare_state(
-            teams = sel_teams,
-            ratings = initial_ratings,
-            home_adv = preseason_ratings.loc["home_adv"],
-            season = sel_season
-        )
 
-        if sel_season != live_season:
+        if sel_season != LIVE_SEASON:
             # get the actual final table
             actual_table = tables.loc[(sel_season,*sel_league)]
             st.write("Actual results:")
@@ -142,21 +127,27 @@ with sim_launch_tab:
         # run the simulations
         # loop over multiple models if desired
         models_used = ["elo_static", "elo_dynamic"]
+
         for model in models_used:
             st.subheader(f"Model: {model}")
-            simulated_season = run_simulations(
-                                    state, Nsims,
-                                    model_name = model,
-                                    games_played = matches_played,
-                                    games_to_play = matches_to_play
-                                )            
-            # display the results
-            st.write("Simulation results:")
+
+            simulated_season = run_season_vec(
+                    season = sel_season,
+                    ratings = {team: preseason_ratings[team] for team in sel_teams},
+                    home_adv = preseason_ratings.loc["home_adv"],
+                    Nsims = Nsims,
+                    model = model,
+                    games_played = matches_played,
+                    games_to_play = matches_to_play,
+                )
+                
+            st.subheader("Simulation results")
             display_results(simulated_season, sel_teams, Nsims)
-            #games_played = actual_table["W"].sum(axis=0) + actual_table["D"].sum(axis=0)/2
-            if sel_season != live_season:
+
+            if sel_season != LIVE_SEASON:
                 model_errors = get_errors(actual_table, simulated_season, Nsims)
                 display_errors(model_errors)
+                
 
 ########################################################################
 # Tab: Season Simulations

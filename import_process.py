@@ -28,8 +28,8 @@ def process_data( teams_csv, scores_csv ) -> HistoricalData:
     """
     # import all teams and set their default rating
     teams = pd.read_csv(teams_csv, usecols=["Team"])["Team"].to_list()
-    initial_ratings = {team:default_rating for team in teams}
-    initial_ratings["home_adv"] = initial_home_adv
+    initial_ratings = {team:DEFAULT_RATING for team in teams}
+    initial_ratings["home_adv"] = INITIAL_HOME_ADV
 
     # build full ratings - direct from csv
     ratings, season_ratings, home_success, home_winex = build_ratings(initial_ratings, scores_csv)
@@ -105,7 +105,7 @@ def build_ratings(live_ratings, scores_csv):
     home_success = []
     home_winex = []
     home_res_hash = { "H": 1, "D": 0.5, "A": 0}
-    N = N_matches_home_adv
+    N = N_MATCHES_HOME_ADV
     # counters if updating every X games rather than seasonally
     #update_home_adv_counter = 0
     #when_update_home_adv = 100   
@@ -279,14 +279,14 @@ def build_league_tables(df):
     # take into account historical rules
     seasons = full_tables.index.get_level_values("Season")
     
-    two_point_era = full_tables[ seasons < change_to_three_points_per_win ]
+    two_point_era = full_tables[ seasons < CHANGE_TO_THREE_POINTS_PER_WIN ]
     if not two_point_era.empty:
         two_point_era["PTS"] = 2*full_tables["W"] + full_tables["D"]
         two_point_era["PTSH"] = 2*full_tables["WH"] + full_tables["DH"]
         two_point_era["PTSA"] = 2*full_tables["WA"] + full_tables["DA"]
         two_point_era["PTS_RULE"] = 2
 
-    three_point_era = full_tables[ seasons >= change_to_three_points_per_win ]
+    three_point_era = full_tables[ seasons >= CHANGE_TO_THREE_POINTS_PER_WIN ]
     if not three_point_era.empty:
         three_point_era["PTS"] = 3*full_tables["W"] + full_tables["D"]
         three_point_era["PTSH"] = 3*full_tables["WH"] + full_tables["DH"]
@@ -295,13 +295,13 @@ def build_league_tables(df):
 
     full_tables = pd.concat([two_point_era, three_point_era])
     
-    goal_average_era = full_tables[seasons < change_to_goal_diff].sort_values(["PTS", "GAv", "GF"], ascending=[False, False, False])
-    goal_diff_era = full_tables[ seasons >= change_to_goal_diff ].sort_values(["PTS", "GD", "GF"], ascending=[False, False, False])
+    goal_average_era = full_tables[seasons < CHANGE_TO_GOAL_DIFF].sort_values(["PTS", "GAv", "GF"], ascending=[False, False, False])
+    goal_diff_era = full_tables[ seasons >= CHANGE_TO_GOAL_DIFF ].sort_values(["PTS", "GD", "GF"], ascending=[False, False, False])
 
     full_tables = pd.concat([goal_average_era, goal_diff_era])
 
     full_tables["GOAL_RULE"] = "Diff"
-    full_tables.loc[seasons < change_to_goal_diff, "GOAL_RULE"] = "Av"
+    full_tables.loc[seasons < CHANGE_TO_GOAL_DIFF, "GOAL_RULE"] = "Av"
 
     # add a position column 
     full_tables["POS"] = full_tables.groupby(level=["Season", "Tier", "Division"]).cumcount().add(1)
