@@ -6,7 +6,7 @@ from import_process import (
     get_ratings_at_date, split_season_by_date, split_season_by_percent,
 )
 from simulation.vectorise_mc_sim import (
-    run_season_vec
+    run_season_monte_carlo
 )
 from plotting import get_errors
 
@@ -39,7 +39,7 @@ def simulate_season_percent(season, tier, div, season_league_teams, scores_df, s
     if season == LIVE_SEASON:
         matches_to_play = None
     
-    simulated_season = run_season_vec(
+    simulated_season = run_season_monte_carlo(
         season = season,
         ratings = initial_ratings,
         home_adv = home_adv,

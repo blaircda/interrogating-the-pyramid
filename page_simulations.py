@@ -18,7 +18,7 @@ from helpers import (
     select_season_range, select_season_division, select_tier_by_season,
     get_sorted_tables, get_teams_by_season_and_div, format_matches_played
 )
-from simulation.vectorise_mc_sim import run_season_vec
+from simulation.vectorise_mc_sim import run_season_monte_carlo, run_season_pure_elo
 
 teams_csv = "data/EnglishTeamActivePeriods.csv"
 scores_csv = "data/EnglandLeagueResults.csv"
@@ -128,10 +128,22 @@ with sim_launch_tab:
         # loop over multiple models if desired
         models_used = ["elo_static", "elo_dynamic"]
 
+        st.subheader("Direct predictions from Elo win expectancy converted to Poisson model")
+        predicted_season = run_season_pure_elo(
+                season = sel_season,
+                ratings = {team: preseason_ratings[team] for team in sel_teams},
+                home_adv = preseason_ratings.loc["home_adv"],
+                games_played = matches_played,
+                games_to_play = matches_to_play,
+            )
+
+        st.write( pd.DataFrame.from_dict(predicted_season, orient="index") )
+
+        st.subheader("Monte Carlo predictions from Elo win expectancy converted to Poisson models")
         for model in models_used:
             st.subheader(f"Model: {model}")
 
-            simulated_season = run_season_vec(
+            simulated_season = run_season_monte_carlo(
                     season = sel_season,
                     ratings = {team: preseason_ratings[team] for team in sel_teams},
                     home_adv = preseason_ratings.loc["home_adv"],
