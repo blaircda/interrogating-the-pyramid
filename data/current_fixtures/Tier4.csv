@@ -1,0 +1,553 @@
+home,away
+Newport County,Rochdale
+Oldham Athletic,Port Vale
+Accrington Stanley,Colchester United
+Barnet,Salford City
+Cheltenham Town,Rotherham United
+Chesterfield,Fleetwood Town
+Crawley Town,Crewe Alexandra
+Gillingham,Walsall
+Grimsby Town,Exeter City
+Northampton Town,Swindon Town
+Tranmere Rovers,Shrewsbury Town
+York City,Bristol Rovers
+Salford City,Chesterfield
+Walsall,Grimsby Town
+Bristol Rovers,Newport County
+Colchester United,Oldham Athletic
+Crewe Alexandra,Northampton Town
+Exeter City,Accrington Stanley
+Fleetwood Town,Gillingham
+Port Vale,Tranmere Rovers
+Rochdale,Crawley Town
+Rotherham United,York City
+Shrewsbury Town,Barnet
+Swindon Town,Cheltenham Town
+Barnet,Cheltenham Town
+Port Vale,Crewe Alexandra
+Rotherham United,Chesterfield
+Colchester United,Rochdale
+Crawley Town,Bristol Rovers
+Gillingham,Northampton Town
+Grimsby Town,Fleetwood Town
+Newport County,Tranmere Rovers
+Oldham Athletic,Swindon Town
+Shrewsbury Town,Salford City
+Walsall,Accrington Stanley
+York City,Exeter City
+Accrington Stanley,Grimsby Town
+Bristol Rovers,Colchester United
+Cheltenham Town,York City
+Chesterfield,Gillingham
+Crewe Alexandra,Walsall
+Exeter City,Barnet
+Fleetwood Town,Oldham Athletic
+Northampton Town,Crawley Town
+Rochdale,Shrewsbury Town
+Salford City,Newport County
+Swindon Town,Port Vale
+Tranmere Rovers,Rotherham United
+Fleetwood Town,Shrewsbury Town
+Salford City,Port Vale
+Accrington Stanley,Crawley Town
+Bristol Rovers,Rotherham United
+Cheltenham Town,Grimsby Town
+Chesterfield,Barnet
+Crewe Alexandra,York City
+Exeter City,Walsall
+Northampton Town,Newport County
+Rochdale,Gillingham
+Swindon Town,Colchester United
+Tranmere Rovers,Oldham Athletic
+Crawley Town,Cheltenham Town
+Grimsby Town,Bristol Rovers
+Barnet,Accrington Stanley
+Colchester United,Crewe Alexandra
+Gillingham,Tranmere Rovers
+Newport County,Fleetwood Town
+Oldham Athletic,Chesterfield
+Port Vale,Exeter City
+Rotherham United,Salford City
+Shrewsbury Town,Northampton Town
+Walsall,Rochdale
+York City,Swindon Town
+Rochdale,Oldham Athletic
+Walsall,Port Vale
+Accrington Stanley,Newport County
+Barnet,Fleetwood Town
+Chesterfield,York City
+Colchester United,Cheltenham Town
+Crewe Alexandra,Shrewsbury Town
+Exeter City,Tranmere Rovers
+Gillingham,Bristol Rovers
+Grimsby Town,Crawley Town
+Northampton Town,Rotherham United
+Salford City,Swindon Town
+Bristol Rovers,Exeter City
+Cheltenham Town,Chesterfield
+Fleetwood Town,Rochdale
+Newport County,Grimsby Town
+Rotherham United,Crewe Alexandra
+Shrewsbury Town,Colchester United
+Swindon Town,Accrington Stanley
+Tranmere Rovers,Walsall
+York City,Gillingham
+Oldham Athletic,Salford City
+Crawley Town,Barnet
+Port Vale,Northampton Town
+Chesterfield,Tranmere Rovers
+Accrington Stanley,Cheltenham Town
+Crewe Alexandra,Bristol Rovers
+Exeter City,Rotherham United
+Gillingham,Newport County
+Grimsby Town,Shrewsbury Town
+Rochdale,Swindon Town
+Salford City,Fleetwood Town
+Walsall,Crawley Town
+Barnet,York City
+Northampton Town,Oldham Athletic
+Colchester United,Port Vale
+Oldham Athletic,Accrington Stanley
+Swindon Town,Crewe Alexandra
+Bristol Rovers,Barnet
+Cheltenham Town,Salford City
+Crawley Town,Chesterfield
+Fleetwood Town,Walsall
+Newport County,Colchester United
+Port Vale,Grimsby Town
+Rotherham United,Gillingham
+Shrewsbury Town,Exeter City
+Tranmere Rovers,Rochdale
+York City,Northampton Town
+Fleetwood Town,Rotherham United
+Shrewsbury Town,Bristol Rovers
+Accrington Stanley,Gillingham
+Colchester United,Exeter City
+Crewe Alexandra,Rochdale
+Grimsby Town,Northampton Town
+Newport County,York City
+Oldham Athletic,Cheltenham Town
+Port Vale,Chesterfield
+Salford City,Crawley Town
+Swindon Town,Walsall
+Tranmere Rovers,Barnet
+Barnet,Swindon Town
+Bristol Rovers,Salford City
+Cheltenham Town,Fleetwood Town
+Chesterfield,Colchester United
+Crawley Town,Shrewsbury Town
+Exeter City,Crewe Alexandra
+Northampton Town,Tranmere Rovers
+Rochdale,Grimsby Town
+Rotherham United,Newport County
+Walsall,Oldham Athletic
+York City,Accrington Stanley
+Gillingham,Port Vale
+Bristol Rovers,Swindon Town
+Cheltenham Town,Newport County
+Northampton Town,Colchester United
+Barnet,Oldham Athletic
+Chesterfield,Crewe Alexandra
+Crawley Town,Tranmere Rovers
+Exeter City,Fleetwood Town
+Gillingham,Grimsby Town
+Rochdale,Accrington Stanley
+Rotherham United,Shrewsbury Town
+York City,Port Vale
+Walsall,Salford City
+Newport County,Chesterfield
+Grimsby Town,York City
+Port Vale,Rochdale
+Accrington Stanley,Northampton Town
+Colchester United,Walsall
+Crewe Alexandra,Barnet
+Fleetwood Town,Bristol Rovers
+Oldham Athletic,Crawley Town
+Salford City,Exeter City
+Shrewsbury Town,Gillingham
+Swindon Town,Rotherham United
+Tranmere Rovers,Cheltenham Town
+Exeter City,Cheltenham Town
+Bristol Rovers,Chesterfield
+Colchester United,Gillingham
+Crewe Alexandra,Newport County
+Port Vale,Accrington Stanley
+Rochdale,York City
+Rotherham United,Crawley Town
+Salford City,Northampton Town
+Shrewsbury Town,Oldham Athletic
+Swindon Town,Grimsby Town
+Walsall,Barnet
+Fleetwood Town,Tranmere Rovers
+Gillingham,Crewe Alexandra
+Newport County,Swindon Town
+Accrington Stanley,Salford City
+Barnet,Port Vale
+Cheltenham Town,Bristol Rovers
+Chesterfield,Shrewsbury Town
+Crawley Town,Fleetwood Town
+Grimsby Town,Rotherham United
+Northampton Town,Rochdale
+Oldham Athletic,Exeter City
+Tranmere Rovers,Colchester United
+York City,Walsall
+Bristol Rovers,Tranmere Rovers
+Exeter City,Crawley Town
+Colchester United,York City
+Crewe Alexandra,Grimsby Town
+Fleetwood Town,Accrington Stanley
+Port Vale,Newport County
+Rochdale,Barnet
+Rotherham United,Oldham Athletic
+Salford City,Gillingham
+Shrewsbury Town,Cheltenham Town
+Swindon Town,Chesterfield
+Walsall,Northampton Town
+Accrington Stanley,Crewe Alexandra
+Barnet,Rotherham United
+Cheltenham Town,Rochdale
+Chesterfield,Exeter City
+Crawley Town,Port Vale
+Gillingham,Swindon Town
+Grimsby Town,Colchester United
+Newport County,Walsall
+Northampton Town,Fleetwood Town
+Oldham Athletic,Bristol Rovers
+Tranmere Rovers,Salford City
+York City,Shrewsbury Town
+Chesterfield,Grimsby Town
+Tranmere Rovers,York City
+Barnet,Northampton Town
+Bristol Rovers,Accrington Stanley
+Cheltenham Town,Crewe Alexandra
+Crawley Town,Newport County
+Exeter City,Rochdale
+Fleetwood Town,Swindon Town
+Oldham Athletic,Gillingham
+Rotherham United,Walsall
+Salford City,Colchester United
+Shrewsbury Town,Port Vale
+Crewe Alexandra,Salford City
+Colchester United,Fleetwood Town
+Northampton Town,Exeter City
+Accrington Stanley,Chesterfield
+Gillingham,Cheltenham Town
+Grimsby Town,Barnet
+Newport County,Oldham Athletic
+Port Vale,Rotherham United
+Rochdale,Bristol Rovers
+Swindon Town,Tranmere Rovers
+Walsall,Shrewsbury Town
+York City,Crawley Town
+Barnet,Colchester United
+Bristol Rovers,Walsall
+Cheltenham Town,Port Vale
+Chesterfield,Northampton Town
+Crawley Town,Gillingham
+Exeter City,Newport County
+Fleetwood Town,Crewe Alexandra
+Oldham Athletic,York City
+Rotherham United,Rochdale
+Salford City,Grimsby Town
+Shrewsbury Town,Swindon Town
+Tranmere Rovers,Accrington Stanley
+Accrington Stanley,Rotherham United
+Colchester United,Crawley Town
+Crewe Alexandra,Tranmere Rovers
+Gillingham,Barnet
+Grimsby Town,Oldham Athletic
+Newport County,Shrewsbury Town
+Northampton Town,Cheltenham Town
+Port Vale,Bristol Rovers
+Rochdale,Salford City
+Swindon Town,Exeter City
+Walsall,Chesterfield
+York City,Fleetwood Town
+Accrington Stanley,Shrewsbury Town
+Colchester United,Rotherham United
+Crewe Alexandra,Oldham Athletic
+Grimsby Town,Tranmere Rovers
+Newport County,Barnet
+Port Vale,Fleetwood Town
+Rochdale,Chesterfield
+Swindon Town,Crawley Town
+Walsall,Cheltenham Town
+York City,Salford City
+Gillingham,Exeter City
+Northampton Town,Bristol Rovers
+Barnet,Grimsby Town
+Chesterfield,Accrington Stanley
+Shrewsbury Town,Walsall
+Bristol Rovers,Rochdale
+Cheltenham Town,Gillingham
+Crawley Town,York City
+Exeter City,Northampton Town
+Fleetwood Town,Colchester United
+Oldham Athletic,Newport County
+Rotherham United,Port Vale
+Salford City,Crewe Alexandra
+Tranmere Rovers,Swindon Town
+Barnet,Tranmere Rovers
+Bristol Rovers,Shrewsbury Town
+Cheltenham Town,Oldham Athletic
+Chesterfield,Port Vale
+Crawley Town,Salford City
+Exeter City,Colchester United
+Gillingham,Accrington Stanley
+Northampton Town,Grimsby Town
+Rochdale,Crewe Alexandra
+Rotherham United,Fleetwood Town
+Walsall,Swindon Town
+York City,Newport County
+Accrington Stanley,York City
+Colchester United,Chesterfield
+Crewe Alexandra,Exeter City
+Fleetwood Town,Cheltenham Town
+Grimsby Town,Rochdale
+Newport County,Rotherham United
+Oldham Athletic,Walsall
+Port Vale,Gillingham
+Salford City,Bristol Rovers
+Shrewsbury Town,Crawley Town
+Swindon Town,Barnet
+Tranmere Rovers,Northampton Town
+Accrington Stanley,Rochdale
+Colchester United,Northampton Town
+Crewe Alexandra,Chesterfield
+Fleetwood Town,Exeter City
+Grimsby Town,Gillingham
+Newport County,Cheltenham Town
+Oldham Athletic,Barnet
+Port Vale,York City
+Salford City,Walsall
+Shrewsbury Town,Rotherham United
+Swindon Town,Bristol Rovers
+Tranmere Rovers,Crawley Town
+Barnet,Crewe Alexandra
+Bristol Rovers,Fleetwood Town
+Cheltenham Town,Tranmere Rovers
+Chesterfield,Newport County
+Crawley Town,Oldham Athletic
+Exeter City,Salford City
+Gillingham,Shrewsbury Town
+Northampton Town,Accrington Stanley
+Rochdale,Port Vale
+Rotherham United,Swindon Town
+Walsall,Colchester United
+York City,Grimsby Town
+Accrington Stanley,Walsall
+Bristol Rovers,Crawley Town
+Cheltenham Town,Barnet
+Chesterfield,Rotherham United
+Crewe Alexandra,Port Vale
+Exeter City,York City
+Fleetwood Town,Grimsby Town
+Northampton Town,Gillingham
+Rochdale,Colchester United
+Salford City,Shrewsbury Town
+Swindon Town,Oldham Athletic
+Tranmere Rovers,Newport County
+Barnet,Exeter City
+Colchester United,Bristol Rovers
+Crawley Town,Northampton Town
+Gillingham,Chesterfield
+Grimsby Town,Accrington Stanley
+Newport County,Salford City
+Oldham Athletic,Fleetwood Town
+Port Vale,Swindon Town
+Rotherham United,Tranmere Rovers
+Shrewsbury Town,Rochdale
+Walsall,Crewe Alexandra
+York City,Cheltenham Town
+Barnet,Chesterfield
+Colchester United,Swindon Town
+Crawley Town,Accrington Stanley
+Gillingham,Rochdale
+Grimsby Town,Cheltenham Town
+Newport County,Northampton Town
+Oldham Athletic,Tranmere Rovers
+Port Vale,Salford City
+Rotherham United,Bristol Rovers
+Shrewsbury Town,Fleetwood Town
+Walsall,Exeter City
+York City,Crewe Alexandra
+Accrington Stanley,Barnet
+Bristol Rovers,Grimsby Town
+Cheltenham Town,Crawley Town
+Chesterfield,Oldham Athletic
+Crewe Alexandra,Colchester United
+Exeter City,Port Vale
+Fleetwood Town,Newport County
+Northampton Town,Shrewsbury Town
+Rochdale,Walsall
+Salford City,Rotherham United
+Swindon Town,York City
+Tranmere Rovers,Gillingham
+Accrington Stanley,Port Vale
+Barnet,Walsall
+Cheltenham Town,Exeter City
+Chesterfield,Bristol Rovers
+Crawley Town,Rotherham United
+Gillingham,Colchester United
+Grimsby Town,Swindon Town
+Newport County,Crewe Alexandra
+Northampton Town,Salford City
+Oldham Athletic,Shrewsbury Town
+Tranmere Rovers,Fleetwood Town
+York City,Rochdale
+Bristol Rovers,York City
+Colchester United,Accrington Stanley
+Crewe Alexandra,Crawley Town
+Exeter City,Grimsby Town
+Fleetwood Town,Chesterfield
+Port Vale,Oldham Athletic
+Rochdale,Newport County
+Rotherham United,Cheltenham Town
+Salford City,Barnet
+Shrewsbury Town,Tranmere Rovers
+Swindon Town,Northampton Town
+Walsall,Gillingham
+Accrington Stanley,Exeter City
+Barnet,Shrewsbury Town
+Cheltenham Town,Swindon Town
+Chesterfield,Salford City
+Crawley Town,Rochdale
+Gillingham,Fleetwood Town
+Grimsby Town,Walsall
+Newport County,Bristol Rovers
+Northampton Town,Crewe Alexandra
+Oldham Athletic,Colchester United
+Tranmere Rovers,Port Vale
+York City,Rotherham United
+Bristol Rovers,Cheltenham Town
+Colchester United,Tranmere Rovers
+Crewe Alexandra,Gillingham
+Exeter City,Oldham Athletic
+Fleetwood Town,Crawley Town
+Port Vale,Barnet
+Rochdale,Northampton Town
+Rotherham United,Grimsby Town
+Salford City,Accrington Stanley
+Shrewsbury Town,Chesterfield
+Swindon Town,Newport County
+Walsall,York City
+Barnet,Newport County
+Bristol Rovers,Northampton Town
+Cheltenham Town,Walsall
+Chesterfield,Rochdale
+Crawley Town,Swindon Town
+Exeter City,Gillingham
+Fleetwood Town,Port Vale
+Oldham Athletic,Crewe Alexandra
+Rotherham United,Colchester United
+Salford City,York City
+Shrewsbury Town,Accrington Stanley
+Tranmere Rovers,Grimsby Town
+Accrington Stanley,Tranmere Rovers
+Colchester United,Barnet
+Crewe Alexandra,Fleetwood Town
+Gillingham,Crawley Town
+Grimsby Town,Salford City
+Newport County,Exeter City
+Northampton Town,Chesterfield
+Port Vale,Cheltenham Town
+Rochdale,Rotherham United
+Swindon Town,Shrewsbury Town
+Walsall,Bristol Rovers
+York City,Oldham Athletic
+Barnet,Gillingham
+Bristol Rovers,Port Vale
+Cheltenham Town,Northampton Town
+Chesterfield,Walsall
+Crawley Town,Colchester United
+Exeter City,Swindon Town
+Fleetwood Town,York City
+Oldham Athletic,Grimsby Town
+Rotherham United,Accrington Stanley
+Salford City,Rochdale
+Shrewsbury Town,Newport County
+Tranmere Rovers,Crewe Alexandra
+Accrington Stanley,Bristol Rovers
+Colchester United,Salford City
+Crewe Alexandra,Cheltenham Town
+Gillingham,Oldham Athletic
+Grimsby Town,Chesterfield
+Newport County,Crawley Town
+Northampton Town,Barnet
+Port Vale,Shrewsbury Town
+Rochdale,Exeter City
+Swindon Town,Fleetwood Town
+Walsall,Rotherham United
+York City,Tranmere Rovers
+Accrington Stanley,Oldham Athletic
+Barnet,Bristol Rovers
+Chesterfield,Crawley Town
+Colchester United,Newport County
+Crewe Alexandra,Swindon Town
+Exeter City,Shrewsbury Town
+Gillingham,Rotherham United
+Grimsby Town,Port Vale
+Northampton Town,York City
+Rochdale,Tranmere Rovers
+Salford City,Cheltenham Town
+Walsall,Fleetwood Town
+Oldham Athletic,Rochdale
+Bristol Rovers,Gillingham
+Cheltenham Town,Colchester United
+Crawley Town,Grimsby Town
+Fleetwood Town,Barnet
+Newport County,Accrington Stanley
+Port Vale,Walsall
+Rotherham United,Northampton Town
+Shrewsbury Town,Crewe Alexandra
+Swindon Town,Salford City
+Tranmere Rovers,Exeter City
+York City,Chesterfield
+Accrington Stanley,Swindon Town
+Barnet,Crawley Town
+Chesterfield,Cheltenham Town
+Colchester United,Shrewsbury Town
+Crewe Alexandra,Rotherham United
+Exeter City,Bristol Rovers
+Gillingham,York City
+Grimsby Town,Newport County
+Northampton Town,Port Vale
+Rochdale,Fleetwood Town
+Salford City,Oldham Athletic
+Walsall,Tranmere Rovers
+Bristol Rovers,Crewe Alexandra
+Cheltenham Town,Accrington Stanley
+Crawley Town,Walsall
+Fleetwood Town,Salford City
+Newport County,Gillingham
+Oldham Athletic,Northampton Town
+Port Vale,Colchester United
+Rotherham United,Exeter City
+Shrewsbury Town,Grimsby Town
+Swindon Town,Rochdale
+Tranmere Rovers,Chesterfield
+York City,Barnet
+Accrington Stanley,Fleetwood Town
+Barnet,Rochdale
+Cheltenham Town,Shrewsbury Town
+Chesterfield,Swindon Town
+Crawley Town,Exeter City
+Gillingham,Salford City
+Grimsby Town,Crewe Alexandra
+Newport County,Port Vale
+Northampton Town,Walsall
+Oldham Athletic,Rotherham United
+Tranmere Rovers,Bristol Rovers
+York City,Colchester United
+Bristol Rovers,Oldham Athletic
+Colchester United,Grimsby Town
+Crewe Alexandra,Accrington Stanley
+Exeter City,Chesterfield
+Fleetwood Town,Northampton Town
+Port Vale,Crawley Town
+Rochdale,Cheltenham Town
+Rotherham United,Barnet
+Salford City,Tranmere Rovers
+Shrewsbury Town,York City
+Swindon Town,Gillingham
+Walsall,Newport County

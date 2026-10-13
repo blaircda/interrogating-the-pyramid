@@ -1,0 +1,553 @@
+home,away
+Wolverhampton Wanderers,Blackburn Rovers
+Bolton Wanderers,Preston North End
+Bristol City,Millwall
+Charlton Athletic,Derby County
+Middlesbrough,Lincoln City
+Norwich City,West Bromwich Albion
+Portsmouth,Queens Park Rangers
+Stoke City,Swansea City
+Sheffield United,Birmingham City
+Watford,Southampton
+Burnley,West Ham United
+Cardiff City,Wrexham
+Birmingham City,Bristol City
+Lincoln City,Portsmouth
+Millwall,Norwich City
+Blackburn Rovers,Middlesbrough
+Derby County,Cardiff City
+Preston North End,Wolverhampton Wanderers
+Queens Park Rangers,Bolton Wanderers
+Southampton,Stoke City
+Swansea City,Sheffield United
+West Ham United,Charlton Athletic
+Wrexham,Watford
+West Bromwich Albion,Burnley
+Wrexham,Birmingham City
+Derby County,Swansea City
+Middlesbrough,West Bromwich Albion
+Wolverhampton Wanderers,Stoke City
+Blackburn Rovers,Queens Park Rangers
+Bolton Wanderers,Lincoln City
+Bristol City,Portsmouth
+Cardiff City,Sheffield United
+Charlton Athletic,Preston North End
+Norwich City,Burnley
+Southampton,Millwall
+Watford,West Ham United
+Lincoln City,Blackburn Rovers
+Portsmouth,Derby County
+Preston North End,Bristol City
+Sheffield United,Bolton Wanderers
+Swansea City,Watford
+West Ham United,Wolverhampton Wanderers
+Birmingham City,Southampton
+Stoke City,Norwich City
+Millwall,Wrexham
+Queens Park Rangers,Cardiff City
+West Bromwich Albion,Charlton Athletic
+Burnley,Middlesbrough
+Lincoln City,Southampton
+Preston North End,Blackburn Rovers
+Stoke City,Charlton Athletic
+Burnley,Bristol City
+Millwall,Bolton Wanderers
+Portsmouth,Cardiff City
+Queens Park Rangers,Middlesbrough
+Sheffield United,Norwich City
+West Bromwich Albion,Watford
+West Ham United,Derby County
+Swansea City,Wrexham
+Birmingham City,Wolverhampton Wanderers
+Blackburn Rovers,Sheffield United
+Cardiff City,Stoke City
+Southampton,Swansea City
+Watford,Preston North End
+Wrexham,Burnley
+Bolton Wanderers,West Ham United
+Derby County,West Bromwich Albion
+Norwich City,Birmingham City
+Charlton Athletic,Queens Park Rangers
+Bristol City,Lincoln City
+Middlesbrough,Millwall
+Wolverhampton Wanderers,Portsmouth
+West Ham United,Wrexham
+Bolton Wanderers,Cardiff City
+Derby County,Birmingham City
+West Bromwich Albion,Queens Park Rangers
+Blackburn Rovers,Millwall
+Charlton Athletic,Portsmouth
+Middlesbrough,Norwich City
+Preston North End,Lincoln City
+Southampton,Bristol City
+Swansea City,Burnley
+Watford,Stoke City
+Sheffield United,Wolverhampton Wanderers
+Bristol City,Watford
+Cardiff City,Charlton Athletic
+Millwall,West Ham United
+Stoke City,Sheffield United
+Birmingham City,Middlesbrough
+Burnley,Derby County
+Lincoln City,Swansea City
+Portsmouth,Blackburn Rovers
+Queens Park Rangers,Preston North End
+Wrexham,Southampton
+Wolverhampton Wanderers,West Bromwich Albion
+Norwich City,Bolton Wanderers
+West Ham United,Queens Park Rangers
+Charlton Athletic,Bristol City
+Swansea City,Norwich City
+West Bromwich Albion,Birmingham City
+Blackburn Rovers,Cardiff City
+Bolton Wanderers,Stoke City
+Derby County,Wrexham
+Middlesbrough,Wolverhampton Wanderers
+Preston North End,Millwall
+Sheffield United,Lincoln City
+Watford,Burnley
+Southampton,Portsmouth
+Bristol City,Blackburn Rovers
+Burnley,Charlton Athletic
+Cardiff City,Watford
+Millwall,Swansea City
+Wolverhampton Wanderers,Bolton Wanderers
+Wrexham,West Bromwich Albion
+Birmingham City,Preston North End
+Stoke City,Middlesbrough
+Norwich City,Southampton
+Portsmouth,Sheffield United
+Queens Park Rangers,Derby County
+Lincoln City,West Ham United
+Burnley,Wolverhampton Wanderers
+Middlesbrough,Cardiff City
+Millwall,Lincoln City
+Watford,Charlton Athletic
+Birmingham City,Queens Park Rangers
+Bristol City,Sheffield United
+Derby County,Stoke City
+Norwich City,Portsmouth
+Southampton,Bolton Wanderers
+Swansea City,West Ham United
+West Bromwich Albion,Blackburn Rovers
+Wrexham,Preston North End
+Bolton Wanderers,Middlesbrough
+Charlton Athletic,Norwich City
+Portsmouth,Millwall
+Sheffield United,Derby County
+Blackburn Rovers,Wrexham
+Cardiff City,Birmingham City
+Lincoln City,Burnley
+Preston North End,West Bromwich Albion
+Queens Park Rangers,Swansea City
+Stoke City,Bristol City
+West Ham United,Southampton
+Wolverhampton Wanderers,Watford
+Sheffield United,Wrexham
+Lincoln City,Birmingham City
+Norwich City,Watford
+Stoke City,Preston North End
+Bolton Wanderers,Bristol City
+Burnley,Portsmouth
+Middlesbrough,Charlton Athletic
+Millwall,Derby County
+Southampton,Queens Park Rangers
+Swansea City,Blackburn Rovers
+West Ham United,West Bromwich Albion
+Wolverhampton Wanderers,Cardiff City
+Blackburn Rovers,Stoke City
+Derby County,Norwich City
+Portsmouth,Swansea City
+Preston North End,Sheffield United
+Queens Park Rangers,Burnley
+Watford,Lincoln City
+Charlton Athletic,Bolton Wanderers
+Birmingham City,Millwall
+West Bromwich Albion,Southampton
+Cardiff City,West Ham United
+Wrexham,Middlesbrough
+Bristol City,Wolverhampton Wanderers
+Derby County,Bolton Wanderers
+Bristol City,Norwich City
+Portsmouth,Stoke City
+Wrexham,Wolverhampton Wanderers
+Birmingham City,Swansea City
+Blackburn Rovers,West Ham United
+Cardiff City,Burnley
+Charlton Athletic,Sheffield United
+Preston North End,Southampton
+Queens Park Rangers,Lincoln City
+Watford,Middlesbrough
+West Bromwich Albion,Millwall
+Millwall,Queens Park Rangers
+Norwich City,Cardiff City
+Southampton,Derby County
+Bolton Wanderers,Portsmouth
+Lincoln City,Wrexham
+Middlesbrough,Bristol City
+Sheffield United,Watford
+Stoke City,Birmingham City
+Swansea City,West Bromwich Albion
+West Ham United,Preston North End
+Wolverhampton Wanderers,Charlton Athletic
+Burnley,Blackburn Rovers
+Bristol City,Wrexham
+Cardiff City,Preston North End
+Charlton Athletic,Lincoln City
+Middlesbrough,Swansea City
+Norwich City,Queens Park Rangers
+Portsmouth,West Ham United
+Sheffield United,Southampton
+Wolverhampton Wanderers,Derby County
+Bolton Wanderers,West Bromwich Albion
+Burnley,Birmingham City
+Watford,Blackburn Rovers
+Stoke City,Millwall
+Southampton,Middlesbrough
+Blackburn Rovers,Charlton Athletic
+Lincoln City,Wolverhampton Wanderers
+Preston North End,Norwich City
+Birmingham City,Bolton Wanderers
+Derby County,Watford
+Millwall,Burnley
+Queens Park Rangers,Sheffield United
+West Bromwich Albion,Bristol City
+West Ham United,Stoke City
+Wrexham,Portsmouth
+Swansea City,Cardiff City
+Sheffield United,West Ham United
+Bolton Wanderers,Blackburn Rovers
+Bristol City,Swansea City
+Middlesbrough,Derby County
+Watford,Millwall
+Cardiff City,Lincoln City
+Charlton Athletic,Birmingham City
+Norwich City,Wrexham
+Portsmouth,West Bromwich Albion
+Stoke City,Queens Park Rangers
+Wolverhampton Wanderers,Southampton
+Burnley,Preston North End
+Blackburn Rovers,Norwich City
+Millwall,Sheffield United
+Queens Park Rangers,Wolverhampton Wanderers
+Swansea City,Bolton Wanderers
+West Bromwich Albion,Cardiff City
+Wrexham,Charlton Athletic
+Birmingham City,Watford
+West Ham United,Middlesbrough
+Derby County,Bristol City
+Lincoln City,Stoke City
+Preston North End,Portsmouth
+Southampton,Burnley
+Bolton Wanderers,Wrexham
+Preston North End,Middlesbrough
+Queens Park Rangers,Watford
+Stoke City,West Bromwich Albion
+Blackburn Rovers,Derby County
+Cardiff City,Southampton
+Charlton Athletic,Swansea City
+Portsmouth,Birmingham City
+Sheffield United,Burnley
+West Ham United,Bristol City
+Wolverhampton Wanderers,Millwall
+Lincoln City,Norwich City
+West Bromwich Albion,Sheffield United
+Birmingham City,West Ham United
+Bristol City,Cardiff City
+Millwall,Charlton Athletic
+Swansea City,Preston North End
+Watford,Bolton Wanderers
+Burnley,Stoke City
+Derby County,Lincoln City
+Middlesbrough,Portsmouth
+Norwich City,Wolverhampton Wanderers
+Southampton,Blackburn Rovers
+Wrexham,Queens Park Rangers
+Bolton Wanderers,Burnley
+Sheffield United,Middlesbrough
+Blackburn Rovers,Birmingham City
+Cardiff City,Millwall
+Charlton Athletic,Southampton
+Lincoln City,West Bromwich Albion
+Portsmouth,Watford
+Preston North End,Derby County
+Queens Park Rangers,Bristol City
+Stoke City,Wrexham
+West Ham United,Norwich City
+Wolverhampton Wanderers,Swansea City
+Wrexham,Blackburn Rovers
+Bristol City,Stoke City
+Burnley,Lincoln City
+Derby County,Sheffield United
+Middlesbrough,Bolton Wanderers
+Millwall,Portsmouth
+Norwich City,Charlton Athletic
+Swansea City,Queens Park Rangers
+Watford,Wolverhampton Wanderers
+West Bromwich Albion,Preston North End
+Birmingham City,Cardiff City
+Southampton,West Ham United
+Millwall,Wolverhampton Wanderers
+Birmingham City,Portsmouth
+Bristol City,West Ham United
+Derby County,Blackburn Rovers
+Middlesbrough,Preston North End
+Norwich City,Lincoln City
+Southampton,Cardiff City
+Swansea City,Charlton Athletic
+Watford,Queens Park Rangers
+West Bromwich Albion,Stoke City
+Wrexham,Bolton Wanderers
+Burnley,Sheffield United
+Blackburn Rovers,West Bromwich Albion
+Bolton Wanderers,Southampton
+Cardiff City,Middlesbrough
+Charlton Athletic,Watford
+Lincoln City,Millwall
+Portsmouth,Norwich City
+Preston North End,Wrexham
+Queens Park Rangers,Birmingham City
+Sheffield United,Bristol City
+Stoke City,Derby County
+West Ham United,Swansea City
+Wolverhampton Wanderers,Burnley
+Birmingham City,Lincoln City
+Blackburn Rovers,Swansea City
+Bristol City,Bolton Wanderers
+Cardiff City,Wolverhampton Wanderers
+Charlton Athletic,Middlesbrough
+Derby County,Millwall
+Portsmouth,Burnley
+Preston North End,Stoke City
+Queens Park Rangers,Southampton
+Watford,Norwich City
+West Bromwich Albion,West Ham United
+Wrexham,Sheffield United
+Bolton Wanderers,Charlton Athletic
+Burnley,Queens Park Rangers
+Lincoln City,Watford
+Millwall,Birmingham City
+Norwich City,Derby County
+Sheffield United,Preston North End
+Southampton,West Bromwich Albion
+Stoke City,Blackburn Rovers
+Middlesbrough,Wrexham
+Swansea City,Portsmouth
+West Ham United,Cardiff City
+Wolverhampton Wanderers,Bristol City
+Bolton Wanderers,Derby County
+Burnley,Cardiff City
+Lincoln City,Queens Park Rangers
+Middlesbrough,Watford
+Millwall,West Bromwich Albion
+Norwich City,Bristol City
+Sheffield United,Charlton Athletic
+Southampton,Preston North End
+Stoke City,Portsmouth
+Swansea City,Birmingham City
+West Ham United,Blackburn Rovers
+Wolverhampton Wanderers,Wrexham
+Birmingham City,Stoke City
+Blackburn Rovers,Burnley
+Bristol City,Middlesbrough
+Cardiff City,Norwich City
+Charlton Athletic,Wolverhampton Wanderers
+Derby County,Southampton
+Portsmouth,Bolton Wanderers
+Preston North End,West Ham United
+Queens Park Rangers,Millwall
+Watford,Sheffield United
+West Bromwich Albion,Swansea City
+Wrexham,Lincoln City
+Birmingham City,Derby County
+Bristol City,Southampton
+Burnley,Swansea City
+Cardiff City,Bolton Wanderers
+Lincoln City,Preston North End
+Millwall,Blackburn Rovers
+Norwich City,Middlesbrough
+Portsmouth,Charlton Athletic
+Queens Park Rangers,West Bromwich Albion
+Stoke City,Watford
+Wolverhampton Wanderers,Sheffield United
+Wrexham,West Ham United
+Blackburn Rovers,Bristol City
+Charlton Athletic,Burnley
+Derby County,Queens Park Rangers
+Preston North End,Birmingham City
+Sheffield United,Portsmouth
+Watford,Cardiff City
+West Bromwich Albion,Wrexham
+West Ham United,Lincoln City
+Bolton Wanderers,Wolverhampton Wanderers
+Middlesbrough,Stoke City
+Southampton,Norwich City
+Swansea City,Millwall
+Blackburn Rovers,Portsmouth
+Bolton Wanderers,Norwich City
+Charlton Athletic,Cardiff City
+Derby County,Burnley
+Middlesbrough,Birmingham City
+Preston North End,Queens Park Rangers
+Sheffield United,Stoke City
+Southampton,Wrexham
+Swansea City,Lincoln City
+Watford,Bristol City
+West Bromwich Albion,Wolverhampton Wanderers
+West Ham United,Millwall
+Birmingham City,West Bromwich Albion
+Bristol City,Charlton Athletic
+Burnley,Watford
+Cardiff City,Blackburn Rovers
+Lincoln City,Sheffield United
+Millwall,Preston North End
+Norwich City,Swansea City
+Queens Park Rangers,West Ham United
+Stoke City,Bolton Wanderers
+Wolverhampton Wanderers,Middlesbrough
+Wrexham,Derby County
+Portsmouth,Southampton
+Bolton Wanderers,Queens Park Rangers
+Bristol City,Birmingham City
+Burnley,West Bromwich Albion
+Cardiff City,Derby County
+Charlton Athletic,West Ham United
+Middlesbrough,Blackburn Rovers
+Norwich City,Millwall
+Watford,Wrexham
+Portsmouth,Lincoln City
+Sheffield United,Swansea City
+Stoke City,Southampton
+Wolverhampton Wanderers,Preston North End
+Birmingham City,Sheffield United
+Blackburn Rovers,Wolverhampton Wanderers
+Derby County,Charlton Athletic
+Lincoln City,Middlesbrough
+Millwall,Bristol City
+Preston North End,Bolton Wanderers
+Queens Park Rangers,Portsmouth
+Southampton,Watford
+Swansea City,Stoke City
+West Bromwich Albion,Norwich City
+West Ham United,Burnley
+Wrexham,Cardiff City
+Bolton Wanderers,Birmingham City
+Bristol City,West Bromwich Albion
+Burnley,Millwall
+Cardiff City,Swansea City
+Charlton Athletic,Blackburn Rovers
+Middlesbrough,Southampton
+Norwich City,Preston North End
+Portsmouth,Wrexham
+Sheffield United,Queens Park Rangers
+Stoke City,West Ham United
+Watford,Derby County
+Wolverhampton Wanderers,Lincoln City
+Derby County,Middlesbrough
+Lincoln City,Cardiff City
+Preston North End,Burnley
+Queens Park Rangers,Stoke City
+Southampton,Wolverhampton Wanderers
+Swansea City,Bristol City
+West Bromwich Albion,Portsmouth
+Wrexham,Norwich City
+Blackburn Rovers,Bolton Wanderers
+Millwall,Watford
+West Ham United,Sheffield United
+Birmingham City,Charlton Athletic
+Birmingham City,Blackburn Rovers
+Bristol City,Queens Park Rangers
+Burnley,Bolton Wanderers
+Derby County,Preston North End
+Middlesbrough,Sheffield United
+Millwall,Cardiff City
+Norwich City,West Ham United
+Southampton,Charlton Athletic
+Swansea City,Wolverhampton Wanderers
+Watford,Portsmouth
+West Bromwich Albion,Lincoln City
+Wrexham,Stoke City
+Charlton Athletic,Millwall
+Blackburn Rovers,Southampton
+Bolton Wanderers,Watford
+Cardiff City,Bristol City
+Lincoln City,Derby County
+Portsmouth,Middlesbrough
+Preston North End,Swansea City
+Queens Park Rangers,Wrexham
+Sheffield United,West Bromwich Albion
+Stoke City,Burnley
+West Ham United,Birmingham City
+Wolverhampton Wanderers,Norwich City
+Burnley,Wrexham
+Lincoln City,Bristol City
+Millwall,Middlesbrough
+Portsmouth,Wolverhampton Wanderers
+Queens Park Rangers,Charlton Athletic
+Stoke City,Cardiff City
+Swansea City,Southampton
+West Ham United,Bolton Wanderers
+Preston North End,Watford
+Sheffield United,Blackburn Rovers
+West Bromwich Albion,Derby County
+Birmingham City,Norwich City
+Blackburn Rovers,Preston North End
+Bolton Wanderers,Millwall
+Bristol City,Burnley
+Cardiff City,Portsmouth
+Charlton Athletic,Stoke City
+Derby County,West Ham United
+Middlesbrough,Queens Park Rangers
+Norwich City,Sheffield United
+Southampton,Lincoln City
+Watford,West Bromwich Albion
+Wolverhampton Wanderers,Birmingham City
+Wrexham,Swansea City
+Birmingham City,Wrexham
+Burnley,Norwich City
+Lincoln City,Bolton Wanderers
+Millwall,Southampton
+Portsmouth,Bristol City
+Preston North End,Charlton Athletic
+Queens Park Rangers,Blackburn Rovers
+Sheffield United,Cardiff City
+Stoke City,Wolverhampton Wanderers
+Swansea City,Derby County
+West Bromwich Albion,Middlesbrough
+West Ham United,Watford
+Bolton Wanderers,Sheffield United
+Charlton Athletic,West Bromwich Albion
+Derby County,Portsmouth
+Middlesbrough,Burnley
+Norwich City,Stoke City
+Southampton,Birmingham City
+Wolverhampton Wanderers,West Ham United
+Wrexham,Millwall
+Blackburn Rovers,Lincoln City
+Bristol City,Preston North End
+Cardiff City,Queens Park Rangers
+Watford,Swansea City
+Bolton Wanderers,Swansea City
+Bristol City,Derby County
+Burnley,Southampton
+Cardiff City,West Bromwich Albion
+Charlton Athletic,Wrexham
+Middlesbrough,West Ham United
+Norwich City,Blackburn Rovers
+Portsmouth,Preston North End
+Sheffield United,Millwall
+Stoke City,Lincoln City
+Watford,Birmingham City
+Wolverhampton Wanderers,Queens Park Rangers
+Birmingham City,Burnley
+Blackburn Rovers,Watford
+Derby County,Wolverhampton Wanderers
+Lincoln City,Charlton Athletic
+Millwall,Stoke City
+Preston North End,Cardiff City
+Queens Park Rangers,Norwich City
+Southampton,Sheffield United
+Swansea City,Middlesbrough
+West Bromwich Albion,Bolton Wanderers
+West Ham United,Portsmouth
+Wrexham,Bristol City

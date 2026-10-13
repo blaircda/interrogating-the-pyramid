@@ -419,6 +419,8 @@ def split_season_by_date(scores_df, season, league, date):
     for specified season and league (division)
     return the results of matches up to and including date
     plus the remaining fixtures without the result
+
+    returns matches_played as a dict and matches_to_play as a list of tuples
     """
     matches_played = {}
     matches_to_play = []

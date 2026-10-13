@@ -1,0 +1,553 @@
+home,away
+Notts County,Leicester City
+Oxford United,Milton Keynes Dons
+Reading,Luton Town
+Barnsley,Bromley
+Blackpool,Wycombe Wanderers
+Bradford City,Peterborough United
+Burton Albion,Stevenage
+Cambridge United,Wigan Athletic
+Huddersfield Town,AFC Wimbledon
+Leyton Orient,Sheffield Wednesday
+Mansfield Town,Doncaster Rovers
+Plymouth Argyle,Stockport County
+Sheffield Wednesday,Bradford City
+Doncaster Rovers,Barnsley
+Luton Town,Notts County
+AFC Wimbledon,Reading
+Bromley,Cambridge United
+Leicester City,Burton Albion
+Milton Keynes Dons,Huddersfield Town
+Peterborough United,Mansfield Town
+Stevenage,Oxford United
+Stockport County,Blackpool
+Wigan Athletic,Leyton Orient
+Wycombe Wanderers,Plymouth Argyle
+Blackpool,Peterborough United
+Milton Keynes Dons,Leicester City
+Cambridge United,Huddersfield Town
+Leyton Orient,Barnsley
+Notts County,Burton Albion
+Plymouth Argyle,Bradford City
+Sheffield Wednesday,Bromley
+Stevenage,Doncaster Rovers
+Stockport County,Wycombe Wanderers
+AFC Wimbledon,Wigan Athletic
+Mansfield Town,Luton Town
+Oxford United,Reading
+Bradford City,Cambridge United
+Bromley,Leyton Orient
+Doncaster Rovers,Notts County
+Huddersfield Town,Oxford United
+Leicester City,Plymouth Argyle
+Peterborough United,Stevenage
+Wycombe Wanderers,Sheffield Wednesday
+Barnsley,Blackpool
+Burton Albion,AFC Wimbledon
+Luton Town,Stockport County
+Wigan Athletic,Milton Keynes Dons
+Reading,Mansfield Town
+Peterborough United,Sheffield Wednesday
+Wigan Athletic,Stockport County
+Barnsley,Stevenage
+Bradford City,Mansfield Town
+Burton Albion,Cambridge United
+Doncaster Rovers,Plymouth Argyle
+Huddersfield Town,Notts County
+Leicester City,Oxford United
+Luton Town,Leyton Orient
+Reading,Blackpool
+Wycombe Wanderers,Milton Keynes Dons
+Bromley,AFC Wimbledon
+Stevenage,Luton Town
+Leyton Orient,Wycombe Wanderers
+Notts County,Bradford City
+AFC Wimbledon,Doncaster Rovers
+Blackpool,Bromley
+Cambridge United,Reading
+Mansfield Town,Huddersfield Town
+Milton Keynes Dons,Peterborough United
+Oxford United,Burton Albion
+Plymouth Argyle,Barnsley
+Sheffield Wednesday,Wigan Athletic
+Stockport County,Leicester City
+AFC Wimbledon,Milton Keynes Dons
+Barnsley,Leicester City
+Burton Albion,Mansfield Town
+Blackpool,Plymouth Argyle
+Bromley,Huddersfield Town
+Leyton Orient,Stevenage
+Luton Town,Bradford City
+Oxford United,Cambridge United
+Peterborough United,Doncaster Rovers
+Reading,Notts County
+Sheffield Wednesday,Stockport County
+Wigan Athletic,Wycombe Wanderers
+Cambridge United,AFC Wimbledon
+Mansfield Town,Leyton Orient
+Milton Keynes Dons,Bromley
+Notts County,Blackpool
+Plymouth Argyle,Burton Albion
+Stockport County,Peterborough United
+Wycombe Wanderers,Reading
+Leicester City,Wigan Athletic
+Huddersfield Town,Luton Town
+Bradford City,Barnsley
+Stevenage,Sheffield Wednesday
+Doncaster Rovers,Oxford United
+AFC Wimbledon,Stevenage
+Barnsley,Milton Keynes Dons
+Bromley,Wycombe Wanderers
+Burton Albion,Huddersfield Town
+Leyton Orient,Plymouth Argyle
+Peterborough United,Notts County
+Reading,Bradford City
+Wigan Athletic,Mansfield Town
+Luton Town,Doncaster Rovers
+Oxford United,Stockport County
+Sheffield Wednesday,Cambridge United
+Blackpool,Leicester City
+Notts County,Oxford United
+Plymouth Argyle,AFC Wimbledon
+Bradford City,Leyton Orient
+Doncaster Rovers,Burton Albion
+Huddersfield Town,Sheffield Wednesday
+Leicester City,Peterborough United
+Mansfield Town,Bromley
+Milton Keynes Dons,Reading
+Stevenage,Wigan Athletic
+Stockport County,Barnsley
+Wycombe Wanderers,Luton Town
+Cambridge United,Blackpool
+Mansfield Town,Oxford United
+Milton Keynes Dons,Luton Town
+Peterborough United,Burton Albion
+Barnsley,Cambridge United
+Bradford City,Stevenage
+Leicester City,Doncaster Rovers
+Leyton Orient,Blackpool
+Plymouth Argyle,Huddersfield Town
+Sheffield Wednesday,AFC Wimbledon
+Stockport County,Bromley
+Wigan Athletic,Reading
+Wycombe Wanderers,Notts County
+AFC Wimbledon,Mansfield Town
+Blackpool,Milton Keynes Dons
+Bromley,Leicester City
+Burton Albion,Bradford City
+Cambridge United,Wycombe Wanderers
+Doncaster Rovers,Stockport County
+Huddersfield Town,Peterborough United
+Luton Town,Barnsley
+Notts County,Sheffield Wednesday
+Oxford United,Wigan Athletic
+Stevenage,Plymouth Argyle
+Reading,Leyton Orient
+Huddersfield Town,Wigan Athletic
+Luton Town,Leicester City
+AFC Wimbledon,Wycombe Wanderers
+Blackpool,Mansfield Town
+Bromley,Peterborough United
+Burton Albion,Leyton Orient
+Cambridge United,Plymouth Argyle
+Doncaster Rovers,Sheffield Wednesday
+Notts County,Stockport County
+Oxford United,Bradford City
+Reading,Barnsley
+Stevenage,Milton Keynes Dons
+Bradford City,Huddersfield Town
+Leyton Orient,Cambridge United
+Plymouth Argyle,Reading
+Barnsley,Oxford United
+Leicester City,Stevenage
+Mansfield Town,Notts County
+Milton Keynes Dons,Doncaster Rovers
+Peterborough United,Luton Town
+Stockport County,AFC Wimbledon
+Wigan Athletic,Bromley
+Wycombe Wanderers,Burton Albion
+Sheffield Wednesday,Blackpool
+AFC Wimbledon,Blackpool
+Bromley,Notts County
+Doncaster Rovers,Leyton Orient
+Leicester City,Bradford City
+Luton Town,Cambridge United
+Milton Keynes Dons,Burton Albion
+Peterborough United,Oxford United
+Sheffield Wednesday,Plymouth Argyle
+Stevenage,Mansfield Town
+Stockport County,Reading
+Wigan Athletic,Barnsley
+Wycombe Wanderers,Huddersfield Town
+Barnsley,Sheffield Wednesday
+Blackpool,Wigan Athletic
+Reading,Bromley
+Bradford City,Doncaster Rovers
+Burton Albion,Luton Town
+Cambridge United,Stockport County
+Huddersfield Town,Leicester City
+Leyton Orient,AFC Wimbledon
+Mansfield Town,Milton Keynes Dons
+Notts County,Stevenage
+Oxford United,Wycombe Wanderers
+Plymouth Argyle,Peterborough United
+Doncaster Rovers,Huddersfield Town
+Milton Keynes Dons,Notts County
+Peterborough United,Cambridge United
+AFC Wimbledon,Barnsley
+Bromley,Burton Albion
+Leicester City,Mansfield Town
+Luton Town,Oxford United
+Sheffield Wednesday,Reading
+Stevenage,Blackpool
+Stockport County,Leyton Orient
+Wigan Athletic,Plymouth Argyle
+Wycombe Wanderers,Bradford City
+Leyton Orient,Peterborough United
+Barnsley,Wycombe Wanderers
+Blackpool,Luton Town
+Bradford City,Milton Keynes Dons
+Burton Albion,Wigan Athletic
+Cambridge United,Leicester City
+Huddersfield Town,Stevenage
+Mansfield Town,Stockport County
+Notts County,AFC Wimbledon
+Oxford United,Sheffield Wednesday
+Plymouth Argyle,Bromley
+Reading,Doncaster Rovers
+Leicester City,Sheffield Wednesday
+Burton Albion,Reading
+Stevenage,Stockport County
+Bradford City,AFC Wimbledon
+Doncaster Rovers,Bromley
+Huddersfield Town,Leyton Orient
+Luton Town,Wigan Athletic
+Mansfield Town,Wycombe Wanderers
+Milton Keynes Dons,Cambridge United
+Notts County,Plymouth Argyle
+Oxford United,Blackpool
+Peterborough United,Barnsley
+Cambridge United,Stevenage
+Barnsley,Huddersfield Town
+Sheffield Wednesday,Luton Town
+AFC Wimbledon,Oxford United
+Blackpool,Burton Albion
+Bromley,Bradford City
+Leyton Orient,Notts County
+Plymouth Argyle,Mansfield Town
+Reading,Leicester City
+Stockport County,Milton Keynes Dons
+Wigan Athletic,Peterborough United
+Wycombe Wanderers,Doncaster Rovers
+Bradford City,Stockport County
+Burton Albion,Sheffield Wednesday
+Doncaster Rovers,Wigan Athletic
+Huddersfield Town,Blackpool
+Leicester City,AFC Wimbledon
+Luton Town,Bromley
+Mansfield Town,Barnsley
+Milton Keynes Dons,Leyton Orient
+Notts County,Cambridge United
+Oxford United,Plymouth Argyle
+Peterborough United,Wycombe Wanderers
+Stevenage,Reading
+AFC Wimbledon,Luton Town
+Barnsley,Burton Albion
+Blackpool,Bradford City
+Bromley,Oxford United
+Cambridge United,Doncaster Rovers
+Leyton Orient,Leicester City
+Plymouth Argyle,Milton Keynes Dons
+Sheffield Wednesday,Mansfield Town
+Stockport County,Huddersfield Town
+Wigan Athletic,Notts County
+Wycombe Wanderers,Stevenage
+Reading,Peterborough United
+AFC Wimbledon,Peterborough United
+Barnsley,Notts County
+Blackpool,Doncaster Rovers
+Bromley,Stevenage
+Leyton Orient,Oxford United
+Reading,Milton Keynes Dons
+Sheffield Wednesday,Huddersfield Town
+Wigan Athletic,Bradford City
+Wycombe Wanderers,Leicester City
+Cambridge United,Mansfield Town
+Plymouth Argyle,Luton Town
+Stockport County,Burton Albion
+Burton Albion,Blackpool
+Oxford United,AFC Wimbledon
+Stevenage,Cambridge United
+Bradford City,Bromley
+Doncaster Rovers,Wycombe Wanderers
+Huddersfield Town,Barnsley
+Leicester City,Reading
+Luton Town,Sheffield Wednesday
+Mansfield Town,Plymouth Argyle
+Milton Keynes Dons,Stockport County
+Notts County,Leyton Orient
+Peterborough United,Wigan Athletic
+AFC Wimbledon,Sheffield Wednesday
+Blackpool,Leyton Orient
+Bromley,Stockport County
+Burton Albion,Peterborough United
+Cambridge United,Barnsley
+Doncaster Rovers,Leicester City
+Huddersfield Town,Plymouth Argyle
+Luton Town,Milton Keynes Dons
+Notts County,Wycombe Wanderers
+Oxford United,Mansfield Town
+Reading,Wigan Athletic
+Stevenage,Bradford City
+Barnsley,Luton Town
+Bradford City,Burton Albion
+Leicester City,Bromley
+Leyton Orient,Reading
+Mansfield Town,AFC Wimbledon
+Milton Keynes Dons,Blackpool
+Peterborough United,Huddersfield Town
+Plymouth Argyle,Stevenage
+Sheffield Wednesday,Notts County
+Stockport County,Doncaster Rovers
+Wigan Athletic,Oxford United
+Wycombe Wanderers,Cambridge United
+Barnsley,Reading
+Bradford City,Oxford United
+Leicester City,Luton Town
+Leyton Orient,Burton Albion
+Mansfield Town,Blackpool
+Milton Keynes Dons,Stevenage
+Peterborough United,Bromley
+Plymouth Argyle,Cambridge United
+Sheffield Wednesday,Doncaster Rovers
+Stockport County,Notts County
+Wigan Athletic,Huddersfield Town
+Wycombe Wanderers,AFC Wimbledon
+Huddersfield Town,Bradford City
+AFC Wimbledon,Stockport County
+Blackpool,Sheffield Wednesday
+Bromley,Wigan Athletic
+Burton Albion,Wycombe Wanderers
+Cambridge United,Leyton Orient
+Doncaster Rovers,Milton Keynes Dons
+Luton Town,Peterborough United
+Notts County,Mansfield Town
+Oxford United,Barnsley
+Reading,Plymouth Argyle
+Stevenage,Leicester City
+Barnsley,Leyton Orient
+Bradford City,Plymouth Argyle
+Bromley,Sheffield Wednesday
+Burton Albion,Notts County
+Doncaster Rovers,Stevenage
+Huddersfield Town,Cambridge United
+Leicester City,Milton Keynes Dons
+Luton Town,Mansfield Town
+Peterborough United,Blackpool
+Reading,Oxford United
+Wigan Athletic,AFC Wimbledon
+Wycombe Wanderers,Stockport County
+AFC Wimbledon,Burton Albion
+Blackpool,Barnsley
+Cambridge United,Bradford City
+Leyton Orient,Bromley
+Mansfield Town,Reading
+Milton Keynes Dons,Wigan Athletic
+Notts County,Doncaster Rovers
+Oxford United,Huddersfield Town
+Plymouth Argyle,Leicester City
+Sheffield Wednesday,Wycombe Wanderers
+Stevenage,Peterborough United
+Stockport County,Luton Town
+AFC Wimbledon,Bromley
+Blackpool,Reading
+Cambridge United,Burton Albion
+Leyton Orient,Luton Town
+Mansfield Town,Bradford City
+Milton Keynes Dons,Wycombe Wanderers
+Notts County,Huddersfield Town
+Oxford United,Leicester City
+Plymouth Argyle,Doncaster Rovers
+Sheffield Wednesday,Peterborough United
+Stevenage,Barnsley
+Stockport County,Wigan Athletic
+Barnsley,Plymouth Argyle
+Bradford City,Notts County
+Bromley,Blackpool
+Burton Albion,Oxford United
+Doncaster Rovers,AFC Wimbledon
+Huddersfield Town,Mansfield Town
+Leicester City,Stockport County
+Luton Town,Stevenage
+Peterborough United,Milton Keynes Dons
+Reading,Cambridge United
+Wigan Athletic,Sheffield Wednesday
+Wycombe Wanderers,Leyton Orient
+Cambridge United,Peterborough United
+Barnsley,Wigan Athletic
+Blackpool,AFC Wimbledon
+Bradford City,Leicester City
+Burton Albion,Milton Keynes Dons
+Huddersfield Town,Wycombe Wanderers
+Leyton Orient,Doncaster Rovers
+Mansfield Town,Stevenage
+Notts County,Bromley
+Oxford United,Luton Town
+Plymouth Argyle,Sheffield Wednesday
+Reading,Stockport County
+AFC Wimbledon,Huddersfield Town
+Bromley,Barnsley
+Doncaster Rovers,Mansfield Town
+Leicester City,Notts County
+Luton Town,Reading
+Milton Keynes Dons,Oxford United
+Peterborough United,Bradford City
+Sheffield Wednesday,Leyton Orient
+Stevenage,Burton Albion
+Stockport County,Plymouth Argyle
+Wigan Athletic,Cambridge United
+Wycombe Wanderers,Blackpool
+Barnsley,Doncaster Rovers
+Blackpool,Stockport County
+Bradford City,Sheffield Wednesday
+Burton Albion,Leicester City
+Cambridge United,Bromley
+Huddersfield Town,Milton Keynes Dons
+Leyton Orient,Wigan Athletic
+Mansfield Town,Peterborough United
+Notts County,Luton Town
+Oxford United,Stevenage
+Plymouth Argyle,Wycombe Wanderers
+Reading,AFC Wimbledon
+AFC Wimbledon,Leyton Orient
+Bromley,Reading
+Doncaster Rovers,Bradford City
+Leicester City,Huddersfield Town
+Luton Town,Burton Albion
+Milton Keynes Dons,Mansfield Town
+Peterborough United,Plymouth Argyle
+Sheffield Wednesday,Barnsley
+Stevenage,Notts County
+Stockport County,Cambridge United
+Wigan Athletic,Blackpool
+Wycombe Wanderers,Oxford United
+Bradford City,Wigan Athletic
+Burton Albion,Stockport County
+Doncaster Rovers,Blackpool
+Huddersfield Town,Reading
+Leicester City,Wycombe Wanderers
+Luton Town,Plymouth Argyle
+Mansfield Town,Cambridge United
+Milton Keynes Dons,Sheffield Wednesday
+Notts County,Barnsley
+Oxford United,Leyton Orient
+Peterborough United,AFC Wimbledon
+Stevenage,Bromley
+AFC Wimbledon,Leicester City
+Barnsley,Mansfield Town
+Blackpool,Oxford United
+Bromley,Doncaster Rovers
+Cambridge United,Milton Keynes Dons
+Leyton Orient,Huddersfield Town
+Plymouth Argyle,Notts County
+Reading,Stevenage
+Sheffield Wednesday,Burton Albion
+Stockport County,Bradford City
+Wigan Athletic,Luton Town
+Wycombe Wanderers,Peterborough United
+Bradford City,Blackpool
+Burton Albion,Barnsley
+Doncaster Rovers,Cambridge United
+Huddersfield Town,Stockport County
+Leicester City,Leyton Orient
+Luton Town,AFC Wimbledon
+Mansfield Town,Sheffield Wednesday
+Milton Keynes Dons,Plymouth Argyle
+Notts County,Wigan Athletic
+Oxford United,Bromley
+Peterborough United,Reading
+Stevenage,Wycombe Wanderers
+AFC Wimbledon,Bradford City
+Barnsley,Peterborough United
+Blackpool,Huddersfield Town
+Bromley,Luton Town
+Cambridge United,Notts County
+Leyton Orient,Milton Keynes Dons
+Plymouth Argyle,Oxford United
+Reading,Burton Albion
+Sheffield Wednesday,Leicester City
+Stockport County,Stevenage
+Wigan Athletic,Doncaster Rovers
+Wycombe Wanderers,Mansfield Town
+AFC Wimbledon,Cambridge United
+Barnsley,Bradford City
+Blackpool,Notts County
+Bromley,Milton Keynes Dons
+Burton Albion,Plymouth Argyle
+Leyton Orient,Mansfield Town
+Luton Town,Huddersfield Town
+Oxford United,Doncaster Rovers
+Peterborough United,Stockport County
+Sheffield Wednesday,Stevenage
+Wigan Athletic,Leicester City
+Reading,Wycombe Wanderers
+Milton Keynes Dons,AFC Wimbledon
+Bradford City,Luton Town
+Cambridge United,Oxford United
+Doncaster Rovers,Peterborough United
+Huddersfield Town,Bromley
+Leicester City,Barnsley
+Mansfield Town,Burton Albion
+Notts County,Reading
+Plymouth Argyle,Blackpool
+Stevenage,Leyton Orient
+Stockport County,Sheffield Wednesday
+Wycombe Wanderers,Wigan Athletic
+AFC Wimbledon,Plymouth Argyle
+Barnsley,Stockport County
+Blackpool,Cambridge United
+Bromley,Mansfield Town
+Burton Albion,Doncaster Rovers
+Leyton Orient,Bradford City
+Luton Town,Wycombe Wanderers
+Oxford United,Notts County
+Peterborough United,Leicester City
+Reading,Huddersfield Town
+Sheffield Wednesday,Milton Keynes Dons
+Wigan Athletic,Stevenage
+Bradford City,Reading
+Cambridge United,Sheffield Wednesday
+Doncaster Rovers,Luton Town
+Huddersfield Town,Burton Albion
+Leicester City,Blackpool
+Mansfield Town,Wigan Athletic
+Milton Keynes Dons,Barnsley
+Notts County,Peterborough United
+Plymouth Argyle,Leyton Orient
+Stevenage,AFC Wimbledon
+Stockport County,Oxford United
+Wycombe Wanderers,Bromley
+Barnsley,AFC Wimbledon
+Blackpool,Stevenage
+Bradford City,Wycombe Wanderers
+Burton Albion,Bromley
+Cambridge United,Luton Town
+Huddersfield Town,Doncaster Rovers
+Leyton Orient,Stockport County
+Mansfield Town,Leicester City
+Notts County,Milton Keynes Dons
+Oxford United,Peterborough United
+Plymouth Argyle,Wigan Athletic
+Reading,Sheffield Wednesday
+AFC Wimbledon,Notts County
+Bromley,Plymouth Argyle
+Doncaster Rovers,Reading
+Leicester City,Cambridge United
+Luton Town,Blackpool
+Milton Keynes Dons,Bradford City
+Peterborough United,Leyton Orient
+Sheffield Wednesday,Oxford United
+Stevenage,Huddersfield Town
+Stockport County,Mansfield Town
+Wigan Athletic,Burton Albion
+Wycombe Wanderers,Barnsley
