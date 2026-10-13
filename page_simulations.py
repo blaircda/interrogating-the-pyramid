@@ -81,25 +81,25 @@ with sim_launch_tab:
         simulate = st.form_submit_button("Simulate")
 
     if simulate:
-
-        #full_games_played =  league_size*(league_size - 1 )
-
-        # simulating an ongoing season
+        # current season
+        # upcoming fixtures are not present in scores_df so import them here
         if sel_season == LIVE_SEASON:
+
+            # get fixtures as a list of tuples 
+            sel_tier = sel_league[0]
+            fixtures = f"data/current_fixtures/Tier{sel_tier}.csv"
+            df = pd.read_csv(fixtures, usecols=["home", "away"])
+            fixtures_list = [ (row[0], row[1]) for row in df.itertuples(index=False) ]
+
             # simulating the whole season
             if sim_start_date is None:
                 matches_played = None
-                # assuming we don't have the true fixture list available set matches_to_play to None
-                # then the simulator will iterate over all permutations
-                # in principle is not good for dynamic rating updates
-                matches_to_play = None
+                matches_to_play = fixtures_list
             else:
                 # split the season fixtures by the date
                 matches_played, matches_to_play = split_season_by_date(scores_df, sel_season, sel_league[1], sim_start_date)
-                # assuming we don't have the true fixture list available set matches_to_play to None
-                # then the simulator will iterate over all permutations
-                # in principle is not good for dynamic rating updates
-                matches_to_play = None
+                last_match = list(matches_played.keys())[-1]
+                matches_to_play = fixtures_list[ fixtures_list.index(last_match)+1:]
 
         # simulating a completed season
         elif sel_season != LIVE_SEASON:
@@ -110,7 +110,6 @@ with sim_launch_tab:
             else:
                 # split the season fixtures by the date
                 matches_played, matches_to_play = split_season_by_date(scores_df, sel_season, sel_league[1], sim_start_date)
-                matches_to_play = None
 
         if sim_start_date:
             # display table as of results_to_date
